@@ -1,0 +1,321 @@
+/* ═══════════════════════════════════════════
+   Rocky Predictor — Career Mode Styles
+   ═══════════════════════════════════════════ */
+
+/* ── Career Shell ── */
+#viewIdolo {
+  position: relative !important;
+  inset: auto !important;
+  z-index: auto !important;
+  background: transparent !important;
+  overflow-y: visible !important;
+  padding: 0 !important;
+}
+
+#viewIdolo .card {
+  width: 100% !important;
+  max-width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.career-shell {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.career-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.career-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.career-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--app-accent-dim);
+  border: 1px solid var(--app-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-accent);
+}
+
+.career-header-info h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.career-header-info .meta {
+  font-size: 11px;
+  color: var(--app-text-muted);
+  margin-top: 1px;
+}
+
+.career-navigation {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--app-border);
+  overflow-x: auto;
+}
+
+.career-nav-tab {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--app-transition);
+  white-space: nowrap;
+  background: transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+}
+
+.career-nav-tab:hover { color: var(--app-text-secondary); }
+.career-nav-tab.active { color: var(--app-accent); border-bottom-color: var(--app-accent); }
+
+/* ── Dashboard Grid ── */
+.career-dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.career-dash-full {
+  grid-column: 1 / -1;
+}
+
+.career-panel {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  padding: 16px;
+}
+
+.career-panel-highlight {
+  border-color: var(--app-accent);
+  background: var(--app-accent-dim);
+}
+
+.career-panel-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--app-text-muted);
+  margin-bottom: 6px;
+}
+
+/* Player header panel */
+.career-player-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.career-player-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--app-accent-dim), transparent);
+  border: 2px solid var(--app-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.career-player-info { flex: 1; }
+.career-player-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--app-text);
+  margin: 0;
+}
+.career-player-detail {
+  font-size: 11px;
+  color: var(--app-text-secondary);
+  margin-top: 2px;
+}
+
+.career-player-ovr {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.career-ovr-number {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--app-accent);
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  line-height: 1;
+}
+
+.career-ovr-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--app-text-muted);
+  margin-top: 1px;
+}
+
+/* Stat bars */
+.career-bar {
+  height: 6px;
+  background: var(--app-surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 5px 0;
+}
+
+.career-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--app-accent), var(--app-gold));
+  transition: width 0.4s ease;
+}
+
+.career-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.career-stat-item {
+  text-align: center;
+  padding: 8px 4px;
+  background: var(--app-surface-2);
+  border-radius: var(--app-radius-sm);
+  border: 1px solid var(--app-border);
+}
+
+.career-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.career-stat-label {
+  font-size: 8px;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* Attributes grid */
+.career-atr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.career-atr-item {
+  background: var(--app-surface-2);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--app-text-secondary);
+}
+
+.career-atr-value {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--app-text);
+}
+
+.career-atr-value.high { color: var(--app-accent); }
+.career-atr-value.mid { color: var(--app-gold); }
+.career-atr-value.low { color: var(--app-danger); }
+
+/* Button row */
+.career-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.career-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--app-radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: var(--app-transition);
+  font-family: inherit;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface-2);
+  color: var(--app-text-secondary);
+  text-align: center;
+}
+
+.career-btn:hover {
+  border-color: var(--app-accent);
+  color: var(--app-text);
+  background: var(--app-accent-dim);
+}
+
+.career-btn-primary {
+  background: var(--app-accent);
+  border-color: var(--app-accent);
+  color: #050708;
+}
+
+.career-btn-primary:hover {
+  background: #1ea84f;
+  border-color: #1ea84f;
+  color: #050708;
+}
+
+.career-btn-danger {
+  border-color: var(--app-danger);
+  color: var(--app-danger);
+}
+.career-btn-danger:hover {
+  background: rgba(248,81,73,0.1);
+  border-color: var(--app-danger);
+  color: var(--app-danger);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .career-dashboard {
+    grid-template-columns: 1fr;
+  }
+  .career-stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .career-actions {
+    flex-direction: column;
+  }
+  .career-player-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
