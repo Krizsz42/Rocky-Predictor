@@ -415,7 +415,7 @@ const SEASON_START={
   argentina:Date.UTC(2026,0,22),chile:Date.UTC(2026,0,30),
   libertadores:Date.UTC(2026,1,3),sudamericana:Date.UTC(2026,2,3)
 };
-async function importPlayed(){
+window.importPlayed=async function(){
   const msg=document.getElementById('importMsg');
   const set=(t,c)=>{if(msg){msg.textContent=t;msg.style.color=c||'var(--mut)';}};
   const id=CURRENT_LEAGUE;
@@ -447,7 +447,7 @@ async function importPlayed(){
   if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();}
   set(added?('✓ Importé '+added+' partidos de '+LEAGUES[id].name+'.'):'Sin novedades.','var(--acc)');
   if(typeof showToast==='function')showToast(added?('+'+added+' partidos importados'):'Sin novedades');
-}
+};
 function loadBulkResults(){
   const txt=(document.getElementById('bulkBox').value||'').trim();
   const msg=document.getElementById('bulkMsg');
