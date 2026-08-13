@@ -408,42 +408,55 @@ async function fetchAllPending(){
 }
 async function importPlayed(){
   const msg=document.getElementById('importMsg');
-  msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
-  const isWC=CURRENT_LEAGUE==='worldcup';
+  const compSelect = document.getElementById('historyComp');
+  const compId = compSelect ? compSelect.value : CURRENT_LEAGUE;
   
-  // Fechas de inicio específicas por competición (2026)
+  msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
+  
+  // Fechas de inicio específicas por competición (2026) - SIN año anterior
   const startDates={
-    'worldcup': new Date(Date.UTC(2026,5,11,12)),  // 11 jun 2026
-    'copa_lib': new Date(Date.UTC(2026,1,3,12)),     // 3 feb 2026
-    'copa_sud': new Date(Date.UTC(2026,2,3,12)),     // 3 mar 2026
+    'worldcup': new Date(Date.UTC(2026,5,11,12)),   // 11 jun 2026
+    'libertadores': new Date(Date.UTC(2026,1,3,12)), // 3 feb 2026
+    'sudamericana': new Date(Date.UTC(2026,2,3,12)), // 3 mar 2026
     'liga_arg': new Date(Date.UTC(2026,0,22,12)),    // 22 ene 2026
     'liga_chil': new Date(Date.UTC(2026,0,30,12))    // 30 ene 2026
   };
   
-  // Fechas de fin específicas por competición
+  // Fechas de fin: HOY (no futuro) para evitar traer datos inexistentes
+  const today = new Date();
   const endDates={
     'worldcup': new Date(Date.UTC(2026,6,19,12)),    // 19 jul 2026
-    'copa_lib': new Date(Date.UTC(2026,10,30,12)),   // 30 nov 2026
-    'copa_sud': new Date(Date.UTC(2026,10,30,12)),   // 30 nov 2026
-    'liga_arg': new Date(Date.UTC(2026,11,15,12)),   // 15 dic 2026
-    'liga_chil': new Date(Date.UTC(2026,11,15,12))   // 15 dic 2026
+    'libertadores': today,                           // Hasta hoy
+    'sudamericana': today,                           // Hasta hoy
+    'liga_arg': today,                               // Hasta hoy
+    'liga_chil': today                               // Hasta hoy
   };
   
-  const start=startDates[CURRENT_LEAGUE]||new Date(Date.UTC(2026,7,1,12));
-  const tournEnd=endDates[CURRENT_LEAGUE]||new Date(Date.UTC(2027,5,1,12));
-  const end=new Date()<tournEnd?new Date():tournEnd;
+  const start=startDates[compId]||new Date(Date.UTC(2026,0,1,12));
+  const tournEnd=endDates[compId]||today;
+  const end=tournEnd<today?tournEnd:today;
+  
+  // Limpiar historial previo de esta competición para evitar duplicados o datos viejos
+  if (typeof HIST !== 'undefined' && Array.isArray(HIST)) {
+    const beforeCount = HIST.length;
+    HIST = HIST.filter(x => x.competition !== compId);
+    console.log(`Limpiados ${beforeCount - HIST.length} partidos antiguos de ${compId}`);
+  }
+  
   const byKey={};HIST.forEach(x=>{if(x.actualA!=null)byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;});
   let added=0;
   try{
     const days=[];for(let d=new Date(start);d<=end;d.setUTCDate(d.getUTCDate()+1))days.push(d.toISOString().slice(0,10).replace(/-/g,''));
-    const chunks=await Promise.all(days.map(y=>fetchESPNday(CURRENT_LEAGUE,y)));
+    console.log(`Buscando desde ${start.toISOString()} hasta ${end.toISOString()} (${days.length} días)`);
+    const chunks=await Promise.all(days.map(y=>fetchESPNday(compId,y)));
     for(const events of chunks){for(const ev of events){
       const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
       if(!stt||!stt.completed)continue;
       const it=buildFromESPN(ev);if(!it)continue;
+      it.competition = compId; // Asegurar que el partido tenga la competición correcta
       const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
       if(byKey[k])continue;byKey[k]=1;HIST.push(it);added++;}}
-  }catch(e){msg.textContent='Error al importar (red/CORS).';msg.style.color='var(--red)';return;}
+  }catch(e){console.error(e);msg.textContent='Error al importar (red/CORS).';msg.style.color='var(--red)';return;}
   if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();}
   msg.textContent=added?('Importé '+added+' partido(s).'):'Sin novedades.';
   msg.style.color=added?'var(--acc)':'var(--mut)';
