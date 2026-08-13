@@ -804,9 +804,11 @@ function renderHistory(){
       if(showTable){
         const j=judge(it);
         let mb='';
-        if(j.hitPoss!=null) mb+=bdg(j.hitPoss,'Posesión '+(it.predPossA>=0.5?it.A:it.B));
-        if(j.hitCorners!=null) mb+=bdg(j.hitCorners,'Córners: '+(overLine(it.predCornersTot,9.5)>=0.5?'Over':'Under')+' 9.5 · hubo '+s.cornersTot);
-        if(j.hitYellow!=null) mb+=bdg(j.hitYellow,'Amarillas: '+(overLine(it.predYellowTot,3.5)>=0.5?'Over':'Under')+' 3.5 · hubo '+s.yellowTot);
+        if(s){
+          if(j.hitPoss!=null) mb+=bdg(j.hitPoss,'Posesión '+(it.predPossA>=0.5?it.A:it.B));
+          if(j.hitCorners!=null) mb+=bdg(j.hitCorners,'Córners: '+(overLine(it.predCornersTot,9.5)>=0.5?'Over':'Under')+' 9.5 · hubo '+s.cornersTot);
+          if(j.hitYellow!=null) mb+=bdg(j.hitYellow,'Amarillas: '+(overLine(it.predYellowTot,3.5)>=0.5?'Over':'Under')+' 3.5 · hubo '+s.yellowTot);
+        }
         
         const cmpRow=(label,pred,real,predSuffix='',realSuffix='')=>{
           const predVal = pred!=null ? pred+predSuffix : '–';
@@ -817,7 +819,7 @@ function renderHistory(){
         };
         
         const pPoss=it.predPossA!=null?(it.predPossA*100).toFixed(0):null;
-        const rPoss=s.possA!=null?s.possA.toFixed(0):null;
+        const rPoss=s&&s.possA!=null?s.possA.toFixed(0):null;
         const pShotsA=it.predShotsA!=null?it.predShotsA.toFixed(0):null;
         const pShotsB=it.predShotsB!=null?it.predShotsB.toFixed(0):null;
         const pCorners=it.predCornersTot!=null?it.predCornersTot.toFixed(1):null;
@@ -885,7 +887,7 @@ function renderHistory(){
         };
         
         const pPoss=it.predPossA!=null?(it.predPossA*100).toFixed(0):null;
-        const rPoss=s.possA!=null?s.possA.toFixed(0):null;
+        const rPoss=s&&s.possA!=null?s.possA.toFixed(0):null;
         const pShotsA=it.predShotsA!=null?it.predShotsA.toFixed(0):null;
         const pShotsB=it.predShotsB!=null?it.predShotsB.toFixed(0):null;
         const pCorners=it.predCornersTot!=null?it.predCornersTot.toFixed(1):null;
