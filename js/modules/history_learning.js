@@ -471,7 +471,17 @@ async function fetchResult(id){
         yellowTot:s.yellow, redTot:s.red,
         scorers:(s.scorers||[]).map(g=>({name:g.name,min:g.min,ownGoal:g.ownGoal, forA:(g.home===homeIsA)}))
       };
-    }else{ it.actualStats=null; }
+    }else{ 
+      // Si ESPN no trajo stats, crear estructura vacía para que igual se muestre la tabla con lo disponible
+      it.actualStats={
+        possA:null, possB:null,
+        shotsA:null, shotsB:null,
+        sotA:null, sotB:null,
+        cornersTot:null,
+        yellowTot:null, redTot:null,
+        scorers:[]
+      };
+    }
     // si es eliminatoria y ESPN marca al ganador (incluye penales), registrar quién avanzó
     if(it.ko && it.ko.on && (ev.homeWinner||ev.awayWinner)){
       it.koActualAdv = ev.homeWinner ? (homeIsA?'A':'B') : (homeIsA?'B':'A');
@@ -788,7 +798,8 @@ function renderHistory(){
       // Mostrar tabla comparativa si hay stats reales disponibles (importadas desde ESPN)
       // Ahora muestra la tabla aunque no se haya guardado la predicción, siempre que haya stats reales
       let extra=''; const s=it.actualStats;
-      let showTable = s && (it.xgH!=null || it.predPossA!=null); // Si hay stats reales y (xG predicho O posesión predicha)
+      // Condición relajada: mostrar tabla si hay stats reales O si es un partido importado sin predicción previa
+      let showTable = s && (s.possA != null || s.cornersTot != null || s.shotsA != null || it.xgH != null || it.predPossA != null);
       
       if(showTable){
         const j=judge(it);
@@ -800,8 +811,8 @@ function renderHistory(){
         const cmpRow=(label,pred,real,predSuffix='',realSuffix='')=>{
           const predVal = pred!=null ? pred+predSuffix : '–';
           const realVal = real!=null ? real+realSuffix : '–';
-          const isClose = pred!=null && real!=null && Math.abs(pred-real)/(real||1)<0.2;
-          const status = pred!=null && real!=null ? (isClose ? '<span class="ok-dot">●</span>' : '<span class="off-dot">○</span>') : '';
+          // Solo mostrar punto verde/gris si ambos valores existen
+          const status = (pred!=null && real!=null) ? (Math.abs(pred-real)/(real||1)<0.2 ? '<span class="ok-dot">●</span>' : '<span class="off-dot">○</span>') : '';
           return `<tr><td>${label}</td><td class="r pred-col">${status}${predVal}</td><td class="r real-col">${realVal}</td></tr>`;
         };
         
@@ -811,6 +822,9 @@ function renderHistory(){
         const pShotsB=it.predShotsB!=null?it.predShotsB.toFixed(0):null;
         const pCorners=it.predCornersTot!=null?it.predCornersTot.toFixed(1):null;
         const pYellow=it.predYellowTot!=null?it.predYellowTot.toFixed(1):null;
+        const pRed=it.predRedTot!=null?it.predRedTot.toFixed(1):null;
+        const pSotA=it.sotA!=null?it.sotA.toFixed(0):null;
+        const pSotB=it.sotB!=null?it.sotB.toFixed(0):null;
         
         extra=(mb?`<div class="badges">${mb}</div>`:'')+
           `<div class="comparison-table-container" style="margin-top:10px">`+
@@ -818,16 +832,16 @@ function renderHistory(){
             `<table class="comparison-table">`+
               `<thead><tr><th class="stat-label">Estadística</th><th class="stat-pred">Predicho</th><th class="stat-real">Real</th></tr></thead>`+
               `<tbody>`+
-                cmpRow('⚽ Goles totales',(it.xgH+it.xgA).toFixed(2),it.actualA+it.actualB,'','')+
+                cmpRow('⚽ Goles totales',(it.xgH!=null&&it.xgA!=null)?(it.xgH+it.xgA).toFixed(2):null,it.actualA+it.actualB,'','') +
                 cmpRow('🎯 Posesión '+it.A,pPoss,rPoss,'%','%')+
                 cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s.possB!=null?s.possB.toFixed(0):null),'%','%')+
                 cmpRow('🔫 Remates '+it.A,pShotsA,s.shotsA!=null?s.shotsA:null,'','')+
                 cmpRow('🔫 Remates '+it.B,pShotsB,s.shotsB!=null?s.shotsB:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.A,it.sotA!=null?it.sotA.toFixed(0):'–',s.sotA!=null?s.sotA:'–','','')+
-                cmpRow('🎯 Remates al arco '+it.B,it.sotB!=null?it.sotB.toFixed(0):'–',s.sotB!=null?s.sotB:'–','','')+
+                cmpRow('🎯 Remates al arco '+it.A,pSotA,s.sotA!=null?s.sotA:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.B,pSotB,s.sotB!=null?s.sotB:null,'','')+
                 cmpRow('🚩 Córners totales',pCorners,s.cornersTot!=null?s.cornersTot:null,'','')+
                 cmpRow('🟨 Amarillas totales',pYellow,s.yellowTot!=null?s.yellowTot:null,'','')+
-                cmpRow('🟥 Rojas totales',it.predRedTot!=null?it.predRedTot.toFixed(1):'–',s.redTot!=null?s.redTot:'–','','')+
+                cmpRow('🟥 Rojas totales',pRed,s.redTot!=null?s.redTot:null,'','')+
               `</tbody>`+
             `</table>`+
             `<div class="comparison-legend"><span class="ok-dot">●</span> Cerca (<20% error) · <span class="off-dot">○</span> Lejos (≥20% error)</div>`+
@@ -862,8 +876,8 @@ function renderHistory(){
         const cmpRow=(label,pred,real,predSuffix='',realSuffix='')=>{
           const predVal = pred!=null ? pred+predSuffix : '–';
           const realVal = real!=null ? real+realSuffix : '–';
-          const isClose = pred!=null && real!=null && Math.abs(pred-real)/(real||1)<0.2;
-          const status = pred!=null && real!=null ? (isClose ? '<span class="ok-dot">●</span>' : '<span class="off-dot">○</span>') : '';
+          // Solo mostrar punto verde/gris si ambos valores existen
+          const status = (pred!=null && real!=null) ? (Math.abs(pred-real)/(real||1)<0.2 ? '<span class="ok-dot">●</span>' : '<span class="off-dot">○</span>') : '';
           return `<tr><td>${label}</td><td class="r pred-col">${status}${predVal}</td><td class="r real-col">${realVal}</td></tr>`;
         };
         
@@ -873,6 +887,9 @@ function renderHistory(){
         const pShotsB=it.predShotsB!=null?it.predShotsB.toFixed(0):null;
         const pCorners=it.predCornersTot!=null?it.predCornersTot.toFixed(1):null;
         const pYellow=it.predYellowTot!=null?it.predYellowTot.toFixed(1):null;
+        const pRed=it.predRedTot!=null?it.predRedTot.toFixed(1):null;
+        const pSotA=it.sotA!=null?it.sotA.toFixed(0):null;
+        const pSotB=it.sotB!=null?it.sotB.toFixed(0):null;
         
         extra=(mb?`<div class="badges">${mb}</div>`:'')+
           `<div class="comparison-table-container" style="margin-top:10px">`+
@@ -880,16 +897,16 @@ function renderHistory(){
             `<table class="comparison-table">`+
               `<thead><tr><th class="stat-label">Estadística</th><th class="stat-pred">Predicho</th><th class="stat-real">Real</th></tr></thead>`+
               `<tbody>`+
-                cmpRow('⚽ Goles totales',(it.xgH+it.xgA).toFixed(2),it.actualA+it.actualB,'','')+
+                cmpRow('⚽ Goles totales',(it.xgH!=null&&it.xgA!=null)?(it.xgH+it.xgA).toFixed(2):null,it.actualA+it.actualB,'','') +
                 cmpRow('🎯 Posesión '+it.A,pPoss,rPoss,'%','%')+
                 cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s.possB!=null?s.possB.toFixed(0):null),'%','%')+
                 cmpRow('🔫 Remates '+it.A,pShotsA,s.shotsA!=null?s.shotsA:null,'','')+
                 cmpRow('🔫 Remates '+it.B,pShotsB,s.shotsB!=null?s.shotsB:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.A,it.sotA!=null?it.sotA.toFixed(0):'–',s.sotA!=null?s.sotA:'–','','')+
-                cmpRow('🎯 Remates al arco '+it.B,it.sotB!=null?it.sotB.toFixed(0):'–',s.sotB!=null?s.sotB:'–','','')+
+                cmpRow('🎯 Remates al arco '+it.A,pSotA,s.sotA!=null?s.sotA:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.B,pSotB,s.sotB!=null?s.sotB:null,'','')+
                 cmpRow('🚩 Córners totales',pCorners,s.cornersTot!=null?s.cornersTot:null,'','')+
                 cmpRow('🟨 Amarillas totales',pYellow,s.yellowTot!=null?s.yellowTot:null,'','')+
-                cmpRow('🟥 Rojas totales',it.predRedTot!=null?it.predRedTot.toFixed(1):'–',s.redTot!=null?s.redTot:'–','','')+
+                cmpRow('🟥 Rojas totales',pRed,s.redTot!=null?s.redTot:null,'','')+
               `</tbody>`+
             `</table>`+
             `<div class="comparison-legend"><span class="ok-dot">●</span> Cerca (<20% error) · <span class="off-dot">○</span> Lejos (≥20% error)</div>`+
