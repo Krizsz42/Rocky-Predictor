@@ -564,7 +564,13 @@ function buildFromESPN(ev){
       sotA:s.homeSOT,sotB:s.awaySOT,cornersTot:(s.homeCorners||0)+(s.awayCorners||0),
       yellowTot:s.yellow,redTot:s.red,
       scorers:(s.scorers||[]).map(g=>({name:g.name,min:g.min,ownGoal:g.ownGoal,forA:g.home}))
-    } : null
+    } : {
+      // Estructura vacía cuando ESPN no trae stats, pero igual permite mostrar la tabla con goles reales
+      possA:null,possB:null,shotsA:null,shotsB:null,
+      sotA:null,sotB:null,cornersTot:null,
+      yellowTot:null,redTot:null,
+      scorers:[]
+    }
   };
 }
 
