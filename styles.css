@@ -383,6 +383,23 @@ td b{color:var(--txt)}
 .bulk-box{width:100%;background:var(--bg);border:1px solid var(--line2);color:var(--txt);border-radius:9px;padding:10px 12px;font-size:12px;outline:none;resize:vertical;min-height:56px;margin-top:8px}
 .bulk-box:focus{border-color:var(--acc)}
 
+/* Tabla comparativa Predicho vs Real */
+.comparison-table-container{background:var(--panel);border-radius:10px;padding:12px;border:1px solid var(--line)}
+.comparison-header{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:10px;text-align:center}
+.comparison-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.comparison-table th{padding:8px 6px;text-align:left;font-weight:700;color:var(--gray);border-bottom:2px solid var(--line);font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px}
+.comparison-table td{padding:7px 6px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.comparison-table tbody tr:last-child td{border-bottom:none}
+.comparison-table tbody tr:hover{background:rgba(55,201,120,0.05)}
+.stat-label{font-weight:600;color:var(--txt)}
+.stat-pred{color:var(--acc);font-weight:700;text-align:right}
+.stat-real{color:var(--gold);font-weight:700;text-align:right}
+.pred-col{text-align:right}
+.real-col{text-align:right}
+.ok-dot{color:var(--acc);font-size:10px;margin-right:4px}
+.off-dot{color:var(--red);font-size:10px;margin-right:4px}
+.comparison-legend{font-size:10px;color:var(--gray);margin-top:8px;text-align:center;font-style:italic}
+
 /* ---------- ÍDOLO ---------- */
 .ido-wrap{max-width:640px;margin:0 auto}
 .ido-hero{background:linear-gradient(165deg,#101a13,#10151a 60%);border:1px solid rgba(55,201,120,.35);border-radius:var(--r);padding:24px;text-align:center;position:relative;overflow:hidden;margin-bottom:14px}
