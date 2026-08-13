@@ -407,29 +407,56 @@ async function fetchAllPending(){
   showToast('Búsqueda terminada');
 }
 /* ═══════════ FIX 2 · IMPORTAR TEMPORADA COMPLETA (no solo agosto) ═══════════ */
+/* ═══════════ FIX 2 · IMPORTAR TEMPORADA COMPLETA (no solo agosto) ═══════════ */
 const SEASON_START={
   worldcup:Date.UTC(2026,5,11),
   premier:Date.UTC(2026,7,8),laliga:Date.UTC(2026,7,15),bundes:Date.UTC(2026,7,21),
   seriea:Date.UTC(2026,7,22),ligue1:Date.UTC(2026,7,14),
   champions:Date.UTC(2026,6,7),champions_classif:Date.UTC(2026,6,7),
-  argentina:Date.UTC(2026,0,22),chile:Date.UTC(2026,0,30),
-  libertadores:Date.UTC(2026,1,3),sudamericana:Date.UTC(2026,2,3)
+  argentina:Date.UTC(2026,0,22), // 22 Ene 2026
+  chile:Date.UTC(2026,0,30),     // 30 Ene 2026
+  libertadores:Date.UTC(2026,1,3), // 3 Feb 2026
+  sudamericana:Date.UTC(2026,2,3)  // 3 Mar 2026
 };
+
 window.importPlayed=async function(){
   const msg=document.getElementById('importMsg');
   const set=(t,c)=>{if(msg){msg.textContent=t;msg.style.color=c||'var(--mut)';}};
   const id=CURRENT_LEAGUE;
-  const start=SEASON_START[id]||Date.UTC(2026,7,1), end=Date.now();
-  const days=[];for(let t=start;t<=end;t+=864e5)days.push(new Date(t).toISOString().slice(0,10).replace(/-/g,''));
+  
+  // Fechas base
+  let start=SEASON_START[id]||Date.UTC(2026,7,1);
+  const end=Date.now();
+  
+  const days=[];
+  for(let t=start;t<=end;t+=864e5) days.push(new Date(t).toISOString().slice(0,10).replace(/-/g,''));
+  
   set('Importando temporada completa de '+LEAGUES[id].name+' (0/'+days.length+' días)…');
+  
   const byId={},byKey={};
   HIST.forEach(x=>{if(x.actualA!=null){if(x.espnId)byId[x.espnId]=1;byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;}});
+  
   let added=0,scanned=0;
-  const CH=10; // 10 días en paralelo por tanda
+  
+  // CHUNK SIZE: 10 para internacionales, 3 para locales (argentina/chile) para evitar timeout
+  let CH = 10;
+  if((id==='argentina'||id==='chile') && days.length > 30) CH = 3; 
+
+  const fetchWithRetry = async (dateStr) => {
+    try {
+      return await fetchESPNday(id, dateStr);
+    } catch (e) {
+      console.warn(`Reintentando ${dateStr}...`, e);
+      await new Promise(r=>setTimeout(r, 500));
+      return await fetchESPNday(id, dateStr);
+    }
+  };
+
   try{
     for(let i=0;i<days.length;i+=CH){
       const chunk=days.slice(i,i+CH);
-      const res=await Promise.all(chunk.map(d=>fetchESPNday(id,d)));
+      const res=await Promise.all(chunk.map(d=>fetchWithRetry(d)));
+      
       res.forEach(events=>{(events||[]).forEach(ev=>{
         const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
         if(!stt||!stt.completed)return;
@@ -440,10 +467,15 @@ window.importPlayed=async function(){
         it.ts=Date.now()+added;
         HIST.push(it);added++;
       });});
+      
       scanned+=chunk.length;
       set('Importando '+LEAGUES[id].name+'… '+Math.round(scanned/days.length*100)+'% ('+added+' partidos)');
+      
+      // Pequeña pausa cada 3 tandas para no saturar la API en ligas locales
+      if(CH===3 && (i/CH)%3===0 && i>0) await new Promise(r=>setTimeout(r, 300));
     }
-  }catch(e){set('Error al importar (red/CORS).','var(--red)');return;}
+  }catch(e){set('Error al importar (red/CORS).','var(--red)');console.error(e);return;}
+  
   if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();}
   set(added?('✓ Importé '+added+' partidos de '+LEAGUES[id].name+'.'):'Sin novedades.','var(--acc)');
   if(typeof showToast==='function')showToast(added?('+'+added+' partidos importados'):'Sin novedades');
