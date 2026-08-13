@@ -151,14 +151,8 @@ function switchLeague(id){
   if(ll) ll.textContent=(LEAGUES[id]?LEAGUES[id].icon+' ':'')+(LEAGUES[id]?LEAGUES[id].name:id);
   var logoImg=document.getElementById('contentLogo');
   if(logoImg&&LEAGUES[id]){
-    var logoSrc;
-    if(LEAGUES[id].logoKey){
-      // Usar logoKey para competiciones ESPN (sudamericanas)
-      logoSrc='https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/'+LEAGUES[id].logoKey+'.png&w=40&h=40';
-    }else if(LEAGUES[id].logoId){
-      // Usar logoId para competiciones con ID numérico
-      logoSrc='https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/'+LEAGUES[id].logoId+'.png&w=40&h=40';
-    }
+    // Usar logoId para TODAS las competiciones (URL directa de ESPN)
+    var logoSrc='https://a.espncdn.com/i/leaguelogos/soccer/500/'+LEAGUES[id].logoId+'.png';
     if(logoSrc) logoImg.src=logoSrc;
   }
   var meta=document.getElementById('leagueMeta');
