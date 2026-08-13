@@ -413,10 +413,10 @@ const SEASON_START={
   premier:Date.UTC(2026,7,8),laliga:Date.UTC(2026,7,15),bundes:Date.UTC(2026,7,21),
   seriea:Date.UTC(2026,7,22),ligue1:Date.UTC(2026,7,14),
   champions:Date.UTC(2026,6,7),champions_classif:Date.UTC(2026,6,7),
-  argentina:Date.UTC(2026,0,22), // 22 Ene 2026
-  chile:Date.UTC(2026,0,30),     // 30 Ene 2026
-  libertadores:Date.UTC(2026,1,3), // 3 Feb 2026
-  sudamericana:Date.UTC(2026,2,3)  // 3 Mar 2026
+  argentina:Date.UTC(2026,0,23),chile:Date.UTC(2026,1,6),
+  libertadores:Date.UTC(2026,1,3),sudamericana:Date.UTC(2026,1,3),
+  // Mapeo directo para las ligas locales
+  liga_arg:Date.UTC(2026,0,23),liga_chil:Date.UTC(2026,1,6)
 };
 
 window.importPlayed=async function(){
@@ -438,9 +438,9 @@ window.importPlayed=async function(){
   
   let added=0,scanned=0;
   
-  // CHUNK SIZE: 10 para internacionales, 3 para locales (argentina/chile) para evitar timeout
+  // CHUNK SIZE: 10 para internacionales, 3 para locales (argentina/chile/liga_arg/liga_chil) para evitar timeout
   let CH = 10;
-  if((id==='argentina'||id==='chile') && days.length > 30) CH = 3; 
+  if((id==='argentina'||id==='chile'||id==='liga_arg'||id==='liga_chil') && days.length > 30) CH = 3; 
 
   const fetchWithRetry = async (dateStr) => {
     try {
