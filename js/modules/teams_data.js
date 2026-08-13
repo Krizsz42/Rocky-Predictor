@@ -1,0 +1,310 @@
+// ===================== BASE DE FUERZA + ESTRELLA (ranking FIFA jun 2026, aprox/editable) =====================
+// s = rating de fuerza 0-100 ; p = jugador a seguir (orientativo, editable)
+const TEAMS=[
+  {es:"Argentina",s:92,p:"Julián Álvarez",k:["argentina"]},
+  {es:"España",s:91,p:"Lamine Yamal",k:["espana","spain"]},
+  {es:"Francia",s:90,p:"Kylian Mbappé",k:["francia","france"]},
+  {es:"Inglaterra",s:88,p:"Jude Bellingham",k:["inglaterra","england"]},
+  {es:"Brasil",s:87,p:"Vinícius Jr",k:["brasil","brazil"]},
+  {es:"Portugal",s:87,p:"Rafael Leão",k:["portugal"]},
+  {es:"Países Bajos",s:85,p:"Cody Gakpo",k:["paises bajos","holanda","netherlands","holland"]},
+  {es:"Alemania",s:84,p:"Florian Wirtz",k:["alemania","germany"]},
+  {es:"Bélgica",s:82,p:"Kevin De Bruyne",k:["belgica","belgium"]},
+  {es:"Croacia",s:80,p:"Luka Modrić",k:["croacia","croatia"]},
+  {es:"Marruecos",s:80,p:"Achraf Hakimi",k:["marruecos","morocco"]},
+  {es:"Colombia",s:79,p:"Luis Díaz",k:["colombia"]},
+  {es:"Uruguay",s:79,p:"Federico Valverde",k:["uruguay"]},
+  {es:"Senegal",s:76,p:"Nicolas Jackson",k:["senegal"]},
+  {es:"Suiza",s:76,p:"Granit Xhaka",k:["suiza","switzerland"]},
+  {es:"Dinamarca",s:75,p:"Rasmus Højlund",k:["dinamarca","denmark"]},
+  {es:"Noruega",s:74,p:"Erling Haaland",k:["noruega","norway"]},
+  {es:"Japón",s:74,p:"Takefusa Kubo",k:["japon","japan"]},
+  {es:"Estados Unidos",s:74,p:"Christian Pulisic",k:["estados unidos","usa","eeuu","united states"]},
+  {es:"México",s:73,p:"Santiago Giménez",k:["mexico"]},
+  {es:"Ecuador",s:72,p:"Moisés Caicedo",k:["ecuador"]},
+  {es:"Austria",s:72,p:"Marcel Sabitzer",k:["austria"]},
+  {es:"Turquía",s:72,p:"Arda Güler",k:["turquia","turkey","turkiye"]},
+  {es:"Nigeria",s:71,p:"Victor Osimhen",k:["nigeria"]},
+  {es:"Suecia",s:71,p:"Alexander Isak",k:["suecia","sweden"]},
+  {es:"Corea del Sur",s:71,p:"Son Heung-min",k:["corea del sur","corea","south korea","korea"]},
+  {es:"Australia",s:70,p:"—",k:["australia"]},
+  {es:"Egipto",s:70,p:"Mohamed Salah",k:["egipto","egypt"]},
+  {es:"Costa de Marfil",s:70,p:"Simon Adingra",k:["costa de marfil","ivory coast","cote divoire","marfil"]},
+  {es:"Canadá",s:70,p:"Alphonso Davies",k:["canada"]},
+  {es:"Irán",s:68,p:"Mehdi Taremi",k:["iran"]},
+  {es:"Paraguay",s:68,p:"Miguel Almirón",k:["paraguay"]},
+  {es:"Argelia",s:68,p:"Riyad Mahrez",k:["argelia","algeria"]},
+  {es:"República Checa",s:68,p:"Patrik Schick",k:["republica checa","checa","czechia","czech"]},
+  {es:"Bosnia",s:67,p:"Edin Džeko",k:["bosnia","bosnia y herzegovina","bosnia herzegovina","bosniaherzegovina"]},
+  {es:"Túnez",s:66,p:"—",k:["tunez","tunisia"]},
+  {es:"Panamá",s:64,p:"—",k:["panama"]},
+  {es:"Uzbekistán",s:62,p:"—",k:["uzbekistan"]},
+  {es:"Sudáfrica",s:62,p:"—",k:["sudafrica","south africa"]},
+  {es:"Arabia Saudita",s:60,p:"Salem Al-Dawsari",k:["arabia saudita","arabia","saudi arabia","saudi"]},
+  {es:"Catar",s:60,p:"Akram Afif",k:["catar","qatar"]},
+  {es:"Jordania",s:58,p:"Musa Al-Taamari",k:["jordania","jordan"]},
+  {es:"Cabo Verde",s:58,p:"—",k:["cabo verde","cape verde"]},
+  {es:"Curazao",s:56,p:"—",k:["curazao","curacao"]},
+  {es:"Nueva Zelanda",s:56,p:"Chris Wood",k:["nueva zelanda","new zealand"]},
+  {es:"Haití",s:54,p:"—",k:["haiti"]},
+  {es:"Escocia",s:70,p:"Scott McTominay",k:["escocia","scotland"]},
+  {es:"Ghana",s:69,p:"Mohammed Kudus",k:["ghana"]},
+  {es:"RD del Congo",s:65,p:"Yoane Wissa",k:["rd del congo","rd congo","congo dr","dr congo","republica democratica del congo","congo"]},
+  {es:"Irak",s:61,p:"Aymen Hussein",k:["irak","iraq"]},
+];
+const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z ]/g,'').trim();
+function findTeam(t){
+  const q=norm(t);
+  var r=TEAMS.find(x=>x.k.includes(q)||norm(x.es)===q||x.k.some(k=>k.startsWith(q)&&q.length>=3));
+  if(r) return r;
+  if(CURRENT_LEAGUE!=='worldcup'){
+    var ct=leagueTeams(CURRENT_LEAGUE);
+    if(ct) r=ct.find(x=>x.k.some(k=>k.includes(q)||q.includes(k))||norm(x.es)===q);
+  }
+  return r||null;
+}
+
+// ===================== CLUBES (5 grandes ligas + Champions) =====================
+// s = rating de fuerza 0-100 ; espn = ID de ESPN para schedule ; en = nombre en inglés
+const CLUB_TEAMS={
+  premier:[
+    {es:"Manchester City",s:90,espn:382,en:"Manchester City",k:["manchester city","man city"]},
+    {es:"Arsenal",s:88,espn:359,en:"Arsenal",k:["arsenal"]},
+    {es:"Liverpool",s:88,espn:364,en:"Liverpool",k:["liverpool"]},
+    {es:"Chelsea",s:84,espn:363,en:"Chelsea",k:["chelsea"]},
+    {es:"Manchester United",s:83,espn:360,en:"Manchester United",k:["manchester united","man united","man utd"]},
+    {es:"Tottenham",s:82,espn:367,en:"Tottenham Hotspur",k:["tottenham","spurs"]},
+    {es:"Newcastle",s:81,espn:361,en:"Newcastle United",k:["newcastle"]},
+    {es:"Aston Villa",s:80,espn:362,en:"Aston Villa",k:["aston villa"]},
+    {es:"Brighton",s:78,espn:331,en:"Brighton & Hove Albion",k:["brighton"]},
+    {es:"West Ham",s:77,espn:379,en:"West Ham United",k:["west ham"]},
+    {es:"Everton",s:77,espn:368,en:"Everton",k:["everton"]},
+    {es:"Fulham",s:75,espn:370,en:"Fulham",k:["fulham"]},
+    {es:"Crystal Palace",s:74,espn:384,en:"Crystal Palace",k:["crystal palace","palace"]},
+    {es:"Wolverhampton",s:73,espn:380,en:"Wolverhampton Wanderers",k:["wolverhampton","wolves","wolves"]},
+    {es:"Nottingham Forest",s:72,espn:393,en:"Nottingham Forest",k:["nottingham","nottingham forest"]},
+    {es:"Brentford",s:71,espn:337,en:"Brentford",k:["brentford"]},
+    {es:"Bournemouth",s:70,espn:349,en:"AFC Bournemouth",k:["bournemouth"]},
+    {es:"Leeds United",s:71,espn:369,en:"Leeds United",k:["leeds","leeds united"]},
+    {es:"Burnley",s:69,espn:389,en:"Burnley",k:["burnley"]},
+    {es:"Sunderland",s:67,espn:381,en:"Sunderland",k:["sunderland"]},
+  ],
+  laliga:[
+    {es:"Real Madrid",s:92,espn:86,en:"Real Madrid",k:["real madrid"]},
+    {es:"Barcelona",s:90,espn:83,en:"Barcelona",k:["barcelona","barça"]},
+    {es:"Atlético Madrid",s:86,espn:1068,en:"Atlético Madrid",k:["atletico madrid","atletico","atlético"]},
+    {es:"Real Sociedad",s:80,espn:89,en:"Real Sociedad",k:["real sociedad","la real"]},
+    {es:"Athletic Club",s:79,espn:93,en:"Athletic Bilbao",k:["athletic","bilbao"]},
+    {es:"Villarreal",s:78,espn:102,en:"Villarreal",k:["villarreal"]},
+    {es:"Betis",s:76,espn:244,en:"Real Betis",k:["betis","real betis"]},
+    {es:"Sevilla",s:75,espn:243,en:"Sevilla",k:["sevilla","sevilla"]},
+    {es:"Valencia",s:74,espn:94,en:"Valencia",k:["valencia"]},
+    {es:"Girona",s:73,espn:9812,en:"Girona",k:["girona"]},
+    {es:"Osasuna",s:71,espn:97,en:"Osasuna",k:["osasuna"]},
+    {es:"Celta de Vigo",s:70,espn:85,en:"Celta Vigo",k:["celta","celta de vigo"]},
+    {es:"Rayo Vallecano",s:69,espn:101,en:"Rayo Vallecano",k:["rayo","rayo vallecano"]},
+    {es:"Mallorca",s:68,espn:84,en:"Mallorca",k:["mallorca"]},
+    {es:"Getafe",s:67,espn:2922,en:"Getafe",k:["getafe"]},
+    {es:"Espanyol",s:66,espn:88,en:"Espanyol",k:["espanyol"]},
+    {es:"Alavés",s:65,espn:96,en:"Alavés",k:["alaves","alavés"]},
+    {es:"Levante",s:65,espn:1538,en:"Levante UD",k:["levante"]},
+    {es:"Elche",s:63,espn:3751,en:"Elche CF",k:["elche"]},
+    {es:"Real Oviedo",s:62,espn:92,en:"Real Oviedo",k:["oviedo","real oviedo"]},
+  ],
+  bundes:[
+    {es:"Bayern Múnich",s:91,espn:132,en:"Bayern Munich",k:["bayern","bayern munich","bayern munchen"]},
+    {es:"Borussia Dortmund",s:85,espn:124,en:"Borussia Dortmund",k:["dortmund","bvb"]},
+    {es:"RB Leipzig",s:83,espn:11420,en:"RB Leipzig",k:["leipzig","rb leipzig"]},
+    {es:"Bayer Leverkusen",s:82,espn:131,en:"Bayer Leverkusen",k:["leverkusen","bayer"]},
+    {es:"Stuttgart",s:77,espn:134,en:"VfB Stuttgart",k:["stuttgart"]},
+    {es:"Eintracht Frankfurt",s:76,espn:125,en:"Eintracht Frankfurt",k:["frankfurt","eintracht"]},
+    {es:"Wolfsburgo",s:74,espn:138,en:"VfL Wolfsburg",k:["wolfsburgo","wolfsburg"]},
+    {es:"Friburgo",s:73,espn:126,en:"SC Freiburg",k:["friburgo","freiburg"]},
+    {es:"Borussia Mönchengladbach",s:72,espn:268,en:"Borussia Mönchengladbach",k:["monchengladbach","gladbach"]},
+    {es:"Mainz",s:71,espn:2950,en:"1. FSV Mainz 05",k:["mainz"]},
+    {es:"Werder Bremen",s:70,espn:137,en:"Werder Bremen",k:["werder","werder bremen"]},
+    {es:"Hoffenheim",s:69,espn:7911,en:"TSG Hoffenheim",k:["hoffenheim"]},
+    {es:"Union Berlin",s:68,espn:598,en:"1. FC Union Berlin",k:["union berlin","union"]},
+    {es:"Augsburgo",s:67,espn:3841,en:"FC Augsburg",k:["augsburgo","augsburg"]},
+    {es:"1. FC Köln",s:67,espn:122,en:"1. FC Köln",k:["koln","köln","cologne"]},
+    {es:"Heidenheim",s:65,espn:6418,en:"1. FC Heidenheim",k:["heidenheim"]},
+    {es:"St. Pauli",s:64,espn:270,en:"FC St. Pauli",k:["st pauli","st. pauli"]},
+    {es:"Hamburger SV",s:63,espn:127,en:"Hamburger SV",k:["hamburgo","hamburg","hsv"]},
+  ],
+  seriea:[
+    {es:"Inter",s:87,espn:110,en:"Inter Milan",k:["inter","inter de milan"]},
+    {es:"AC Milan",s:85,espn:103,en:"AC Milan",k:["ac milan","milan"]},
+    {es:"Juventus",s:84,espn:111,en:"Juventus",k:["juventus","juve"]},
+    {es:"Napoli",s:83,espn:114,en:"Napoli",k:["napoli","napoles"]},
+    {es:"Atalanta",s:81,espn:105,en:"Atalanta",k:["atalanta"]},
+    {es:"Roma",s:80,espn:104,en:"Roma",k:["roma"]},
+    {es:"Lazio",s:79,espn:112,en:"Lazio",k:["lazio"]},
+    {es:"Fiorentina",s:75,espn:109,en:"Fiorentina",k:["fiorentina"]},
+    {es:"Bologna",s:73,espn:107,en:"Bologna",k:["bologna"]},
+    {es:"Torino",s:72,espn:239,en:"Torino",k:["torino","turin"]},
+    {es:"Udinese",s:71,espn:118,en:"Udinese",k:["udinese"]},
+    {es:"Genoa",s:70,espn:3263,en:"Genoa",k:["genoa","genova"]},
+    {es:"Cremonese",s:68,espn:4050,en:"US Cremonese",k:["cremonese"]},
+    {es:"Pisa",s:67,espn:3956,en:"Pisa SC",k:["pisa"]},
+    {es:"Lecce",s:67,espn:113,en:"Lecce",k:["lecce"]},
+    {es:"Parma",s:66,espn:115,en:"Parma Calcio",k:["parma"]},
+    {es:"Como",s:65,espn:2572,en:"Como 1907",k:["como"]},
+    {es:"Cagliari",s:64,espn:2925,en:"Cagliari",k:["cagliari"]},
+    {es:"Hellas Verona",s:63,espn:119,en:"Hellas Verona",k:["verona","hellas verona"]},
+    {es:"Sassuolo",s:63,espn:3997,en:"US Sassuolo",k:["sassuolo"]},
+  ],
+  ligue1:[
+    {es:"PSG",s:87,espn:160,en:"Paris Saint-Germain",k:["psg","paris","paris saint germain"]},
+    {es:"Olympique Lyon",s:80,espn:167,en:"Olympique Lyonnais",k:["lyon","olympique lyon"]},
+    {es:"Marsella",s:79,espn:176,en:"Olympique Marseille",k:["marsella","marseille","olympique marsella"]},
+    {es:"Mónaco",s:78,espn:174,en:"AS Monaco",k:["monaco"]},
+    {es:"Lille",s:77,espn:166,en:"Lille",k:["lille"]},
+    {es:"Niza",s:76,espn:2502,en:"OGC Nice",k:["niza","nice"]},
+    {es:"Rennes",s:74,espn:169,en:"Stade Rennais",k:["rennes"]},
+    {es:"Lens",s:73,espn:175,en:"RC Lens",k:["lens"]},
+    {es:"Toulouse",s:70,espn:179,en:"Toulouse",k:["toulouse"]},
+    {es:"Strasburgo",s:69,espn:180,en:"RC Strasbourg",k:["strasburgo","strasbourg"]},
+    {es:"Brest",s:69,espn:6997,en:"Stade Brestois",k:["brest"]},
+    {es:"Lorient",s:67,espn:273,en:"FC Lorient",k:["lorient"]},
+    {es:"Paris FC",s:66,espn:6851,en:"Paris FC",k:["paris fc","paris"]},
+    {es:"Nantes",s:66,espn:165,en:"FC Nantes",k:["nantes"]},
+    {es:"Angers",s:65,espn:7868,en:"Angers SCO",k:["angers"]},
+    {es:"FC Metz",s:64,espn:177,en:"FC Metz",k:["metz"]},
+    {es:"Auxerre",s:63,espn:172,en:"AJ Auxerre",k:["auxerre"]},
+    {es:"Le Havre",s:62,espn:3236,en:"Le Havre AC",k:["le havre","havre"]},
+  ],
+  champions:[
+    {es:"Manchester City",s:92,espn:382,en:"Manchester City",k:["manchester city","man city"]},
+    {es:"Real Madrid",s:92,espn:86,en:"Real Madrid",k:["real madrid"]},
+    {es:"Bayern Múnich",s:91,espn:132,en:"Bayern Munich",k:["bayern","bayern munich","bayern munchen"]},
+    {es:"PSG",s:90,espn:160,en:"Paris Saint-Germain",k:["psg","paris","paris saint germain"]},
+    {es:"Barcelona",s:90,espn:83,en:"Barcelona",k:["barcelona","barça"]},
+    {es:"Liverpool",s:88,espn:364,en:"Liverpool",k:["liverpool"]},
+    {es:"Arsenal",s:88,espn:359,en:"Arsenal",k:["arsenal"]},
+    {es:"Inter",s:87,espn:110,en:"Inter Milan",k:["inter","inter de milan"]},
+    {es:"Atlético Madrid",s:86,espn:1068,en:"Atlético Madrid",k:["atletico madrid","atletico","atlético"]},
+    {es:"Borussia Dortmund",s:85,espn:124,en:"Borussia Dortmund",k:["dortmund","bvb"]},
+    {es:"AC Milan",s:85,espn:103,en:"AC Milan",k:["ac milan","milan"]},
+    {es:"Juventus",s:84,espn:111,en:"Juventus",k:["juventus","juve"]},
+    {es:"Chelsea",s:84,espn:363,en:"Chelsea",k:["chelsea"]},
+    {es:"Napoli",s:83,espn:114,en:"Napoli",k:["napoli","napoles"]},
+    {es:"Manchester United",s:83,espn:360,en:"Manchester United",k:["manchester united","man united","man utd"]},
+    {es:"RB Leipzig",s:83,espn:11420,en:"RB Leipzig",k:["leipzig","rb leipzig"]},
+    {es:"Tottenham",s:82,espn:367,en:"Tottenham Hotspur",k:["tottenham","spurs"]},
+    {es:"Bayer Leverkusen",s:82,espn:131,en:"Bayer Leverkusen",k:["leverkusen","bayer"]},
+    {es:"Newcastle",s:81,espn:361,en:"Newcastle United",k:["newcastle"]},
+    {es:"Atalanta",s:81,espn:105,en:"Atalanta",k:["atalanta"]},
+    {es:"Roma",s:80,espn:104,en:"Roma",k:["roma"]},
+    {es:"Aston Villa",s:80,espn:362,en:"Aston Villa",k:["aston villa"]},
+    {es:"Olympique Lyon",s:80,espn:167,en:"Olympique Lyonnais",k:["lyon","olympique lyon"]},
+    {es:"Marsella",s:79,espn:176,en:"Olympique Marseille",k:["marsella","marseille","olympique marsella"]},
+    {es:"Sporting CP",s:78,espn:2250,en:"Sporting CP",k:["sporting","sporting cp"]},
+    {es:"PSV",s:78,espn:148,en:"PSV Eindhoven",k:["psv","psv eindhoven"]},
+    {es:"Porto",s:78,espn:437,en:"FC Porto",k:["porto"]},
+    {es:"Benfica",s:77,espn:1929,en:"SL Benfica",k:["benfica"]},
+    {es:"Ajax",s:77,espn:139,en:"Ajax",k:["ajax"]},
+    {es:"Celtic",s:76,espn:256,en:"Celtic",k:["celtic"]},
+    {es:"Feyenoord",s:76,espn:142,en:"Feyenoord",k:["feyenoord"]},
+    {es:"Mónaco",s:78,espn:174,en:"AS Monaco",k:["monaco"]},
+    {es:"Club Brujas",s:74,espn:570,en:"Club Brugge",k:["brujas","club brugge","club brujas"]},
+    {es:"Shakhtar Donetsk",s:74,espn:493,en:"Shakhtar Donetsk",k:["shakhtar","shakhtar donetsk"]},
+    {es:"Lille",s:77,espn:166,en:"Lille",k:["lille"]},
+    {es:"Estrella Roja",s:72,espn:2290,en:"Red Star Belgrade",k:["estrella roja","red star","crvena zvezda"]},
+  ],
+  champions_classif:[
+    {es:"Sturm Graz",s:76,espn:3746,en:"SK Sturm Graz",k:["sturm graz","sturm"]},
+    {es:"Fenerbahçe",s:78,espn:436,en:"Fenerbahce",k:["fenerbahce","fener"]},
+    {es:"Estrella Roja",s:72,espn:2290,en:"Red Star Belgrade",k:["estrella roja","red star"]},
+    {es:"Dinamo Zagreb",s:74,espn:597,en:"Dinamo Zagreb",k:["dinamo zagreb","zagreb"]},
+    {es:"Slovan Bratislava",s:68,espn:521,en:"Slovan Bratislava",k:["slovan","slovan bratislava"]},
+    {es:"Kairat Almaty",s:62,espn:2528,en:"Kairat Almaty",k:["kairat","kairat almaty"]},
+    {es:"Omonia Nicosia",s:64,espn:617,en:"Omonia Nicosia",k:["omonia","omonia nicosia"]},
+    {es:"Shamrock Rovers",s:63,espn:2564,en:"Shamrock Rovers",k:["shamrock","shamrock rovers"]},
+    {es:"Hearts",s:70,espn:262,en:"Heart of Midlothian",k:["hearts","heart of midlothian"]},
+    {es:"Vikingur Reykjavik",s:60,espn:8249,en:"Vikingur Reykjavik",k:["vikingur"]},
+    {es:"KI Klaksvik",s:58,espn:2547,en:"KI Klaksvik",k:["klaksvik","ki klaksvik"]},
+    {es:"Lincoln Red Imps",s:55,espn:17856,en:"Lincoln Red Imps",k:["lincoln","red imps","lincoln red imps"]},
+    {es:"The New Saints",s:58,espn:576,en:"The New Saints",k:["tns","the new saints","new saints"]},
+    {es:"Hapoel Be'er Sheva",s:65,espn:13083,en:"Hapoel Be'er",k:["hapoel beer","hapoel"]},
+    {es:"Lech Poznań",s:67,espn:2990,en:"Lech Poznan",k:["lech poznan","lech"]},
+    {es:"Levski Sofia",s:64,espn:490,en:"Levski Sofia",k:["levski","levski sofia"]},
+    {es:"NK Celje",s:60,espn:3362,en:"NK Celje",k:["celje","nk celje"]},
+    {es:"CSU Craiova",s:62,espn:8089,en:"CSU Craiova",k:["craiova","csu craiova"]},
+    {es:"Larne",s:57,espn:20039,en:"Larne",k:["larne"]},
+    {es:"Borac Banja Luka",s:59,espn:20710,en:"Borac Banja Luka",k:["borac","borac banja luka"]},
+    {es:"Riga FC",s:58,espn:19246,en:"Riga FC",k:["riga","riga fc"]},
+    {es:"Vardar",s:57,espn:560,en:"Vardar",k:["vardar"]},
+    {es:"Drita Gjilan",s:54,espn:19243,en:"Drita Gjilan",k:["drita","drita gjilan"]},
+    {es:"Egnatia",s:56,espn:21943,en:"Egnatia",k:["egnatia"]},
+    {es:"Petrocub",s:55,espn:19250,en:"Petrocub",k:["petrocub"]},
+    {es:"Sabah FK",s:59,espn:21922,en:"Sabah FK",k:["sabah","sabah fk"]},
+    {es:"Ararat-Armenia",s:56,espn:20024,en:"Ararat-Armenia",k:["ararat","ararat-armenia"]},
+    {es:"Iberia 1999",s:55,espn:20025,en:"Iberia 1999",k:["iberia","iberia 1999"]},
+    {es:"AGF",s:66,espn:7853,en:"AGF",k:["agf"]},
+    {es:"KuPS Kuopio",s:60,espn:8169,en:"KuPS Kuopio",k:["kups","kuopio"]},
+    {es:"Flora Tallinn",s:58,espn:12146,en:"Flora",k:["flora","flora tallinn"]},
+    {es:"Kauno Žalgiris",s:56,espn:20028,en:"Kauno Zalgiris",k:["kauno","zalgiris","kauno zalgiris"]},
+    {es:"Tre Fiori",s:50,espn:8591,en:"Tre Fiori",k:["tre fiori"]},
+    {es:"Floriana",s:55,espn:7857,en:"Floriana FC",k:["floriana"]},
+    {es:"Inter d'Escaldes",s:52,espn:20703,en:"Inter D'Escaldes",k:["inter escaldes","escaldes"]},
+    {es:"Atert Bissen",s:48,espn:131796,en:"FC Atert Bissen",k:["atert","atert bissen"]},
+    {es:"Górnik Zabrze",s:65,espn:8180,en:"Gornik Zabrze",k:["gornik","zabrze","gornik zabrze"]},
+    {es:"Mjällby",s:61,espn:20301,en:"Mjällby AIF",k:["mjallby","mja"]},
+    {es:"Thun",s:63,espn:3024,en:"FC Thun",k:["thun"]},
+    {es:"Győri ETO",s:60,espn:12367,en:"Győri ETO FC",k:["gyori","eto","gyor"]},
+    {es:"Sutjeska",s:54,espn:8281,en:"FK Sutjeska",k:["sutjeska"]},
+    {es:"Vitebsk",s:55,espn:131794,en:"ML Vitebsk",k:["vitebsk"]},
+  ],
+};
+// ===================== UTILIDADES GENERALES =====================
+
+// Normalización de texto para búsqueda de equipos
+const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z ]/g,'').trim();
+
+// Utilidad de porcentaje
+const pc = x => (100*x).toFixed(1)+'%';
+
+// Clamp value
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// Parseo de fecha contextual
+const MONTHS = {ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',jul:'07',ago:'08',sep:'09',set:'09',oct:'10',nov:'11',dic:'12'};
+function parseCtxDate(ctx) {
+  if (!ctx || !ctx.date) return null;
+  const parts = ctx.date.split(' ');
+  if (parts.length >= 3) {
+    const d = parts[0], m = MONTHS[parts[1]], y = parts[2];
+    return new Date(y + '-' + m + '-' + d);
+  }
+  return null;
+}
+
+// Formato de fecha en español
+const MES_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fmtDateEs(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return d.getUTCDate() + ' ' + MES_ES[d.getUTCMonth()] + ' ' + d.getUTCFullYear();
+}
+
+// Generación de ID único
+function genId() {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+// Storage seguro
+function safeGetItem(key, defaultVal) {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : defaultVal;
+  } catch(e) { return defaultVal; }
+}
+
+function safeSetItem(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+// Exportar utilidades
+if (typeof window !== 'undefined') {
+  window.RPUtils = { norm, pc, clamp, parseCtxDate, fmtDateEs, genId, safeGetItem, safeSetItem, MONTHS, MES_ES };
+}
