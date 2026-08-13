@@ -1363,44 +1363,6 @@ async function fetchAllPending(){
   for(const it of pend){await fetchResult(it.id);}
   showToast('Búsqueda terminada');
 }
-async function importPlayed(){
-  const msg=document.getElementById('importMsg');
-  msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
-  const isWC=CURRENT_LEAGUE==='worldcup';
-  // Fechas de inicio por competición (año, mes-1, día)
-  const START_DATES={
-    worldcup:[2026,5,11],     // 11 jun 2026
-    premier:[2025,7,1],       // 1 ago 2025 (temporada 2025/26)
-    laliga:[2025,7,15],       // 15 ago 2025
-    bundes:[2025,7,15],       // 15 ago 2025
-    seriea:[2025,7,20],       // 20 ago 2025
-    ligue1:[2025,7,10],       // 10 ago 2025
-    champions:[2025,8,15],    // 15 sep 2025 (fase liga)
-    libertadores:[2025,1,15], // 15 feb 2025 (fase grupos)
-    sudamericana:[2025,1,20], // 20 feb 2025
-    liga_arg:[2025,1,1],      // 1 feb 2025 (torneo argentino)
-    liga_chil:[2025,1,15]     // 15 feb 2025 (temporada chilena)
-  };
-  const sd=START_DATES[CURRENT_LEAGUE]||[2026,7,1];
-  const start=new Date(Date.UTC(sd[0],sd[1],sd[2],12));
-  const tournEnd=isWC?new Date(Date.UTC(2026,6,19,12)):new Date(Date.UTC(2026,5,1,12));
-  const end=new Date()<tournEnd?new Date():tournEnd;
-  const byKey={};HIST.forEach(x=>{if(x.actualA!=null)byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;});
-  let added=0;
-  try{
-    const days=[];for(let d=new Date(start);d<=end;d.setUTCDate(d.getUTCDate()+1))days.push(d.toISOString().slice(0,10).replace(/-/g,''));
-    const chunks=await Promise.all(days.map(y=>fetchESPNday(CURRENT_LEAGUE,y)));
-    for(const events of chunks){for(const ev of events){
-      const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
-      if(!stt||!stt.completed)continue;
-      const it=buildFromESPN(ev);if(!it)continue;
-      const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
-      if(byKey[k])continue;byKey[k]=1;HIST.push(it);added++;}}
-  }catch(e){msg.textContent='Error al importar (red/CORS).';msg.style.color='var(--red)';return;}
-  if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();}
-  msg.textContent=added?('Importé '+added+' partido(s).'):'Sin novedades.';
-  msg.style.color=added?'var(--acc)':'var(--mut)';
-}
 function loadBulkResults(){
   const txt=(document.getElementById('bulkBox').value||'').trim();
   const msg=document.getElementById('bulkMsg');
