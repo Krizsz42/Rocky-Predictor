@@ -406,60 +406,47 @@ async function fetchAllPending(){
   for(const it of pend){await fetchResult(it.id);}
   showToast('Búsqueda terminada');
 }
+/* ═══════════ FIX 2 · IMPORTAR TEMPORADA COMPLETA (no solo agosto) ═══════════ */
+const SEASON_START={
+  worldcup:Date.UTC(2026,5,11),
+  premier:Date.UTC(2026,7,8),laliga:Date.UTC(2026,7,15),bundes:Date.UTC(2026,7,21),
+  seriea:Date.UTC(2026,7,22),ligue1:Date.UTC(2026,7,14),
+  champions:Date.UTC(2026,6,7),champions_classif:Date.UTC(2026,6,7),
+  argentina:Date.UTC(2026,0,22),chile:Date.UTC(2026,0,30),
+  libertadores:Date.UTC(2026,1,3),sudamericana:Date.UTC(2026,2,3)
+};
 async function importPlayed(){
   const msg=document.getElementById('importMsg');
-  const compSelect = document.getElementById('historyComp');
-  const compId = compSelect ? compSelect.value : CURRENT_LEAGUE;
-  
-  msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
-  
-  // Fechas de inicio específicas por competición (2026) - SIN año anterior
-  const startDates={
-    'worldcup': new Date(Date.UTC(2026,5,11,12)),   // 11 jun 2026
-    'libertadores': new Date(Date.UTC(2026,1,3,12)), // 3 feb 2026
-    'sudamericana': new Date(Date.UTC(2026,2,3,12)), // 3 mar 2026
-    'liga_arg': new Date(Date.UTC(2026,0,22,12)),    // 22 ene 2026
-    'liga_chil': new Date(Date.UTC(2026,0,30,12))    // 30 ene 2026
-  };
-  
-  // Fechas de fin: HOY (no futuro) para evitar traer datos inexistentes
-  const today = new Date();
-  const endDates={
-    'worldcup': new Date(Date.UTC(2026,6,19,12)),    // 19 jul 2026
-    'libertadores': today,                           // Hasta hoy
-    'sudamericana': today,                           // Hasta hoy
-    'liga_arg': today,                               // Hasta hoy
-    'liga_chil': today                               // Hasta hoy
-  };
-  
-  const start=startDates[compId]||new Date(Date.UTC(2026,0,1,12));
-  const tournEnd=endDates[compId]||today;
-  const end=tournEnd<today?tournEnd:today;
-  
-  // Limpiar historial previo de esta competición para evitar duplicados o datos viejos
-  if (typeof HIST !== 'undefined' && Array.isArray(HIST)) {
-    const beforeCount = HIST.length;
-    HIST = HIST.filter(x => x.competition !== compId);
-    console.log(`Limpiados ${beforeCount - HIST.length} partidos antiguos de ${compId}`);
-  }
-  
-  const byKey={};HIST.forEach(x=>{if(x.actualA!=null)byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;});
-  let added=0;
+  const set=(t,c)=>{if(msg){msg.textContent=t;msg.style.color=c||'var(--mut)';}};
+  const id=CURRENT_LEAGUE;
+  const start=SEASON_START[id]||Date.UTC(2026,7,1), end=Date.now();
+  const days=[];for(let t=start;t<=end;t+=864e5)days.push(new Date(t).toISOString().slice(0,10).replace(/-/g,''));
+  set('Importando temporada completa de '+LEAGUES[id].name+' (0/'+days.length+' días)…');
+  const byId={},byKey={};
+  HIST.forEach(x=>{if(x.actualA!=null){if(x.espnId)byId[x.espnId]=1;byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;}});
+  let added=0,scanned=0;
+  const CH=10; // 10 días en paralelo por tanda
   try{
-    const days=[];for(let d=new Date(start);d<=end;d.setUTCDate(d.getUTCDate()+1))days.push(d.toISOString().slice(0,10).replace(/-/g,''));
-    console.log(`Buscando desde ${start.toISOString()} hasta ${end.toISOString()} (${days.length} días)`);
-    const chunks=await Promise.all(days.map(y=>fetchESPNday(compId,y)));
-    for(const events of chunks){for(const ev of events){
-      const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
-      if(!stt||!stt.completed)continue;
-      const it=buildFromESPN(ev);if(!it)continue;
-      it.competition = compId; // Asegurar que el partido tenga la competición correcta
-      const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
-      if(byKey[k])continue;byKey[k]=1;HIST.push(it);added++;}}
-  }catch(e){console.error(e);msg.textContent='Error al importar (red/CORS).';msg.style.color='var(--red)';return;}
-  if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();}
-  msg.textContent=added?('Importé '+added+' partido(s).'):'Sin novedades.';
-  msg.style.color=added?'var(--acc)':'var(--mut)';
+    for(let i=0;i<days.length;i+=CH){
+      const chunk=days.slice(i,i+CH);
+      const res=await Promise.all(chunk.map(d=>fetchESPNday(id,d)));
+      res.forEach(events=>{(events||[]).forEach(ev=>{
+        const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
+        if(!stt||!stt.completed)return;
+        if(ev.id&&byId[ev.id])return;
+        const it=buildFromESPN(ev);if(!it)return;
+        const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
+        if(byKey[k])return;byKey[k]=1;if(ev.id)byId[ev.id]=1;
+        it.ts=Date.now()+added;
+        HIST.push(it);added++;
+      });});
+      scanned+=chunk.length;
+      set('Importando '+LEAGUES[id].name+'… '+Math.round(scanned/days.length*100)+'% ('+added+' partidos)');
+    }
+  }catch(e){set('Error al importar (red/CORS).','var(--red)');return;}
+  if(added){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();}
+  set(added?('✓ Importé '+added+' partidos de '+LEAGUES[id].name+'.'):'Sin novedades.','var(--acc)');
+  if(typeof showToast==='function')showToast(added?('+'+added+' partidos importados'):'Sin novedades');
 }
 function loadBulkResults(){
   const txt=(document.getElementById('bulkBox').value||'').trim();
