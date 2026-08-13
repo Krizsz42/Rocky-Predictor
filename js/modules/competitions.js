@@ -56,6 +56,38 @@ const PRESET_MATCHUPS={
     {a:"Slovan Bratislava",b:"Vardar",label:"Duelo del este"},
     {a:"Omonia Nicosia",b:"Hapoel Be'er Sheva",label:"Duelo mediterráneo"},
   ],
+  libertadores:[
+    {a:"Flamengo",b:"Fluminense",label:"Clásico Flamengo-Flu"},
+    {a:"River Plate",b:"Boca Juniors",label:"Superclásico argentino"},
+    {a:"Palmeiras",b:"São Paulo",label:"Clásico Paulista"},
+    {a:"Nacional",b:"Peñarol",label:"Clásico Uruguayo"},
+    {a:"Colo Colo",b:"Universidad de Chile",label:"Clásico Chileno"},
+    {a:"Atlético Mineiro",b:"Cruzeiro",label:"Clásico Mineiro"},
+  ],
+  sudamericana:[
+    {a:"Independiente",b:"Racing",label:"Clásico de Avellaneda"},
+    {a:"São Paulo",b:"Santos",label:"Clásico Santista"},
+    {a:"LDU Quito",b:"Barcelona SC",label:"Clásico Ecuatoriano"},
+    {a:"Athletico Paranaense",b:"Coritiba",label:"Clásico Paranaense"},
+    {a:"Defensa y Justicia",b:"Lanús",label:"Clásico del Sur"},
+    {a:"Fortaleza",b:"Ceará",label:"Clásico Cearense"},
+  ],
+  liga_arg:[
+    {a:"River Plate",b:"Boca Juniors",label:"Superclásico"},
+    {a:"Independiente",b:"Racing",label:"Clásico de Avellaneda"},
+    {a:"San Lorenzo",b:"Huracán",label:"Clásico Porteño"},
+    {a:"Rosario Central",b:"Newell's",label:"Clásico Rosarino"},
+    {a:"Estudiantes",b:"Gimnasia LP",label:"Clásico Platense"},
+    {a:"Talleres",b:"Belgrano",label:"Clásico Cordobés"},
+  ],
+  liga_chil:[
+    {a:"Colo Colo",b:"Universidad de Chile",label:"Clásico Chileno"},
+    {a:"Universidad Católica",b:"Universidad de Chile",label:"Clásico Universitario"},
+    {a:"Colo Colo",b:"Universidad Católica",label:"Clásico Moderno"},
+    {a:"Palestino",b:"Unión Española",label:"Clásico de Colonias"},
+    {a:"Everton",b:"Santiago Wanderers",label:"Clásico Porteño"},
+    {a:"Audax Italiano",b:"Unión Española",label:"Clásico Italiano"},
+  ],
 };
 let _classicIdx=0;
 
@@ -69,6 +101,10 @@ const LEAGUES={
   ligue1:{name:'Ligue 1',espn:'fra.1',color:'#004170',color2:'#3d8ec9',icon:'🇫🇷',tabs:true,teams:'ligue1',logo:9},
   champions:{name:'Champions League',espn:'uefa.champions',color:'#1a3b6b',color2:'#4a7cc9',icon:'⭐',tabs:true,teams:'champions',koLeague:true,logo:2},
   champions_classif:{name:'Champs Clasif.',espn:'uefa.champions_qual',color:'#2d5a8e',color2:'#5a8cc9',icon:'🔰',tabs:true,teams:'champions_classif',logo:2},
+  libertadores:{name:'Copa Libertadores',espn:'conmebol.libertadores',color:'#003da5',color2:'#3d7ed9',icon:'🏆',tabs:true,teams:'libertadores',koLeague:true,logo:13},
+  sudamericana:{name:'Copa Sudamericana',espn:'conmebol.sudamericana',color:'#ff6600',color2:'#ff9933',icon:'🥈',tabs:true,teams:'sudamericana',koLeague:true,logo:14},
+  liga_arg:{name:'Liga Argentina',espn:'arg.1',color:'#75aadb',color2:'#a8d5ff',icon:'🇦🇷',tabs:true,teams:'liga_arg',logo:1},
+  liga_chil:{name:'Campeonato Chileno',espn:'chi.1',color:'#d92323',color2:'#ff5c5c',icon:'🇨🇱',tabs:true,teams:'liga_chil',logo:7},
 };
 let CURRENT_LEAGUE='worldcup';
 
