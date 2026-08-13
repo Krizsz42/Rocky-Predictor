@@ -150,7 +150,17 @@ function switchLeague(id){
   var ll=document.getElementById('leagueLabelInner');
   if(ll) ll.textContent=(LEAGUES[id]?LEAGUES[id].icon+' ':'')+(LEAGUES[id]?LEAGUES[id].name:id);
   var logoImg=document.getElementById('contentLogo');
-  if(logoImg&&LEAGUES[id]) logoImg.src='https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/'+LEAGUES[id].logo+'.png&w=40&h=40';
+  if(logoImg&&LEAGUES[id]){
+    var logoSrc;
+    if(LEAGUES[id].logoKey){
+      // Usar logoKey para competiciones ESPN (sudamericanas)
+      logoSrc='https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/'+LEAGUES[id].logoKey+'.png&w=40&h=40';
+    }else if(LEAGUES[id].logoId){
+      // Usar logoId para competiciones con ID numérico
+      logoSrc='https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/'+LEAGUES[id].logoId+'.png&w=40&h=40';
+    }
+    if(logoSrc) logoImg.src=logoSrc;
+  }
   var meta=document.getElementById('leagueMeta');
   if(meta) meta.textContent=LEAGUES[id].name+(id==='worldcup'?' · Estados Unidos 2026':id==='champions'?' · 2025-26':id==='champions_classif'?' · Clasificación':' · 2025-26');
   var mt=document.querySelector('meta[name="theme-color"]');
