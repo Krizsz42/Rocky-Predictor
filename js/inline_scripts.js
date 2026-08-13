@@ -410,8 +410,27 @@ async function importPlayed(){
   const msg=document.getElementById('importMsg');
   msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
   const isWC=CURRENT_LEAGUE==='worldcup';
-  const start=new Date(isWC?Date.UTC(2026,5,11,12):Date.UTC(2026,7,1,12));
-  const tournEnd=new Date(isWC?Date.UTC(2026,6,19,12):Date.UTC(2027,5,1,12));
+  
+  // Fechas de inicio específicas por competición (2026)
+  const startDates={
+    'worldcup': new Date(Date.UTC(2026,5,11,12)),  // 11 jun 2026
+    'copa_lib': new Date(Date.UTC(2026,1,3,12)),     // 3 feb 2026
+    'copa_sud': new Date(Date.UTC(2026,2,3,12)),     // 3 mar 2026
+    'liga_arg': new Date(Date.UTC(2026,0,22,12)),    // 22 ene 2026
+    'liga_chil': new Date(Date.UTC(2026,0,30,12))    // 30 ene 2026
+  };
+  
+  // Fechas de fin específicas por competición
+  const endDates={
+    'worldcup': new Date(Date.UTC(2026,6,19,12)),    // 19 jul 2026
+    'copa_lib': new Date(Date.UTC(2026,10,30,12)),   // 30 nov 2026
+    'copa_sud': new Date(Date.UTC(2026,10,30,12)),   // 30 nov 2026
+    'liga_arg': new Date(Date.UTC(2026,11,15,12)),   // 15 dic 2026
+    'liga_chil': new Date(Date.UTC(2026,11,15,12))   // 15 dic 2026
+  };
+  
+  const start=startDates[CURRENT_LEAGUE]||new Date(Date.UTC(2026,7,1,12));
+  const tournEnd=endDates[CURRENT_LEAGUE]||new Date(Date.UTC(2027,5,1,12));
   const end=new Date()<tournEnd?new Date():tournEnd;
   const byKey={};HIST.forEach(x=>{if(x.actualA!=null)byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;});
   let added=0;
