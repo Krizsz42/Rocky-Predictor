@@ -1,13 +1,8 @@
-<script>
-/* ═══════════ DATOS ═══════════ */
 const TEAMS=[
 {es:"Argentina",s:92,f:"🇦🇷"},{es:"España",s:91,f:"🇪🇸"},{es:"Francia",s:90,f:"🇫"},{es:"Inglaterra",s:88,f:"🏴󠁧󠁢󠁮󠁿"},
 {es:"Brasil",s:87,f:"🇧🇷"},{es:"Portugal",s:87,f:"🇵🇹"},{es:"Países Bajos",s:85,f:"🇳🇱"},{es:"Alemania",s:84,f:"🇩🇪"},
 {es:"Bélgica",s:82,f:"🇧🇪"},{es:"Croacia",s:80,f:"🇭🇷"},{es:"Marruecos",s:80,f:"🇲🇦"},{es:"Colombia",s:79,f:"🇨🇴"},
 {es:"Uruguay",s:79,f:"🇺🇾"},{es:"Senegal",s:76,f:"🇸🇳"},{es:"Suiza",s:76,f:"🇨🇭"},{es:"Dinamarca",s:75,f:"🇩"},
-{es:"Noruega",s:74,f:"🇳🇴"},{es:"Japón",s:74,f:"🇯🇵"},{es:"Estados Unidos",s:74,f:"🇺🇸"},{es:"México",s:73,f:"🇲🇽"},
-{es:"Ecuador",s:72,f:"🇪🇨"},{es:"Austria",s:72,f:"🇦"},{es:"Turquía",s:72,f:"🇹🇷"},{es:"Nigeria",s:71,f:"🇳🇬"},
-{es:"Suecia",s:71,f:"🇸"},{es:"Corea del Sur",s:71,f:"🇰🇷"},{es:"Australia",s:70,f:"🇦🇺"},{es:"Egipto",s:70,f:"🇪🇬"},
 {es:"Costa de Marfil",s:70,f:"🇨🇮"},{es:"Canadá",s:70,f:"🇨🇦"},{es:"Escocia",s:70,f:"🏴󠁧󠁢󠁳󠁣󠁿"},{es:"Ghana",s:69,f:"🇬🇭"},
 {es:"Irán",s:68,f:"🇮🇷"},{es:"Paraguay",s:68,f:"🇵🇾"},{es:"Argelia",s:68,f:"🇩🇿"},{es:"República Checa",s:68,f:"🇨🇿"},
 {es:"Bosnia",s:67,f:"🇧🇦"},{es:"Túnez",s:66,f:"🇹🇳"},{es:"RD del Congo",s:65,f:"🇨🇩"},{es:"Panamá",s:64,f:"🇵🇦"},
@@ -2383,6 +2378,3 @@ function mgCabezazo(){return new Promise(res=>{
   ov.querySelector('#rs9').innerHTML+='<span class="i2-chip">'+(sc>60?'⚽ '+sc:'😤 '+sc)+'</span>';
   if(round>=3){cancelAnimationFrame(raf);setTimeout(()=>res(_close(ov,Math.round(tot/3))),600);}
  };});}
-</script>
-</body>
-</html>

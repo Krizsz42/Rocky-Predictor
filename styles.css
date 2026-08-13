@@ -1,4 +1,4 @@
-<style>
+
 :root{
   --bg:#0a0d10; --panel:#10151a; --panel2:#151b21; --panel3:#1a2129;
   --line:#212a33; --line2:#2b3641;
@@ -612,4 +612,4 @@ footer b{color:var(--mut)}
 .i2-zone9{position:absolute;left:38%;width:24%;top:58%;height:38%;background:var(--acc-dim);border:2px dashed var(--acc);border-radius:8px}
 .i2-nine{position:absolute;left:50%;top:76%;transform:translateX(-50%);font-size:22px}
 .i2-ball9{position:absolute;transform:translate(-50%,-50%);font-size:20px}
-</style>
+
