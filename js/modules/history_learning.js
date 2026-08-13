@@ -442,6 +442,25 @@ async function fetchResult(id){
     const homeIsA = norm(ev.strHomeTeam||'')===A || norm(ev.strHomeTeam||'').includes(A) || A.includes(norm(ev.strHomeTeam||''));
     it.actualA = homeIsA? hs : as;
     it.actualB = homeIsA? as : hs;
+    
+    // Si no hay predicción previa (partido importado sin guardar predicción), generarla ahora
+    if(it.xgH==null && it.predPossA==null){
+      const ta=findTeam(it.A), tb=findTeam(it.B);
+      if(ta && tb){
+        const [la,lb]=autoLambdas(ta.s,tb.s);
+        const rho=autoRho(la+lb);
+        const R=simulate(la,lb,rho);
+        const possA=possShare(la,lb), shA=teamShots(la,possA), shB=teamShots(lb,1-possA);
+        const coTot=teamCorners(shA)+teamCorners(shB);
+        const sotA=shA*0.38, sotB=shB*0.38;
+        it.lamH=la; it.lamA=lb; it.rho=rho;
+        it.xgH=R.xgH; it.xgA=R.xgA; it.o25=R.o25; it.btts=R.btts;
+        it.predPossA=possA; it.predShotsA=shA; it.predShotsB=shB;
+        it.predCornersTot=coTot; it.predYellowTot=4.2; it.predRedTot=0.18;
+        it.sotA=sotA; it.sotB=sotB;
+      }
+    }
+    
     if(ev.stats){
       const s=ev.stats, pick=(h,a)=>homeIsA? h : a;
       it.actualStats={
@@ -767,8 +786,9 @@ function renderHistory(){
     let detail;
     if(!done){
       // Mostrar tabla comparativa si hay stats reales disponibles (importadas desde ESPN)
+      // Ahora muestra la tabla aunque no se haya guardado la predicción, siempre que haya stats reales
       let extra=''; const s=it.actualStats;
-      let showTable = s && it.xgH!=null; // Si hay stats reales y xG predicho, mostrar tabla
+      let showTable = s && (it.xgH!=null || it.predPossA!=null); // Si hay stats reales y (xG predicho O posesión predicha)
       
       if(showTable){
         const j=judge(it);
