@@ -1367,8 +1367,23 @@ async function importPlayed(){
   const msg=document.getElementById('importMsg');
   msg.textContent='Importando partidos jugados…';msg.style.color='var(--mut)';
   const isWC=CURRENT_LEAGUE==='worldcup';
-  const start=new Date(isWC?Date.UTC(2026,5,11,12):Date.UTC(2026,7,1,12));
-  const tournEnd=new Date(isWC?Date.UTC(2026,6,19,12):Date.UTC(2027,5,1,12));
+  // Fechas de inicio por competición (año, mes-1, día)
+  const START_DATES={
+    worldcup:[2026,5,11],     // 11 jun 2026
+    premier:[2025,7,1],       // 1 ago 2025 (temporada 2025/26)
+    laliga:[2025,7,15],       // 15 ago 2025
+    bundes:[2025,7,15],       // 15 ago 2025
+    seriea:[2025,7,20],       // 20 ago 2025
+    ligue1:[2025,7,10],       // 10 ago 2025
+    champions:[2025,8,15],    // 15 sep 2025 (fase liga)
+    libertadores:[2025,1,15], // 15 feb 2025 (fase grupos)
+    sudamericana:[2025,1,20], // 20 feb 2025
+    liga_arg:[2025,1,1],      // 1 feb 2025 (torneo argentino)
+    liga_chil:[2025,1,15]     // 15 feb 2025 (temporada chilena)
+  };
+  const sd=START_DATES[CURRENT_LEAGUE]||[2026,7,1];
+  const start=new Date(Date.UTC(sd[0],sd[1],sd[2],12));
+  const tournEnd=isWC?new Date(Date.UTC(2026,6,19,12)):new Date(Date.UTC(2026,5,1,12));
   const end=new Date()<tournEnd?new Date():tournEnd;
   const byKey={};HIST.forEach(x=>{if(x.actualA!=null)byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=1;});
   let added=0;
