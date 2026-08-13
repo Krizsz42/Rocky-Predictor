@@ -1,1 +1,1 @@
-Nothing should be ignored in this case, as the changes only include HTML source files (`index_fixed.html` and `index.html`) without any build artifacts, dependencies, or temporary files.
+(js/modules/competitions.js, js/modules/teams_data.js)
