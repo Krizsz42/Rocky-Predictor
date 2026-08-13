@@ -834,20 +834,20 @@ function renderHistory(){
               `<tbody>`+
                 cmpRow('⚽ Goles totales',(it.xgH!=null&&it.xgA!=null)?(it.xgH+it.xgA).toFixed(2):null,it.actualA+it.actualB,'','') +
                 cmpRow('🎯 Posesión '+it.A,pPoss,rPoss,'%','%')+
-                cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s.possB!=null?s.possB.toFixed(0):null),'%','%')+
-                cmpRow('🔫 Remates '+it.A,pShotsA,s.shotsA!=null?s.shotsA:null,'','')+
-                cmpRow('🔫 Remates '+it.B,pShotsB,s.shotsB!=null?s.shotsB:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.A,pSotA,s.sotA!=null?s.sotA:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.B,pSotB,s.sotB!=null?s.sotB:null,'','')+
-                cmpRow('🚩 Córners totales',pCorners,s.cornersTot!=null?s.cornersTot:null,'','')+
-                cmpRow('🟨 Amarillas totales',pYellow,s.yellowTot!=null?s.yellowTot:null,'','')+
-                cmpRow('🟥 Rojas totales',pRed,s.redTot!=null?s.redTot:null,'','')+
+                cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s&&s.possB!=null?s.possB.toFixed(0):null),'%','%')+
+                cmpRow('🔫 Remates '+it.A,pShotsA,s&&s.shotsA!=null?s.shotsA:null,'','')+
+                cmpRow('🔫 Remates '+it.B,pShotsB,s&&s.shotsB!=null?s.shotsB:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.A,pSotA,s&&s.sotA!=null?s.sotA:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.B,pSotB,s&&s.sotB!=null?s.sotB:null,'','')+
+                cmpRow('🚩 Córners totales',pCorners,s?s.cornersTot:null,'','')+
+                cmpRow('🟨 Amarillas totales',pYellow,s?s.yellowTot:null,'','')+
+                cmpRow('🟥 Rojas totales',pRed,s?s.redTot:null,'','')+
               `</tbody>`+
             `</table>`+
             `<div class="comparison-legend"><span class="ok-dot">●</span> Cerca (<20% error) · <span class="off-dot">○</span> Lejos (≥20% error)</div>`+
           `</div>`;
         
-        if(s.scorers&&s.scorers.length){
+        if(s&&s.scorers&&s.scorers.length){
           const gl=s.scorers.map(g=>`${g.min} ${g.name}${g.ownGoal?' (e.c.)':''} <span style="color:var(--mut)">[${g.forA?it.A:it.B}]</span>`).join(' · ');
           extra+=`<div class="sub" style="margin-top:6px">⚽ ${gl}</div>`;
         }
@@ -866,11 +866,14 @@ function renderHistory(){
     }else{
       const j=judge(it);
       let extra=''; const s=it.actualStats;
-      if(s){
+      // Mostrar tabla si hay stats reales O si al menos tenemos los goles reales (partido importado)
+      if(s || (it.actualA!=null && it.actualB!=null)){
         let mb='';
-        if(j.hitPoss!=null) mb+=bdg(j.hitPoss,'Posesión '+(it.predPossA>=0.5?it.A:it.B));
-        if(j.hitCorners!=null) mb+=bdg(j.hitCorners,'Córners: '+(overLine(it.predCornersTot,9.5)>=0.5?'Over':'Under')+' 9.5 · hubo '+s.cornersTot);
-        if(j.hitYellow!=null) mb+=bdg(j.hitYellow,'Amarillas: '+(overLine(it.predYellowTot,3.5)>=0.5?'Over':'Under')+' 3.5 · hubo '+s.yellowTot);
+        if(s){
+          if(j.hitPoss!=null) mb+=bdg(j.hitPoss,'Posesión '+(it.predPossA>=0.5?it.A:it.B));
+          if(j.hitCorners!=null) mb+=bdg(j.hitCorners,'Córners: '+(overLine(it.predCornersTot,9.5)>=0.5?'Over':'Under')+' 9.5 · hubo '+s.cornersTot);
+          if(j.hitYellow!=null) mb+=bdg(j.hitYellow,'Amarillas: '+(overLine(it.predYellowTot,3.5)>=0.5?'Over':'Under')+' 3.5 · hubo '+s.yellowTot);
+        }
         
         // Función auxiliar para crear filas comparativas con indicador visual de precisión
         const cmpRow=(label,pred,real,predSuffix='',realSuffix='')=>{
@@ -899,20 +902,20 @@ function renderHistory(){
               `<tbody>`+
                 cmpRow('⚽ Goles totales',(it.xgH!=null&&it.xgA!=null)?(it.xgH+it.xgA).toFixed(2):null,it.actualA+it.actualB,'','') +
                 cmpRow('🎯 Posesión '+it.A,pPoss,rPoss,'%','%')+
-                cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s.possB!=null?s.possB.toFixed(0):null),'%','%')+
-                cmpRow('🔫 Remates '+it.A,pShotsA,s.shotsA!=null?s.shotsA:null,'','')+
-                cmpRow('🔫 Remates '+it.B,pShotsB,s.shotsB!=null?s.shotsB:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.A,pSotA,s.sotA!=null?s.sotA:null,'','')+
-                cmpRow('🎯 Remates al arco '+it.B,pSotB,s.sotB!=null?s.sotB:null,'','')+
-                cmpRow('🚩 Córners totales',pCorners,s.cornersTot!=null?s.cornersTot:null,'','')+
-                cmpRow('🟨 Amarillas totales',pYellow,s.yellowTot!=null?s.yellowTot:null,'','')+
-                cmpRow('🟥 Rojas totales',pRed,s.redTot!=null?s.redTot:null,'','')+
+                cmpRow('🎯 Posesión '+it.B,(it.predPossA!=null?(100-it.predPossA*100).toFixed(0):null),(s&&s.possB!=null?s.possB.toFixed(0):null),'%','%')+
+                cmpRow('🔫 Remates '+it.A,pShotsA,s&&s.shotsA!=null?s.shotsA:null,'','')+
+                cmpRow('🔫 Remates '+it.B,pShotsB,s&&s.shotsB!=null?s.shotsB:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.A,pSotA,s&&s.sotA!=null?s.sotA:null,'','')+
+                cmpRow('🎯 Remates al arco '+it.B,pSotB,s&&s.sotB!=null?s.sotB:null,'','')+
+                cmpRow('🚩 Córners totales',pCorners,s?s.cornersTot:null,'','')+
+                cmpRow('🟨 Amarillas totales',pYellow,s?s.yellowTot:null,'','')+
+                cmpRow('🟥 Rojas totales',pRed,s?s.redTot:null,'','')+
               `</tbody>`+
             `</table>`+
             `<div class="comparison-legend"><span class="ok-dot">●</span> Cerca (<20% error) · <span class="off-dot">○</span> Lejos (≥20% error)</div>`+
           `</div>`;
         
-        if(s.scorers&&s.scorers.length){
+        if(s&&s.scorers&&s.scorers.length){
           const gl=s.scorers.map(g=>`${g.min} ${g.name}${g.ownGoal?' (e.c.)':''} <span style="color:var(--mut)">[${g.forA?it.A:it.B}]</span>`).join(' · ');
           extra+=`<div class="sub" style="margin-top:6px">⚽ ${gl}</div>`;
         }
