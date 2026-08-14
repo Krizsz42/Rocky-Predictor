@@ -101,11 +101,6 @@ summary:hover{color:var(--acc)}
 .main{flex:1;min-width:0}
 #sideOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:75;opacity:0;pointer-events:none;transition:.3s}
 #sideOverlay.show{opacity:1;pointer-events:auto}
-@media(max-width:940px){
-  .sidebar{position:fixed;left:0;top:0;transform:translateX(-102%);transition:.3s;box-shadow:var(--shadow)}
-  .sidebar.open{transform:none}
-  .burger{display:flex!important}
-}
 
 /* ---------- TICKER SUPERIOR ---------- */
 .ticker-bar{border-bottom:1px solid var(--line);background:#0c1013;overflow-x:auto;overflow-y:hidden}
@@ -668,6 +663,72 @@ footer b{color:var(--mut)}
 .i2-zone9{position:absolute;left:38%;width:24%;top:58%;height:38%;background:var(--acc-dim);border:2px dashed var(--acc);border-radius:8px}
 .i2-nine{position:absolute;left:50%;top:76%;transform:translateX(-50%);font-size:22px}
 .i2-ball9{position:absolute;transform:translate(-50%,-50%);font-size:20px}
+@media(max-width:940px){
+  html,body{overflow-x:hidden;overscroll-behavior-x:none}
+  body.sb-open{overflow:hidden}
+  .sidebar{position:fixed;left:0;top:0;transform:translateX(-102%);transition:.3s;box-shadow:var(--shadow);touch-action:pan-y}
+  .sidebar.open{transform:none}
+  .burger{display:flex!important}
+  .side-item{padding:13px 12px;font-size:14px}
+  .side-lbl{padding:20px 20px 7px}
+  .side-brand{padding:22px 16px 14px}
+  .brand-mark{width:40px;height:40px}
+  .lv2-inner{grid-template-columns:72px 1fr}
+  .lv2-status{padding:12px 6px;font-size:10.5px}
+  .lv2-main{gap:10px;padding:12px 10px;flex-wrap:nowrap}
+  .lv2-team{min-width:0;gap:7px}
+  .lv2-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lv2-score{gap:6px;flex:none}
+}
+
+/* ---------- NAVEGACIÓN MÓVIL (barra inferior) ---------- */
+.tabbar{display:none}
+@media(max-width:700px){
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(15,20,25,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line2);padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .tab-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 5px;border-radius:10px;font-size:9px;font-weight:700;letter-spacing:.02em;color:var(--gray);-webkit-tap-highlight-color:transparent;transition:.18s}
+  .tab-item .ti{font-size:18px;line-height:1.15}
+  .tab-item.active{color:var(--acc);background:var(--acc-dim)}
+  .wrap{padding:18px 14px calc(80px + env(safe-area-inset-bottom))}
+  footer{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+  #toast{bottom:calc(90px + env(safe-area-inset-bottom))}
+
+  /* RESUMEN */
+  .banner{min-height:150px}
+  .banner-body{padding:18px}
+  .banner-league{font-size:10px;padding:5px 11px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kpi-row{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi{padding:12px 14px}
+  .kpi b{font-size:19px}
+  .ido-btns .btn{flex:1;justify-content:center}
+
+  /* EN VIVO */
+  .lv-datenav{gap:8px}
+  .lv-strip{gap:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .lv-strip::-webkit-scrollbar{display:none}
+  .lv-headrow{gap:8px}
+  .lv-seg{width:100%;margin-left:0;justify-content:center}
+  .lv-segbtn{flex:1;text-align:center}
+  .lv2-events{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+  .lv2-events::-webkit-scrollbar{display:none}
+
+  /* PREDICTOR */
+  .ctrl-row .btn-primary{flex:1;justify-content:center}
+  #paramDet .ctrl-row .btn{flex:1;justify-content:center}
+  .vs-medal{width:44px;height:44px;font-size:13px}
+  .pick-list{max-height:38vh}
+}
+@media(max-width:560px){
+  .lv2-inner{grid-template-columns:56px 1fr}
+  .lv2-status{padding:12px 4px;font-size:10px}
+  .lv2-main{gap:8px}
+  .lv2-team{gap:6px}
+  .lv2-score b{font-size:18px}
+  .param-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .chart-box{height:200px}
+  .sc-xg{gap:16px}
+  .c1x2{padding:12px}
+  .cards1x2{gap:8px}
+}
 </style>
 </head>
 <body>
@@ -695,6 +756,14 @@ footer b{color:var(--mut)}
   <div class="side-foot">Poisson bivariado + Dixon–Coles<br>Escudos y logos: ESPN / flagcdn<br>Uso educativo</div>
 </aside>
 <div id="sideOverlay" onclick="closeSidebar()"></div>
+
+<nav class="tabbar" id="tabBar">
+  <button class="tab-item active" data-v="resumen" onclick="showView('resumen')"><span class="ti">🏠</span>Resumen</button>
+  <button class="tab-item" data-v="envivo" onclick="showView('envivo')"><span class="ti">📺</span>En vivo</button>
+  <button class="tab-item" data-v="match" onclick="showView('match')"><span class="ti">🎯</span>Predictor</button>
+  <button class="tab-item" data-v="bracket" onclick="showView('bracket')"><span class="ti">🏆</span>Cuadro</button>
+  <button class="tab-item" data-v="stats" onclick="showView('stats')"><span class="ti">📊</span>Tabla</button>
+</nav>
 
 <div class="main">
   <div class="ticker-bar" id="tickerBar"><div class="ticker-track2" id="tickerTrack2"></div></div>

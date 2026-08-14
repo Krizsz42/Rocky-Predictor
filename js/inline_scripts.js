@@ -2008,6 +2008,7 @@ const VIEW_TITLES={resumen:'Resumen',envivo:'En vivo',match:'Predictor',bracket:
 function showView(v){
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
   document.querySelectorAll('.side-item[data-v]').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
+  document.querySelectorAll('.tab-item[data-v]').forEach(t=>t.classList.toggle('active',t.dataset.v===v));
   el('tbTitle').textContent=VIEW_TITLES[v]||v;
   const chip=el('tbChip');
   if(v==='envivo'){chip.innerHTML='<span class="lg-dot" style="background:var(--live)"></span>Global · todas las competiciones';}
@@ -2063,8 +2064,17 @@ function setLeague(id){
   if(!el('view-envivo').classList.contains('active')&&!el('view-idolo').classList.contains('active')){
     chip.innerHTML='<span class="lg-dot" style="background:'+LEAGUES[id].color+'"></span>'+leagueLogoHTML(id,14)+' '+LEAGUES[id].name;}
 }
-function toggleSidebar(){el('sidebar').classList.toggle('open');el('sideOverlay').classList.toggle('show');}
+function toggleSidebar(){const sb=el('sidebar'),open=!sb.classList.contains('open');sb.classList.toggle('open');el('sideOverlay').classList.toggle('show');document.body.classList.toggle('sb-open',open);}
 function closeSidebar(){el('sidebar').classList.remove('open');el('sideOverlay').classList.remove('show');}
+(function(){
+  const sb=el('sidebar');let sx=0,sy=0,onControl=false;
+  sb.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;onControl=!!e.target.closest('button,input,select,a');},{passive:true});
+  sb.addEventListener('touchend',e=>{
+    if(onControl)return;
+    const t=e.changedTouches[0];
+    if(sx-t.clientX>70&&Math.abs(t.clientY-sy)<60)closeSidebar();
+  },{passive:true});
+})();
 function buildRanking(){
   const top=TEAMS.slice().sort((a,b)=>b.s-a.s).slice(0,12);
   el('rankCard').innerHTML=top.map((t,i)=>
