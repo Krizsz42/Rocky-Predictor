@@ -1025,6 +1025,7 @@ footer b{color:var(--mut)}
             <div class="panel-h"><h3>Historial de predicciones</h3><span class="rule"></span></div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
               <button class="btn btn-ghost btn-sm" onclick="importPlayed()">Importar jugados (ESPN)</button>
+              <button class="btn btn-danger btn-sm" id="stopImportBtn" style="display:none" onclick="stopImport()">⏹ Detener</button>
               <button class="btn btn-ghost btn-sm" onclick="fetchAllPending()">Buscar pendientes</button>
               <button class="btn btn-danger btn-sm" onclick="clearHistory()">Vaciar</button>
               <span id="importMsg" style="font-size:11.5px;color:var(--mut);align-self:center"></span>

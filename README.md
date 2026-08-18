@@ -138,6 +138,48 @@ Los datos en vivo (partidos, marcadores, estadísticas, goleadores) provienen de
 
 ---
 
+## 🗺️ Roadmap
+
+Ideas priorizadas para futuras versiones. Fuente de datos: API pública de ESPN (`https://site.api.espn.com/apis/site/v2/sports/soccer/{liga}/...`).
+
+| # | Feature | Fuente ESPN | Dónde | Dificultad |
+|---|---|---|---|---|
+| 1 | Noticias y rumores de pases por liga | `/{liga}/news` | Panel "Noticias" en el home + feed de rumores para El Ídolo | 🟢 Fácil |
+| 2 | Líderes de asistencias, vallas y tarjetas (no solo goles) | `/statistics?type=player&group=passing/goalkeeping/...` | Pestaña Tabla con sub-pestañas por categoría | 🟢 Fácil |
+| 3 | Dónde ver cada partido (TV/streaming) | `scoreboard → broadcasts` | Chips en En vivo y agenda ("📺 ESPN2, ESPN+") | 🟢 Fácil |
+| 4 | Ficha completa del partido (stats reales + goleadores + tarjetas de cualquier partido) | `/summary?event={id}` | Modal al tocar cualquier partido terminado | 🟡 Media |
+| 5 | Calendario de la competición (jornadas/fases: "Fecha 3", "Cuartos") | `scoreboard → calendar` | Navegador de fechas + "próxima jornada" en el home | 🟢 Fácil |
+| 6 | Previa automática compartible (forma + tabla + líderes → PNG) | `scoreboard` + `statistics` + `standings` | Botón "📥 Bajá la previa" por partido | 🟡 Media |
+| 7 | Valor vs. bookmaker (cuotas reales vs modelo) | `scoreboard → odds` ⚠️ casi nunca viene | Badge "💰 valor" en predicciones | 🔴 Experimental (diferido) |
+| 8 | Avisos de inicio y final de partido (extiende el 🔔 de goles) | polling en vivo existente | Notificaciones | 🟢 Fácil |
+| 9 | Scouting real para El Ídolo (nombres verdaderos de jugadores) | `/statistics` + `teams` | Mercado de pases del Ídolo con apellidos reales | 🟡 Media |
+
+**Orden sugerido**: 3 → 8 → 5 → 1 → 2 → 4 → 6 → 9 (7 queda en pausa).
+
+---
+
+## 🏗️ Próximas competiciones
+
+Copas nacionales, supercopas e internacionales por sumar al selector (a implementar con calma; ojo: ESPN no siempre trae **standings** ni datos por fase en las copas — hay que verificar por competición y dar fallback al agregarlas).
+
+Base de scoreboard: `https://site.api.espn.com/apis/site/v2/sports/soccer/{código}/scoreboard`
+
+| Competición | Código ESPN | ID (referencia) |
+|---|---|---|
+| 🏴 FA Cup | `eng.fa` | 40 |
+| 🏴 Carabao Cup | `eng.league_cup` | 41 |
+| 🇪🇸 Copa del Rey | `esp.copa_del_rey` | 80 |
+| 🇪🇸 Supercopa de España | `esp.super_cup` | 431 |
+| 🇩🇪 DFB Pokal | `ger.dfb_pokal` | 2061 |
+| 🇮🇹 Coppa Italia | `ita.coppa_italia` | 2192 |
+| 🇫🇷 Coupe de France | `fra.coupe_de_france` | 182 |
+| 🇪🇺 Nations League | `uefa.nations` | 2395 |
+| 🌎 Copa América | `conmebol.america` | 83 |
+| 🇪🇺 Eurocopa | `uefa.euro` | 74 |
+| 🌎 Eliminatorias CONMEBOL | `fifa.worldq.conmebol` | 65 |
+
+---
+
 ## ⚠️ Aviso
 
 Este proyecto es de **uso educativo y de pronóstico**. Las cifras son **probabilidades del modelo, no certezas**: los mercados de córners y tarjetas son más ruidosos que los goles, y las tarjetas dependen mucho del árbitro. Úsalo con criterio y responsabilidad.

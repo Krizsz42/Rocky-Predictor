@@ -558,8 +558,12 @@ const SEASON_START={
 };
 
 let _importRunning=false;
+let _stopImport=false;
 window.importPlayed=async function(){
   if(_importRunning){showToast('Ya hay una importación en curso');return;}
+  _stopImport=false;
+  const stopBtn=document.getElementById('stopImportBtn');
+  if(stopBtn)stopBtn.style.display='inline-block';
   const msg=document.getElementById('importMsg');
   const set=(t,c)=>{if(msg){msg.textContent=t;msg.style.color=c||'var(--mut)';}};
   const id=CURRENT_LEAGUE;
@@ -602,10 +606,12 @@ window.importPlayed=async function(){
     };
   
     for(let i=0;i<days.length;i+=CH){
+      if(_stopImport)break;
       const chunk=days.slice(i,i+CH);
       const res=await Promise.all(chunk.map(d=>fetchWithRetry(d)));
       
       res.forEach(events=>{(events||[]).forEach(ev=>{
+        if(_stopImport)return;
         const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
         if(!stt||!stt.completed)return;
         const it=buildFromESPN(ev,id);if(!it)return;
@@ -634,10 +640,20 @@ window.importPlayed=async function(){
         showToast('Importados '+added+' partidos en '+LEAGUES[id].name);
       }
     }
-    set((added||refreshed)?'Listo: '+added+' nuevos, '+refreshed+' actualizados.':'Sin partidos nuevos.','var(--acc)');
+    if(_stopImport){
+      set((added||refreshed)?'⏹ Detenido: se guardaron '+added+' nuevos y '+refreshed+' actualizados.':'⏹ Detenido sin cambios.','var(--red)');
+      if(stopBtn)stopBtn.style.display='none';
+    }else{
+      set((added||refreshed)?'Listo: '+added+' nuevos, '+refreshed+' actualizados.':'Sin partidos nuevos.','var(--acc)');
+    }
   }catch(e){set('Error al importar (red/CORS).','var(--red)');console.error(e);}
-  finally{_importRunning=false;}
+  finally{if(stopBtn)stopBtn.style.display='none';_importRunning=false;}
 }
+window.stopImport=function(){
+  _stopImport=true;
+  const msg=document.getElementById('importMsg');
+  if(msg){msg.textContent='⏹ Deteniendo… se guarda lo importado hasta ahora.';msg.style.color='var(--red)';}
+};
 function loadBulkResults(){
   const txt=(document.getElementById('bulkBox').value||'').trim();
   const msg=document.getElementById('bulkMsg');
