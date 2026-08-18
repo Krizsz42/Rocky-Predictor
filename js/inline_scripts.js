@@ -488,11 +488,12 @@ function clearHistory(){if(!HIST.length)return;if(!confirm('¿Vaciar el historia
 function toggleHistAll(){histShowAll=!histShowAll;renderHistory();}
 function toggleDetail(id){const d=document.getElementById('det_'+id),c=document.getElementById('cv_'+id);if(!d)return;const hid=d.classList.toggle('hidden');if(c)c.textContent=hid?'▸':'▾';}
 function toggleLearnCb(cb){LEARN.apply=cb.checked;lsSet('rp_learn_apply_v6',cb.checked);renderHistory();}
-function buildFromESPN(ev){
+function buildFromESPN(ev,leagueId){
   const p=espnParse(ev);if(!p)return null;
   if(p.intHomeScore==null||p.intHomeScore===''||p.intAwayScore==null||p.intAwayScore==='')return null;
-  const ta=findAnyTeam(p.strHomeTeam)||{es:p.strHomeTeam||'?',s:62};
-  const tb=findAnyTeam(p.strAwayTeam)||{es:p.strAwayTeam||'?',s:62};
+  const lid=leagueId||CURRENT_LEAGUE;
+  const ta=findAnyTeam(p.strHomeTeam,lid)||{es:p.strHomeTeam||'?',s:62};
+  const tb=findAnyTeam(p.strAwayTeam,lid)||{es:p.strAwayTeam||'?',s:62};
   let [la,lb]=autoLambdas(ta.s,tb.s);const rho=autoRho(la+lb);
   const R=simulate(la,lb,rho);const best=R.scores[0];
   const favO=R.h>=R.d&&R.h>=R.a?'H':(R.a>=R.d?'A':'D');
@@ -500,7 +501,7 @@ function buildFromESPN(ev){
   const coTot=teamCorners(shA)+teamCorners(shB);
   const hs=parseInt(p.intHomeScore,10),as=parseInt(p.intAwayScore,10);
   return {id:'imp-'+(ev.id||Math.random().toString(36).slice(2)),espnId:ev.id||null,ts:Date.now(),
-    A:ta.es,B:tb.es,ctx:LEAGUES[CURRENT_LEAGUE].name+(ev.date?(' · '+ev.date.slice(0,10)):''),
+    A:ta.es,B:tb.es,ctx:LEAGUES[lid].name+(ev.date?(' · '+ev.date.slice(0,10)):''),
     lamH:la,lamA:lb,rho,pH:R.h,pD:R.d,pA:R.a,predResult:favO,
     si:best.i,sj:best.j,sp:best.p,xgH:R.xgH,xgA:R.xgA,o25:R.o25,btts:R.btts,
     predPossA:possA,predShotsA:shA,predShotsB:shB,predCornersTot:coTot,predYellowTot:4.2,
@@ -511,6 +512,7 @@ function buildFromESPN(ev){
 function setStatusH(id,msg,kind){const el=document.getElementById('st_'+id);if(el){el.textContent=msg;el.style.color=kind==='ok'?'var(--acc)':kind==='err'?'var(--red)':'var(--mut)';}}
 async function fetchResult(id){
   const it=HIST.find(x=>x.id===id);if(!it)return;
+  const lg=CURRENT_LEAGUE,arr=HIST;
   setStatusH(id,'Buscando resultado…');
   const date=parseCtxDateSafe(it.ctx);
   const A=norm(teamEnglish(it.A)),B=norm(teamEnglish(it.B));
@@ -518,7 +520,7 @@ async function fetchResult(id){
   try{
     const days=date?windowYmd(date):[new Date().toISOString().slice(0,10).replace(/-/g,'')];
     for(const ymd of days){
-      const parsed=(await fetchESPNday(CURRENT_LEAGUE,ymd)).map(espnParse).filter(Boolean);
+      const parsed=(await fetchESPNday(lg,ymd)).map(espnParse).filter(Boolean);
       ev=parsed.find(e=>eventMatches(e,A,B));if(ev)break;}
     if(!ev){setStatusH(id,'No encontré '+it.A+' vs '+it.B+' en ESPN. Cárgalo a mano.','err');return;}
     if(ev.intHomeScore==null||ev.intHomeScore===''||ev.intAwayScore==null||ev.intAwayScore===''){setStatusH(id,'El partido aún no tiene marcador final.','mut');return;}
@@ -526,11 +528,13 @@ async function fetchResult(id){
     const hs=parseInt(ev.intHomeScore,10),as=parseInt(ev.intAwayScore,10);
     const homeIsA=norm(ev.strHomeTeam||'')===A||norm(ev.strHomeTeam||'').includes(A)||A.includes(norm(ev.strHomeTeam||''));
     it.actualA=homeIsA?hs:as;it.actualB=homeIsA?as:hs;
+    it.espnId=it.espnId||ev.id||null;
     if(ev.stats){const s=ev.stats,pick=(h,a)=>homeIsA?h:a;
       it.actualStats={possA:pick(s.homePoss,s.awayPoss),possB:pick(s.awayPoss,s.homePoss),
         shotsA:pick(s.homeShots,s.awayShots),shotsB:pick(s.awayShots,s.homeShots),
         cornersTot:(s.homeCorners||0)+(s.awayCorners||0),yellowTot:s.yellow,scorers:s.scorers};}
-    persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();
+    if(lg===CURRENT_LEAGUE){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();}
+    else lsSet('rp_hist_'+lg+'_v6',arr);
   }catch(e){setStatusH(id,'No se pudo conectar (CORS/red). Cárgalo a mano.','err');}
 }
 function parseCtxDateSafe(ctx){if(!ctx)return null;const t=ctx.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const m=t.match(/(\d{1,2})\s+([a-z]{3,}).?\s+(\d{4})/);if(!m)return null;const MO={ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',jul:'07',ago:'08',sep:'09',oct:'10',nov:'11',dic:'12'};const mon=MO[m[2].slice(0,3)];if(!mon)return null;return m[3]+'-'+mon+'-'+String(m[1]).padStart(2,'0');}
@@ -553,12 +557,15 @@ const SEASON_START={
   liga_arg:Date.UTC(2026,0,23),liga_chil:Date.UTC(2026,1,6)
 };
 
+let _importRunning=false;
 window.importPlayed=async function(){
+  if(_importRunning){showToast('Ya hay una importación en curso');return;}
   const msg=document.getElementById('importMsg');
   const set=(t,c)=>{if(msg){msg.textContent=t;msg.style.color=c||'var(--mut)';}};
   const id=CURRENT_LEAGUE;
+  const histKey='rp_hist_'+id+'_v6';
+  const same=()=>id===CURRENT_LEAGUE;
   
-  // Fechas base
   let start=SEASON_START[id]||Date.UTC(2026,7,1);
   const end=Date.now();
   
@@ -567,26 +574,33 @@ window.importPlayed=async function(){
   
   set('Importando temporada completa de '+LEAGUES[id].name+' (0/'+days.length+' días)…');
   
-  const byId={},byKey={};
-  HIST.forEach(x=>{if(x.actualA!=null){if(x.espnId)byId[x.espnId]=x;byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=x;}});
-  
-  let added=0,refreshed=0,scanned=0;
-  
-  // CHUNK SIZE: 10 para internacionales, 3 para locales (argentina/chile/liga_arg/liga_chil) para evitar timeout
-  let CH = 10;
-  if((id==='argentina'||id==='chile'||id==='liga_arg'||id==='liga_chil') && days.length > 30) CH = 3; 
-
-  const fetchWithRetry = async (dateStr) => {
-    try {
-      return await fetchESPNday(id, dateStr);
-    } catch (e) {
-      console.warn(`Reintentando ${dateStr}...`, e);
-      await new Promise(r=>setTimeout(r, 500));
-      return await fetchESPNday(id, dateStr);
-    }
-  };
-
+  _importRunning=true;
   try{
+    const hist=lsGet(histKey,[]);
+    const byId={},byKey={},byDate={};
+    hist.forEach(x=>{if(x.actualA!=null){
+      if(x.espnId)byId[x.espnId]=x;
+      byKey['tm:'+norm(x.A)+'|'+norm(x.B)+'|'+x.actualA+'-'+x.actualB]=x;
+      const d=parseCtxDateSafe(x.ctx);
+      if(d)byDate['dm:'+d+'|'+[norm(x.A),norm(x.B)].sort().join('|')]=x;
+    }});
+    
+    let added=0,refreshed=0,scanned=0;
+    
+    // CHUNK SIZE: 10 para internacionales, 3 para locales (argentina/chile/liga_arg/liga_chil) para evitar timeout
+    let CH = 10;
+    if((id==='argentina'||id==='chile'||id==='liga_arg'||id==='liga_chil') && days.length > 30) CH = 3; 
+  
+    const fetchWithRetry = async (dateStr) => {
+      try {
+        return await fetchESPNday(id, dateStr);
+      } catch (e) {
+        console.warn(`Reintentando ${dateStr}...`, e);
+        await new Promise(r=>setTimeout(r, 500));
+        return await fetchESPNday(id, dateStr);
+      }
+    };
+  
     for(let i=0;i<days.length;i+=CH){
       const chunk=days.slice(i,i+CH);
       const res=await Promise.all(chunk.map(d=>fetchWithRetry(d)));
@@ -594,13 +608,14 @@ window.importPlayed=async function(){
       res.forEach(events=>{(events||[]).forEach(ev=>{
         const stt=ev.competitions&&ev.competitions[0]&&ev.competitions[0].status&&ev.competitions[0].status.type;
         if(!stt||!stt.completed)return;
-        const it=buildFromESPN(ev);if(!it)return;
+        const it=buildFromESPN(ev,id);if(!it)return;
         const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
-        const prev=byKey[k]||(it.espnId?byId[it.espnId]:null);
+        const dk='dm:'+(ev.date?ev.date.slice(0,10):'')+'|'+[norm(it.A),norm(it.B)].sort().join('|');
+        const prev=byKey[k]||(it.espnId?byId[it.espnId]:null)||byDate[dk]||null;
         if(prev){if(prev.actualStats&&prev.actualStats.cornersTot==null&&it.actualStats){prev.actualStats=it.actualStats;refreshed++;}return;}
-        byKey[k]=it;if(ev.id)byId[ev.id]=it;
+        byKey[k]=it;if(ev.id)byId[ev.id]=it;byDate[dk]=it;
         it.ts=Date.now()+added;
-        HIST.push(it);added++;
+        hist.push(it);added++;
       });});
       
       scanned+=chunk.length;
@@ -609,15 +624,20 @@ window.importPlayed=async function(){
       // Pequeña pausa cada 3 tandas para no saturar la API en ligas locales
       if(CH===3 && (i/CH)%3===0 && i>0) await new Promise(r=>setTimeout(r, 300));
     }
-  }catch(e){set('Error al importar (red/CORS).','var(--red)');console.error(e);return;}
   
-  if(added||refreshed){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();}
-  const parts=[];
-  if(added)parts.push('importé '+added+' partido'+(added!==1?'s':''));
-  if(refreshed)parts.push('actualicé stats de '+refreshed+' partido'+(refreshed!==1?'s':''));
-  set(parts.length?('✓ '+parts.join(' y ')+' de '+LEAGUES[id].name+'.'):'Sin novedades.','var(--acc)');
-  if(typeof showToast==='function')showToast(parts.length?parts.join(' + '):'Sin novedades');
-};
+    if(added||refreshed){
+      lsSet(histKey,hist);
+      if(same()){
+        HIST=hist;persistHist();
+        computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();
+      }else{
+        showToast('Importados '+added+' partidos en '+LEAGUES[id].name);
+      }
+    }
+    set((added||refreshed)?'Listo: '+added+' nuevos, '+refreshed+' actualizados.':'Sin partidos nuevos.','var(--acc)');
+  }catch(e){set('Error al importar (red/CORS).','var(--red)');console.error(e);}
+  finally{_importRunning=false;}
+}
 function loadBulkResults(){
   const txt=(document.getElementById('bulkBox').value||'').trim();
   const msg=document.getElementById('bulkMsg');
@@ -687,8 +707,8 @@ function renderHistory(){
       if(s){
         let mb='';
         if(j.hitPoss!=null)mb+=bdg(j.hitPoss,'Posesión');
-        if(j.hitCorners!=null)mb+=bdg(j.hitCorners,'Córners 9.5 · hubo '+s.cornersTot);
-        if(j.hitYellow!=null)mb+=bdg(j.hitYellow,'Amarillas 3.5 · hubo '+s.yellowTot);
+        if(j.hitCorners!=null)mb+=bdg(j.hitCorners,'Córners: '+(overLine(it.predCornersTot,9.5)>=0.5?'Over':'Under')+' 9.5 · hubo '+s.cornersTot);
+        if(j.hitYellow!=null)mb+=bdg(j.hitYellow,'Amarillas: '+(overLine(it.predYellowTot,3.5)>=0.5?'Over':'Under')+' 3.5 · hubo '+s.yellowTot);
         const row2=(lab,p,r)=>'<tr><td>'+lab+'</td><td class="r">'+p+'</td><td class="r"><b>'+r+'</b></td></tr>';
         extra='<div class="badges" style="margin-top:8px">'+mb+'</div>'+
           '<table class="hr-table"><thead><tr><th>Mercado</th><th class="r">Predicho</th><th class="r">Real</th></tr></thead><tbody>'+
