@@ -83,11 +83,11 @@ Con esos ingredientes se calculan los goles esperados (λ) de cada equipo, se ap
 
 ## 📲 Instalar como app
 
-Agrega la app a la pantalla de inicio (debe servirse por **HTTPS** o `localhost`):
+La app es una **PWA real** (web manifest + service worker con caché): al agregarla a la pantalla de inicio se abre a **pantalla completa**, con ícono propio y soporte offline básico. Debe servirse por **HTTPS** o `localhost`:
 
 1. Abre la URL (p. ej. GitHub Pages o Netlify) en el navegador del móvil.
-2. **iPhone (Safari)**: botón *Compartir* → **Añadir a pantalla de inicio** (usa `favicon.png` como ícono vía *apple-touch-icon*).
-3. **Android (Chrome)**: menú **⋮** → **Agregar a pantalla principal**.
+2. **iPhone (Safari)**: botón *Compartir* → **Añadir a pantalla de inicio** (usa `icon-512.png` como ícono; iOS 16.4+ además habilita notificaciones Web Push).
+3. **Android (Chrome)**: aparece el aviso *Instalar app* (o menú **⋮** → **Agregar a pantalla principal**).
 
 Queda a pantalla completa con ícono propio (también visible en la pestaña del navegador y en el logo de la sidebar).
 
@@ -125,6 +125,9 @@ Abre `http://localhost:8011` (o `http://TU-IP-LOCAL:8011` desde el móvil en la 
 │       ├── idolo_career.js   # modo carrera "El Ídolo"
 │       └── ui_functions.js   # helpers de interfaz
 ├── serve.js                # servidor local + proxy ESPN (CORS)
+├── manifest.webmanifest    # PWA (instalación a pantalla completa)
+├── sw.js                   # service worker (caché básica)
+├── icon-192.png / icon-512.png  # íconos PWA
 ├── modo_carrera_equipos_2026.json  # datos del modo carrera
 ├── favicon.png / favicon.ico       # ícono (pestaña, sidebar e iOS)
 └── SEGMENTACION.md         # notas de arquitectura
@@ -153,8 +156,11 @@ Ideas priorizadas para futuras versiones. Fuente de datos: API pública de ESPN 
 | 7 | Valor vs. bookmaker (cuotas reales vs modelo) | `scoreboard → odds` ⚠️ casi nunca viene | Badge "💰 valor" en predicciones | 🔴 Experimental (diferido) |
 | 8 | Avisos de inicio y final de partido (extiende el 🔔 de goles) | polling en vivo existente | Notificaciones | 🟢 Fácil |
 | 9 | Scouting real para El Ídolo (nombres verdaderos de jugadores) | `/statistics` + `teams` | Mercado de pases del Ídolo con apellidos reales | 🟡 Media |
+| 10 | Formato real de la Liga Argentina (bug): hoy se trata como liga simple (una tabla todos contra todos) | `arg.1` + lógica propia | Modelar **Apertura y Clausura** separados, **2 zonas de 15**, playoffs a partido único (top 8 por zona), **tabla anual** para el Campeón de Liga y descenso por promedios; hoy `standings[0]` muestra solo el primer grupo que devuelva ESPN | 🟡 Media |
+| 11 | Ocultar la sección **Cuadro** en ligas de formato round-robin (🇨🇱 chilena, 🇪🇸 española, 🇮🇹 italiana, 🇫🇷 francesa, 🇩🇪 alemana, 🏴 inglesa): el bracket solo tiene sentido en eliminatorias directas | UI | Mostrar Cuadro únicamente en competiciones con fases KO (`ko:true`), ocultarlo en ligas de tabla | 🟢 Fácil |
+| 12 | Notificaciones push en iOS (Web Push): el path de Supabase ya está esqueleto en `bracket_system.js` pero no conectado a ningún botón; faltan el handler de push del SW, el `PUSH-SETUP.md` y verificar la Edge Function | service worker + Supabase | Activar el botón de notificaciones en móviles iOS 16.4+ (requiere PWA instalada); el toggle actual (API vieja) solo funciona en desktop/Android con la app abierta | 🟡 Media |
 
-**Orden sugerido**: 3 → 8 → 5 → 1 → 2 → 4 → 6 → 9 (7 queda en pausa).
+**Orden sugerido**: 3 → 8 → 5 → 11 → 1 → 2 → 4 → 6 → 9 → 10 → 12 (7 queda en pausa).
 
 ---
 

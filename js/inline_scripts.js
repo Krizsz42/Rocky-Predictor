@@ -29,10 +29,10 @@ bundes:{name:'Bundesliga',icon:'🇩🇪',color:'#ff5c4a',espn:'ger.1',teams:'bu
 seriea:{name:'Serie A',icon:'🇮🇹',color:'#3d7ed9',espn:'ita.1',teams:'seriea',logo:12,sub:'Temporada 2026/27 · 20 equipos.'},
 ligue1:{name:'Ligue 1',icon:'🇫🇷',color:'#5a8cc9',espn:'fra.1',teams:'ligue1',logo:9,sub:'Temporada 2026/27 · 18 equipos.'},
 champions:{name:'Champions League',icon:'⭐',color:'#4a7cc9',espn:'uefa.champions',teams:'champions',ko:true,logo:2,sub:'Temporada 2026/27 · eliminatorias.'},
-  libertadores:{name:'Copa Libertadores',icon:'🏆',color:'#003da5',espn:'conmebol.libertadores',teams:'libertadores',ko:true,logo:58,sub:'Torneo de clubes más importante de Sudamérica.'},
-  sudamericana:{name:'Copa Sudamericana',icon:'🥈',color:'#ff6600',espn:'conmebol.sudamericana',teams:'sudamericana',ko:true,logo:1208,sub:'Segunda competición de clubes de Sudamérica.'},
-  liga_arg:{name:'Liga Argentina',icon:'🇦🇷',color:'#75aadb',espn:'arg.1',teams:'liga_arg',logo:1,sub:'Primera División de Argentina 2026.'},
-  liga_chil:{name:'Campeonato Chileno',icon:'🇨🇱',color:'#d92323',espn:'chi.1',teams:'liga_chil',logo:86,sub:'Primera División de Chile 2026.'}};
+  libertadores:{name:'Copa Libertadores',icon:'🏆',color:'#e1251d',espn:'conmebol.libertadores',teams:'libertadores',ko:true,logo:58,sub:'Torneo de clubes más importante de Sudamérica.'},
+  sudamericana:{name:'Copa Sudamericana',icon:'🥈',color:'#f26522',espn:'conmebol.sudamericana',teams:'sudamericana',ko:true,logo:1208,sub:'Segunda competición de clubes de Sudamérica.'},
+  liga_arg:{name:'Liga Argentina',icon:'🇦🇷',color:'#6cace4',espn:'arg.1',teams:'liga_arg',logo:1,sub:'Primera División de Argentina 2026.'},
+  liga_chil:{name:'Campeonato Chileno',icon:'🇨🇱',color:'#0039a6',espn:'chi.1',teams:'liga_chil',logo:86,sub:'Primera División de Chile 2026.'}};
 let CURRENT_LEAGUE='worldcup';
 try{const sv=localStorage.getItem('rp_league_v6');if(sv&&LEAGUES[sv])CURRENT_LEAGUE=sv;}catch(e){}
 const FLAG_CODE={"Argentina":"ar","España":"es","Francia":"fr","Inglaterra":"gb-eng","Brasil":"br","Portugal":"pt","Países Bajos":"nl","Alemania":"de","Bélgica":"be","Croacia":"hr","Marruecos":"ma","Colombia":"co","Uruguay":"uy","Senegal":"sn","Suiza":"ch","Dinamarca":"dk","Noruega":"no","Japón":"jp","Estados Unidos":"us","México":"mx","Ecuador":"ec","Austria":"at","Turquía":"tr","Nigeria":"ng","Suecia":"se","Corea del Sur":"kr","Australia":"au","Egipto":"eg","Costa de Marfil":"ci","Canadá":"ca","Irán":"ir","Paraguay":"py","Argelia":"dz","República Checa":"cz","Bosnia":"ba","Túnez":"tn","Panamá":"pa","Uzbekistán":"uz","Sudáfrica":"za","Arabia Saudita":"sa","Catar":"qa","Jordania":"jo","Cabo Verde":"cv","Curazao":"cw","Nueva Zelanda":"nz","Haití":"ht","Escocia":"gb-sct","Ghana":"gh","RD del Congo":"cd","Irak":"iq"};

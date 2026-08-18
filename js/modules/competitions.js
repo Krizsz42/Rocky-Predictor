@@ -101,10 +101,10 @@ const LEAGUES={
   ligue1:{name:'Ligue 1',espn:'fra.1',color:'#004170',color2:'#3d8ec9',icon:'🇫🇷',tabs:true,teams:'ligue1',logoId:9},
   champions:{name:'Champions League',espn:'uefa.champions',color:'#1a3b6b',color2:'#4a7cc9',icon:'⭐',tabs:true,teams:'champions',koLeague:true,logoId:2},
   champions_classif:{name:'Champs Clasif.',espn:'uefa.champions_qual',color:'#2d5a8e',color2:'#5a8cc9',icon:'🔰',tabs:true,teams:'champions_classif',logoId:2},
-  libertadores:{name:'Copa Libertadores',espn:'conmebol.libertadores',color:'#003da5',color2:'#3d7ed9',icon:'🏆',tabs:true,teams:'libertadores',koLeague:true,logoId:58},
-  sudamericana:{name:'Copa Sudamericana',espn:'conmebol.sudamericana',color:'#ff6600',color2:'#ff9933',icon:'🥈',tabs:true,teams:'sudamericana',koLeague:true,logoId:1208},
-  liga_arg:{name:'Liga Argentina',espn:'arg.1',color:'#75aadb',color2:'#a8d5ff',icon:'🇦🇷',tabs:true,teams:'liga_arg',logoId:1},
-  liga_chil:{name:'Campeonato Chileno',espn:'chi.1',color:'#d92323',color2:'#ff5c5c',icon:'🇨🇱',tabs:true,teams:'liga_chil',logoId:86},
+  libertadores:{name:'Copa Libertadores',espn:'conmebol.libertadores',color:'#e1251d',color2:'#f5f7fa',icon:'🏆',tabs:true,teams:'libertadores',koLeague:true,logoId:58},
+  sudamericana:{name:'Copa Sudamericana',espn:'conmebol.sudamericana',color:'#f26522',color2:'#ffa149',icon:'🥈',tabs:true,teams:'sudamericana',koLeague:true,logoId:1208},
+  liga_arg:{name:'Liga Argentina',espn:'arg.1',color:'#6cace4',color2:'#a8d4f5',icon:'🇦🇷',tabs:true,teams:'liga_arg',logoId:1},
+  liga_chil:{name:'Campeonato Chileno',espn:'chi.1',color:'#0039a6',color2:'#d52b1e',icon:'🇨🇱',tabs:true,teams:'liga_chil',logoId:86},
 };
 let CURRENT_LEAGUE='worldcup';
 
