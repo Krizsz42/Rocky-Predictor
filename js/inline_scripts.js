@@ -868,6 +868,7 @@ async function renderLive(force){
             '<div class="lv2-team away">'+crestHTML(m.B,20)+'<span class="lv2-name'+(aWin?' win':'')+'">'+m.B+'</span></div>'+
             '</div>'+
             (m.scorers.length?'<div class="lv2-events">'+m.scorers.slice(0,4).map(s=>'<span><b>'+s.min+'</b> '+s.name+'</span>').join('')+'</div>':'')+
+            '<div class="lv2-actions"><button class="lv2-btn" onclick="event.stopPropagation();openLiveMatchObj(_liveFlat['+m.idx+'])">⚡ Ver en predictor</button></div>'+
             '</div></div></div>';}).join('')+'</div>';}).join('');
   }catch(e){body.innerHTML='<div class="empty">Error al cargar. <button class="ghostb" onclick="renderLive(true)">Reintentar</button></div>';}
   if(_liveOpenMatch){
