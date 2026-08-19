@@ -204,6 +204,19 @@ function jointPoisson(mean,preds){let p=0,Kk=Math.max(25,Math.ceil(mean*3));for(
 const LEARN={apply:lsGet('rp_learn_apply_v6',true),ready:false,goalAdj:1,cornerAdj:1,cornerReady:false,n:0,accRes:0,accScore:0,accOU:0,accBtts:0,avgErr:0,bias:0,nStats:0,accPoss:0,accCorners:0,accYellow:0};
 function applyLearning(la,lb){if(LEARN.apply&&LEARN.ready)return [clamp(la*LEARN.goalAdj,.25,3.2),clamp(lb*LEARN.goalAdj,.25,3.2)];return [la,lb];}
 function applyCornerLearn(c){return (LEARN.apply&&LEARN.cornerReady)?c*LEARN.cornerAdj:c;}
+/* perfil de córners por equipo: promedios reales a favor (f) y en contra (a) desde el historial */
+let TEAM_CORNERS={};const CORN_MIN=3;
+function teamCornerProfile(name){const p=TEAM_CORNERS[name];return (p&&p.n>=CORN_MIN)?p:null;}
+function predictTeamCorners(name,opp,fallback){
+  const p=teamCornerProfile(name),o=teamCornerProfile(opp);
+  if(p&&o)return clamp(0.55*p.f+0.45*o.a,2,12);
+  if(p)return clamp((p.f+fallback)/2,2,12);
+  return fallback;
+}
+function predictCornersTot(A,B,shotsA,shotsB){
+  return predictTeamCorners(A,B,teamCorners(shotsA))+predictTeamCorners(B,A,teamCorners(shotsB));
+}
+function cornerProfileCount(){let c=0;for(const k in TEAM_CORNERS)if(TEAM_CORNERS[k].n>=CORN_MIN)c++;return c;}
 
 /* ═══════════ ESPN ═══════════ */
 // Fetch con varios caminos para vencer el bloqueo CORS del navegador:
@@ -468,6 +481,13 @@ function computeLearning(){
     sumP+=j.predTot;sumR+=j.realTot;absErr+=Math.abs(j.predTot-j.realTot);
     if(it.actualStats){nStats++;if(j.hitPoss)hp++;if(j.hitCorners)hc++;if(j.hitYellow)hy++;
       if(it.predCornersTot!=null&&it.actualStats.cornersTot!=null){sumPC+=it.predCornersTot;sumRC+=it.actualStats.cornersTot;}}});
+  const tRaw={};
+  done.forEach(it=>{const s=it.actualStats;if(!s||s.cornersA==null)return;
+    const ra=tRaw[it.A]=tRaw[it.A]||{n:0,f:0,a:0},rb=tRaw[it.B]=tRaw[it.B]||{n:0,f:0,a:0};
+    ra.n++;ra.f+=s.cornersA;ra.a+=s.cornersB;
+    rb.n++;rb.f+=s.cornersB;rb.a+=s.cornersA;});
+  TEAM_CORNERS={};
+  Object.keys(tRaw).forEach(k=>{const p=tRaw[k];TEAM_CORNERS[k]={n:p.n,f:p.f/p.n,a:p.a/p.n};});
   Object.assign(LEARN,{n,accRes:res,accScore:sc,accOU:ou,accBtts:bt,avgErr:n?absErr/n:0,bias:n?(sumR-sumP)/n:0,nStats,accPoss:hp,accCorners:hc,accYellow:hy,
     cornerAdj:(nStats>=3&&sumPC>0)?clamp(sumRC/sumPC,.7,1.4):1,cornerReady:nStats>=3&&sumPC>0,
     goalAdj:(n>=3&&sumP>0)?clamp(sumR/sumP,.8,1.25):1,ready:n>=3});
@@ -498,7 +518,7 @@ function buildFromESPN(ev,leagueId){
   const R=simulate(la,lb,rho);const best=R.scores[0];
   const favO=R.h>=R.d&&R.h>=R.a?'H':(R.a>=R.d?'A':'D');
   const possA=possShare(la,lb),shA=teamShots(la,possA),shB=teamShots(lb,1-possA);
-  const coTot=teamCorners(shA)+teamCorners(shB);
+  const coTot=predictCornersTot(ta.es,tb.es,shA,shB);
   const hs=parseInt(p.intHomeScore,10),as=parseInt(p.intAwayScore,10);
   return {id:'imp-'+(ev.id||Math.random().toString(36).slice(2)),espnId:ev.id||null,ts:Date.now(),
     A:ta.es,B:tb.es,ctx:LEAGUES[lid].name+(ev.date?(' · '+ev.date.slice(0,10)):''),
@@ -507,7 +527,9 @@ function buildFromESPN(ev,leagueId){
     predPossA:possA,predShotsA:shA,predShotsB:shB,predCornersTot:coTot,predYellowTot:4.2,
     actualA:hs,actualB:as,
     actualStats:{possA:p.stats.homePoss,possB:p.stats.awayPoss,shotsA:p.stats.homeShots,shotsB:p.stats.awayShots,
-      cornersTot:(p.stats.homeCorners||0)+(p.stats.awayCorners||0),yellowTot:p.stats.yellow,scorers:p.stats.scorers}};
+      cornersTot:(p.stats.homeCorners||0)+(p.stats.awayCorners||0),
+      cornersA:(p.stats.homeCorners||0),cornersB:(p.stats.awayCorners||0),
+      yellowTot:p.stats.yellow,scorers:p.stats.scorers}};
 }
 function setStatusH(id,msg,kind){const el=document.getElementById('st_'+id);if(el){el.textContent=msg;el.style.color=kind==='ok'?'var(--acc)':kind==='err'?'var(--red)':'var(--mut)';}}
 async function fetchResult(id){
@@ -532,7 +554,9 @@ async function fetchResult(id){
     if(ev.stats){const s=ev.stats,pick=(h,a)=>homeIsA?h:a;
       it.actualStats={possA:pick(s.homePoss,s.awayPoss),possB:pick(s.awayPoss,s.homePoss),
         shotsA:pick(s.homeShots,s.awayShots),shotsB:pick(s.awayShots,s.homeShots),
-        cornersTot:(s.homeCorners||0)+(s.awayCorners||0),yellowTot:s.yellow,scorers:s.scorers};}
+        cornersTot:(s.homeCorners||0)+(s.awayCorners||0),
+        cornersA:pick(s.homeCorners,s.awayCorners),cornersB:pick(s.awayCorners,s.homeCorners),
+        yellowTot:s.yellow,scorers:s.scorers};}
     if(lg===CURRENT_LEAGUE){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();}
     else lsSet('rp_hist_'+lg+'_v6',arr);
   }catch(e){setStatusH(id,'No se pudo conectar (CORS/red). Cárgalo a mano.','err');}
@@ -618,7 +642,7 @@ window.importPlayed=async function(){
         const k='tm:'+norm(it.A)+'|'+norm(it.B)+'|'+it.actualA+'-'+it.actualB;
         const dk='dm:'+(ev.date?ev.date.slice(0,10):'')+'|'+[norm(it.A),norm(it.B)].sort().join('|');
         const prev=byKey[k]||(it.espnId?byId[it.espnId]:null)||byDate[dk]||null;
-        if(prev){if(prev.actualStats&&prev.actualStats.cornersTot==null&&it.actualStats){prev.actualStats=it.actualStats;refreshed++;}return;}
+        if(prev){if(prev.actualStats&&(prev.actualStats.cornersTot==null||prev.actualStats.cornersA==null)&&it.actualStats){prev.actualStats=it.actualStats;refreshed++;}return;}
         byKey[k]=it;if(ev.id)byId[ev.id]=it;byDate[dk]=it;
         it.ts=Date.now()+added;
         hist.push(it);added++;
@@ -691,7 +715,7 @@ function renderHistory(){
       '<div class="learn-cell"><small>Over/Under 2.5</small><b>'+frac(LEARN.accOU)+'</b></div>'+
       '<div class="learn-cell"><small>Ambos marcan</small><b>'+frac(LEARN.accBtts)+'</b></div>'+
       '<div class="learn-cell"><small>Error goles</small><b>'+LEARN.avgErr.toFixed(2)+'</b></div></div>'+
-      '<p style="font-size:12px;color:var(--mut)">Diagnóstico: <b style="color:var(--txt)">'+biasTxt+'</b>. Calibración '+(LEARN.ready?'<b style="color:var(--gold)">×'+LEARN.goalAdj.toFixed(3)+'</b>':'(requiere 3+ resultados)')+(LEARN.cornerReady?' · córners <b style="color:var(--gold)">×'+LEARN.cornerAdj.toFixed(3)+'</b>':'')+'.</p>'+
+      '<p style="font-size:12px;color:var(--mut)">Diagnóstico: <b style="color:var(--txt)">'+biasTxt+'</b>. Calibración '+(LEARN.ready?'<b style="color:var(--gold)">×'+LEARN.goalAdj.toFixed(3)+'</b>':'(requiere 3+ resultados)')+(LEARN.cornerReady?' · córners <b style="color:var(--gold)">×'+LEARN.cornerAdj.toFixed(3)+'</b>':'')+(cornerProfileCount()?' · perfiles córners <b>'+cornerProfileCount()+'</b> equipos':'')+'.</p>'+
       '<label class="learn-toggle"><input type="checkbox" checked disabled> Rating base (siempre activo)</label>'+
       '<label class="learn-toggle"><input type="checkbox" '+(LEARN.apply?'checked':'')+' '+(LEARN.ready?'':'disabled')+' onchange="toggleLearnCb(this)"> Calibración por partidos jugados</label>'+
       '<label class="learn-toggle"><input type="checkbox" '+(APPLY_FORM?'checked':'')+' onchange="toggleFormCb(this)"> Forma reciente ajustada por rival (ESPN)</label>';
@@ -1136,6 +1160,9 @@ function fillAutoParams(rerun){
   const ta=findAnyTeam(state.A),tb=findAnyTeam(state.B);if(!ta||!tb)return;
   let [la,lb]=autoLambdas(ratingOf(ta.es),ratingOf(tb.es));const lr=applyLearning(la,lb);la=lr[0];lb=lr[1];
   setParamInputs(la,lb,autoRho(la+lb));
+  const possA=possShare(la,lb);
+  el('pCornA').value=applyCornerLearn(predictTeamCorners(ta.es,tb.es,teamCorners(teamShots(la,possA)))).toFixed(1);
+  el('pCornB').value=applyCornerLearn(predictTeamCorners(tb.es,ta.es,teamCorners(teamShots(lb,1-possA)))).toFixed(1);
   if(rerun)runSim(false);
   ensureFormFor(ta.es,tb.es);
 }
@@ -1316,7 +1343,10 @@ function runSim(scroll){
     cRows+='<tr><td>'+L+'</td><td class="r" style="color:'+(ov>=un?'var(--acc)':'var(--mut)')+';font-weight:'+(ov>=un?700:400)+'">'+pc(ov)+'</td><td class="r" style="color:'+(un>ov?'var(--acc)':'var(--mut)')+';font-weight:'+(un>ov?700:400)+'">'+pc(un)+'</td></tr>';}
   let cInfo=cPicks.filter(x=>x.p>0.5&&x.p<=0.95).sort((a,b)=>b.p-a.p);
   if(!cInfo.length)cInfo=cPicks.slice().sort((a,b)=>b.p-a.p);
-  el('cornerMk').innerHTML='<div style="font-size:12px;color:var(--mut);margin-bottom:8px">Córners totales esperados: <b style="color:var(--gold)">'+coTot.toFixed(1)+'</b> ('+ta.es+' '+coA.toFixed(1)+' · '+tb.es+' '+coB.toFixed(1)+')</div>'+
+  const prfA=teamCornerProfile(ta.es),prfB=teamCornerProfile(tb.es);
+  el('cornerMk').innerHTML='<div style="font-size:12px;color:var(--mut);margin-bottom:8px">Córners totales esperados: <b style="color:var(--gold)">'+coTot.toFixed(1)+'</b> ('+ta.es+' '+coA.toFixed(1)+' · '+tb.es+' '+coB.toFixed(1)+')'+
+    ((prfA||prfB)?'<div style="margin-top:4px;font-size:11px;color:var(--gray)">perfil real: '+ta.es+' '+(prfA?prfA.f.toFixed(1)+'F/'+prfA.a.toFixed(1)+'C':'–')+' · '+tb.es+' '+(prfB?prfB.f.toFixed(1)+'F/'+prfB.a.toFixed(1)+'C':'–')+'</div>':'')+
+    '</div>'+
     '<table><thead><tr><th>Línea</th><th class="r">Over</th><th class="r">Under</th></tr></thead><tbody>'+cRows+'</tbody></table>'+
     '<div class="pills">'+cInfo.slice(0,4).map(x=>'<span class="pill"><span>'+x.lab+'</span><b>'+pc(x.p)+'</b></span>').join('')+'</div>';
   /* tarjetas */
@@ -1574,7 +1604,7 @@ function addCartTeams(ta,tb,sel){
   let [la,lb]=autoLambdas(ta.s,tb.s);const lr=applyLearning(la,lb);la=lr[0];lb=lr[1];
   const r=autoRho(la+lb),R=simulate(la,lb,r);
   const possA=possShare(la,lb);
-  const corTot=applyCornerLearn(teamCorners(teamShots(la,possA)))+applyCornerLearn(teamShots(lb,1-possA)?teamCorners(teamShots(lb,1-possA)):0);
+  const corTot=applyCornerLearn(predictCornersTot(ta.es,tb.es,teamShots(la,possA),teamShots(lb,1-possA)));
   CART.push({id:'ct'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),A:ta.es,B:tb.es,R,corTot,yelTot:4.2,sel:sel?sel.slice():[]});
 }
 function addCartMatch(){
@@ -1597,28 +1627,32 @@ function cartLegs(m){
     {t:'Goles totales',legs:[]},
     {t:'Ambos marcan',legs:[{k:'BTTS',grp:'btts',dom:'g',lab:'Sí',pred:(i,j)=>i>0&&j>0},{k:'BTTSN',grp:'btts',dom:'g',lab:'No',pred:(i,j)=>!(i>0&&j>0)}]}];
   const gLegs=[];
-  for(let L=0.5;L<=4.5;L+=1){
+  for(let L=0.5;L<=6.5;L+=1){
     gLegs.push({k:'O'+(L*10).toFixed(0).padStart(2,'0'),grp:'g'+L,dom:'g',lab:'Over '+L,pred:(i,j)=>i+j>L});
     gLegs.push({k:'U'+(L*10).toFixed(0).padStart(2,'0'),grp:'g'+L,dom:'g',lab:'Under '+L,pred:(i,j)=>i+j<L});}
   groups[2].legs=gLegs;
-  const cLegs=[];[8.5,9.5,10.5,11.5].forEach(L=>{cLegs.push({k:'CO'+L,grp:'c'+L,dom:'c',lab:'Over '+L,pred:k=>k>L});cLegs.push({k:'CU'+L,grp:'c'+L,dom:'c',lab:'Under '+L,pred:k=>k<L});});
+  const cLegs=[];
+  for(let L=5.5;L<=15.5;L+=1){
+    cLegs.push({k:'CO'+L,grp:'c'+L,dom:'c',lab:'Over '+L,pred:k=>k>L});
+    cLegs.push({k:'CU'+L,grp:'c'+L,dom:'c',lab:'Under '+L,pred:k=>k<L});}
   groups.push({t:'Córners totales',legs:cLegs});
-  const yLegs=[];[2.5,3.5,4.5,5.5].forEach(L=>{yLegs.push({k:'YO'+L,grp:'y'+L,dom:'y',lab:'Over '+L,pred:k=>k>L});yLegs.push({k:'YU'+L,grp:'y'+L,dom:'y',lab:'Under '+L,pred:k=>k<L});});
+  const yLegs=[];
+  for(let L=2.5;L<=6.5;L+=1){
+    yLegs.push({k:'YO'+L,grp:'y'+L,dom:'y',lab:'Over '+L,pred:k=>k>L});
+    yLegs.push({k:'YU'+L,grp:'y'+L,dom:'y',lab:'Under '+L,pred:k=>k<L});}
   groups.push({t:'Tarjetas amarillas',legs:yLegs});
   groups.forEach(gr=>gr.legs.forEach(l=>{l.prob=l.dom==='g'?jointGoals(R,[l.pred]):(l.dom==='c'?jointPoisson(m.corTot,[l.pred]):jointPoisson(m.yelTot,[l.pred]));}));
   return groups;
 }
 function toggleCartLeg(mid,key){
   const m=CART.find(x=>x.id===mid);if(!m)return;
-  const groups=cartLegs(m),byKey={};let leg=null;
-  groups.forEach(gr=>gr.legs.forEach(l=>{byKey[l.k]=l;if(l.k===key)leg=l;}));
+  const groups=cartLegs(m);let leg=null;
+  groups.forEach(gr=>gr.legs.forEach(l=>{if(l.k===key)leg=l;}));
   if(!leg)return;
   if(m.sel.includes(key)){m.sel=m.sel.filter(k=>k!==key);renderCartilla();return;}
-  const grpKeys=groups.reduce((a,gr)=>a.concat(gr.legs),[]).filter(l=>l.grp===leg.grp).map(l=>l.k);
-  m.sel=m.sel.filter(k=>!grpKeys.includes(k));
-  m.sel=m.sel.filter(k=>{const ol=byKey[k];if(!ol||ol.dom!==leg.dom)return true;
-    const j=leg.dom==='g'?jointGoals(m.R,[leg.pred,ol.pred]):leg.dom==='c'?jointPoisson(m.corTot,[leg.pred,ol.pred]):jointPoisson(m.yelTot,[leg.pred,ol.pred]);
-    return j>1e-9;});
+  const family=k=>k[0]==='O'||k[0]==='U'?'g':(k[0]==='C'?'c':(k[0]==='Y'?'y':''));
+  const fam=family(leg.k);
+  m.sel=m.sel.filter(k=>family(k)!==fam);
   m.sel.push(key);renderCartilla();
 }
 function cartMatchProb(m){
