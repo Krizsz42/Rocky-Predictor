@@ -227,6 +227,10 @@ summary:hover{color:var(--acc)}
 .lv2-actions{padding:0 12px 10px;display:flex;justify-content:center}
 .lv2-btn{border:1px solid var(--line2);background:transparent;color:var(--mut);font-weight:600;font-size:11.5px;padding:6px 13px;border-radius:8px;cursor:pointer;transition:.2s}
 .lv2-btn:hover{border-color:var(--acc);color:var(--acc)}
+.ph-av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--panel3);color:var(--mut);font-weight:700;vertical-align:middle;flex-shrink:0}
+.ph-img{border-radius:50%;vertical-align:middle;object-fit:cover;background:var(--panel3);flex-shrink:0}
+.gol-ph{display:inline-flex;margin-right:7px;vertical-align:middle}
+.lv2-events .ph-av,.lv2-events .ph-img{margin-right:4px}
 .empty{border:1px dashed var(--line2);border-radius:12px;padding:34px 20px;text-align:center;color:var(--gray);font-size:13px}
 
 /* ---------- PREDICTOR ---------- */
@@ -354,6 +358,13 @@ td b{color:var(--txt)}
 .st-table tr.top1 td{color:var(--gold)}
 .fdot{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;font-size:8.5px;font-weight:800;margin-right:3px}
 .fd-w{background:var(--acc-dim);color:var(--acc)} .fd-d{background:rgba(143,160,172,.15);color:var(--mut)} .fd-l{background:var(--red-dim);color:var(--red)}
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;margin-top:14px}
+.grp-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.grp-h{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.grp-t{width:100%;border-collapse:collapse;font-size:12px}
+.grp-t td{padding:4px 2px;border-bottom:1px solid var(--line)}
+.grp-t tr:last-child td{border-bottom:none}
+.grp-t td.r{text-align:right;color:var(--mut)}
 
 /* ---------- CARTILLA ---------- */
 .ct-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}

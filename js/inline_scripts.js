@@ -59,7 +59,7 @@ const pc=x=>(100*x).toFixed(1)+'%';
 const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
 const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z ]/g,'').trim();
 /* alias de nombres: ESPN no usa los mismos nombres que la base → mapeo normalizado */
-const ALIAS={};
+const ALIAS={'estudiantes de la plata':'Estudiantes LP','estudiantes la plata':'Estudiantes LP','racing club':'Racing','caracas':'Caracas FC','bragantino':'RB Bragantino','red bull bragantino':'RB Bragantino','recoleta':'Deportivo Recoleta','atl nacional':'Atlético Nacional','universidad central':'UCV FC','river':'River Plate','liga de quito':'LDU Quito','atletico mg':'Atlético Mineiro','atleticomg':'Atlético Mineiro','club olimpia':'Olimpia','cienciano del cusco':'Cienciano'};
 Object.keys(EN_NAME).forEach(es=>{ALIAS[norm(EN_NAME[es])]=es;});
 Object.assign(ALIAS,{
   'athletic bilbao':'Athletic Club',
@@ -309,7 +309,7 @@ function espnParse(ev){
     if(d.yellowCard){yellow++;if(isHome)yA++;else yB++;}
     if(d.redCard){red++;if(isHome)rA++;else rB++;}
     if(d.scoringPlay){const ath=d.athletesInvolved&&d.athletesInvolved[0];
-      scorers.push({min:(d.clock&&d.clock.displayValue)||'',name:ath?ath.displayName:'',home:isHome,pen:!!d.penaltyKick,ownGoal:!!d.ownGoal,shootout:!!d.shootout});}});
+      scorers.push({min:(d.clock&&d.clock.displayValue)||'',name:ath?ath.displayName:'',pid:ath?ath.id:null,home:isHome,pen:!!d.penaltyKick,ownGoal:!!d.ownGoal,shootout:!!d.shootout});}});
   function statOnComp(names){const cats=comp.statistics||[];
     for(const n of names){const cat=cats.find(c=>c.name===n);
       if(cat&&cat.groups){const hg=cat.groups.find(g=>g.group&&(g.group.name==='home'||g.group.id==='0'));
@@ -342,6 +342,17 @@ function espnParse(ev){
     stats:{homePoss:poss.home,awayPoss:poss.away,homeShots:sh.home,awayShots:sh.away,homeSOT:sot.home,awaySOT:sot.away,homeCorners:co.home,awayCorners:co.away,homeFouls:fo.home,awayFouls:fo.away,yellow,red,yellowA:yA,yellowB:yB,redA:rA,redB:rB,scorers}};
 }
 function eventMatches(ev,A,B){const set=[norm(ev.strHomeTeam||''),norm(ev.strAwayTeam||'')];const inSet=x=>set.some(s=>s&&x&&(s===x||s.includes(x)||x.includes(s)));return inSet(A)&&inSet(B);}
+window.phFallback=function(img,ini){
+  const s=document.createElement('span');s.className='ph-av';s.textContent=ini;
+  const w=parseInt(img&&img.getAttribute('width'),10)||22;
+  s.style.width=w+'px';s.style.height=w+'px';s.style.fontSize=Math.round(w*0.42)+'px';
+  if(img&&img.parentNode)img.parentNode.replaceChild(s,img);
+};
+function playerImg(pid,name,size){
+  const ini=(name||'?').trim().split(/\s+/).map(w=>w.charAt(0)).filter(Boolean).slice(0,2).join('').toUpperCase()||'?';
+  if(!pid)return '<span class="ph-av" style="width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.42)+'px">'+ini+'</span>';
+  return '<img class="ph-img" width="'+size+'" height="'+size+'" loading="lazy" src="https://a.espncdn.com/i/headshots/soccer/players/full/'+pid+'.png" onerror="phFallback(this,\''+ini+'\')" alt="">';
+}
 function windowYmd(date){const base=new Date(date+'T12:00:00Z'),out=[];for(let off=-3;off<=3;off++){const d=new Date(base);d.setUTCDate(d.getUTCDate()+off);out.push(d.toISOString().slice(0,10).replace(/-/g,''));}return out;}
 function mapEspnName(name,leagueId){const t=findAnyTeam(name,leagueId);return t?t.es:(name||'');}
 function compNoteText(comp){if(!comp)return '';let t=comp.altGameNote||'';if(!t&&comp.notes&&comp.notes.length)t=comp.notes.map(n=>n.headline||n.text||'').join(' ');return t;}
@@ -891,7 +902,7 @@ async function renderLive(force){
             '<div class="lv2-score"><b>'+(m.hs!=null?m.hs:'–')+'</b><i>|</i><b>'+(m.as!=null?m.as:'–')+'</b></div>'+
             '<div class="lv2-team away">'+crestHTML(m.B,20)+'<span class="lv2-name'+(aWin?' win':'')+'">'+m.B+'</span></div>'+
             '</div>'+
-            (m.scorers.length?'<div class="lv2-events">'+m.scorers.slice(0,4).map(s=>'<span><b>'+s.min+'</b> '+s.name+'</span>').join('')+'</div>':'')+
+            (m.scorers.length?'<div class="lv2-events">'+m.scorers.slice(0,4).map(s=>'<span><b>'+s.min+'</b> '+playerImg(s.pid,s.name,20)+' '+s.name+'</span>').join('')+'</div>':'')+
             '<div class="lv2-actions"><button class="lv2-btn" onclick="event.stopPropagation();openLiveMatchObj(_liveFlat['+m.idx+'])">⚡ Ver en predictor</button></div>'+
             '</div></div></div>';}).join('')+'</div>';}).join('');
   }catch(e){body.innerHTML='<div class="empty">Error al cargar. <button class="ghostb" onclick="renderLive(true)">Reintentar</button></div>';}
@@ -1061,7 +1072,7 @@ async function renderLiveCompare(){
   const goalSc=allSc.filter(g=>!g.shootout);
   const shootSc=allSc.filter(g=>g.shootout);
   html+='<div class="lc-goals">'+(goalSc.length
-    ? goalSc.map(g=>'<div class="lc-goal">⚽ <b>'+(g.min||'')+'</b> '+(g.name||'—')+' <span style="color:var(--mut)">('+(g.home?A:B)+')</span>'+(g.pen?' <span style="color:var(--acc2)">de penal</span>':'')+(g.ownGoal?' <span style="color:var(--red)">e.c.</span>':'')+'</div>').join('')
+    ? goalSc.map(g=>'<div class="lc-goal">⚽ <b>'+(g.min||'')+'</b> '+playerImg(g.pid,g.name,20)+' '+(g.name||'—')+' <span style="color:var(--mut)">('+(g.home?A:B)+')</span>'+(g.pen?' <span style="color:var(--acc2)">de penal</span>':'')+(g.ownGoal?' <span style="color:var(--red)">e.c.</span>':'')+'</div>').join('')
     :(hs>0||as>0)?'<div class="sub" style="margin:0">Goles registrados sin detalle de goleador.</div>':'<div class="sub" style="margin:0">Sin goles.</div>')+'</div>';
   if(shootSc.length||p.homeShootout!=null||p.awayShootout!=null){
     const aPk=shootSc.filter(g=>g.home).map(g=>g.name||'—');
@@ -1371,9 +1382,10 @@ function runSim(scroll){
 
 /* ═══════════ BRACKET ═══════════ */
 let BRACKET=lsGet('rp_bracket_v6',[]),PICKS=lsGet('rp_picks_v6',{});let _bkCache={};
+let CONFIRMED=lsGet('rp_confirmed_v6',{});function saveConfirmed(){lsSet('rp_confirmed_v6',CONFIRMED);}
 function confKey(a,b){return [norm(a),norm(b)].sort().join('|');}
 function saveBracket(){lsSet('rp_bracket_v6',BRACKET);lsSet('rp_picks_v6',PICKS);}
-function pickedWinner(a,b){if(!a||!b)return null;return PICKS[confKey(a,b)]||null;}
+function pickedWinner(a,b){if(!a||!b)return null;const k=confKey(a,b);if(PICKS[k])return PICKS[k];return CONFIRMED[k]||null;}
 function ratingOf(name){const t=findAnyTeam(name);if(!t)return name?62:null;const f=APPLY_FORM&&TEAM_FORM[t.es];return (f&&Math.abs(f.delta)>=0.5)?clamp(t.s+f.delta,40,90):t.s;}
 function advProb(nameA,nameB,cache){
   const key=nameA+'|'+nameB;if(cache[key]!=null)return cache[key];
@@ -1404,7 +1416,20 @@ function loadChampionsBracket(){
   PICKS={};saveBracket();renderBracket();
   el('bkMsg').textContent='Octavos de Champions armados (1° vs 16°, 2° vs 15°…).';
 }
+// Octavos de final 2026 de las copas: se usan SOLO los cruces reales de la fase de grupos (CUP_R16_2026), sin consultar la API
 function loadClubBracket(poolKey,label){
+  const msg=el('bkMsg');
+  try{localStorage.removeItem('rp_cup_bk_'+poolKey);}catch(e){}
+  const realCfg=applyCupR16(poolKey);
+  if(realCfg){
+    BRACKET=realCfg.teams.slice();PICKS={};
+    Object.assign(CONFIRMED,realCfg.confirmed||{});
+    saveBracket();saveConfirmed();renderBracket();
+    const def=Object.keys(realCfg.confirmed||{}).length;
+    msg.textContent='Octavos reales de '+label+' cargados ('+realCfg.how+'). '+(def?'Ya definidas: '+def+' llaves.':'')+'Marca ganadores con ✓ y simula.';
+    msg.style.color='var(--acc)';
+    return;
+  }
   const ct=CLUB_TEAMS[poolKey].slice().sort((a,b)=>b.s-a.s);
   const top16=[];const seen={};
   ct.forEach(t=>{if(!seen[t.es]){seen[t.es]=1;top16.push(t.es);}});
@@ -1412,7 +1437,8 @@ function loadClubBracket(poolKey,label){
   BRACKET=new Array(16).fill('');
   for(let i=0;i<8;i++){BRACKET[2*i]=top16[i];BRACKET[2*i+1]=top16[15-i];}
   PICKS={};saveBracket();renderBracket();
-  el('bkMsg').textContent='Octavos de '+label+' armados (1° vs 16°, 2° vs 15°…).';
+  msg.textContent='Octavos de '+label+' armados por rating (1° vs 16°, 2° vs 15°…).';
+  msg.style.color='var(--red)';
 }
 function loadLibBracket(){loadClubBracket('libertadores','la Libertadores');}
 function loadSudBracket(){loadClubBracket('sudamericana','la Sudamericana');}
@@ -1491,6 +1517,60 @@ function simTournament(){
 }
 
 /* ═══════════ TABLA ═══════════ */
+/* Fase de grupos 2026 (sorteo Conmebol 19/03/2026, Luque) */
+const CONMEBOL_GROUPS={
+  libertadores:[
+    ['A','Flamengo','Estudiantes LP','Cusco FC','Independiente Medellín'],
+    ['B','Nacional','Universitario','Coquimbo Unido','Deportes Tolima'],
+    ['C','Fluminense','Bolívar','Deportivo La Guaira','Independiente Rivadavia'],
+    ['D','Boca Juniors','Cruzeiro','Universidad Católica','Barcelona SC'],
+    ['E','Peñarol','Corinthians','Independiente Santa Fe','Platense'],
+    ['F','Palmeiras','Cerro Porteño','Atlético Junior','Sporting Cristal'],
+    ['G','LDU Quito','Lanús','Always Ready','Mirassol'],
+    ['H','Independiente del Valle','Libertad','Rosario Central','UCV FC']
+  ],
+  sudamericana:[
+    ['A','América de Cali','Tigre','Macará','Alianza Atlético'],
+    ['B','Atlético Mineiro','Cienciano','Academia Puerto Cabello','Juventud'],
+    ['C','São Paulo','Millonarios','Boston River','O\'Higgins'],
+    ['D','Santos','San Lorenzo','Deportivo Cuenca','Deportivo Recoleta'],
+    ['E','Racing','Caracas FC','Independiente Petrolero','Botafogo'],
+    ['F','Grêmio','Palestino','Montevideo City Torque','Deportivo Riestra'],
+    ['G','Olimpia','Vasco da Gama','Audax Italiano','Barracas Central'],
+    ['H','River Plate','RB Bragantino','Blooming','Carabobo']
+  ]
+};
+/* Octavos de final 2026 REALES (aunque ESPN no responda) */
+const CUP_R16_2026={
+  libertadores:{
+    how:'Sorteo 29/05 en Luque: 1° vs 2° de la fase de grupos; el 1° define la vuelta de local.',
+    pairs:['Independiente Rivadavia','Fluminense','Universidad Católica','Estudiantes LP','Cerro Porteño','Palmeiras','Coquimbo Unido','Platense','Flamengo','Cruzeiro','LDU Quito','Mirassol','Corinthians','Rosario Central','Independiente del Valle','Deportes Tolima'],
+    winners:['Independiente Rivadavia|Fluminense|Fluminense','Universidad Católica|Estudiantes LP|Estudiantes LP']
+  },
+  sudamericana:{
+    how:'Repechaje: 2° de Grupo vs 3° de Libertadores (el mejor 2° vs el peor 3°); los 8 ganadores entran al sorteo de octavos contra los 1° de Grupo.',
+    pairs:['Deportivo Recoleta','Boca Juniors','Bolívar','São Paulo','RB Bragantino','Atlético Mineiro','Tigre','Montevideo City Torque','Independiente Santa Fe','River Plate','Vasco da Gama','Olimpia','Santos','Macará','Cienciano','Botafogo'],
+    winners:['Deportivo Recoleta|Boca Juniors|Boca Juniors','Bolívar|São Paulo|São Paulo']
+  }
+};
+function applyCupR16(poolKey){
+  const cfg=CUP_R16_2026[poolKey];if(!cfg||cfg.pairs.length!==16)return null;
+  const confirmed={};
+  (cfg.winners||[]).forEach(w=>{const [A,B,W]=w.split('|');if(A&&B&&W)confirmed[confKey(A,B)]=W;});
+  return {teams:cfg.pairs.slice(),confirmed,how:cfg.how};
+}
+function grpCard(g,stats){
+  const rows=g.slice(1).map(n=>({n,s:stats[n]||{gp:0,gf:0,ga:0,pts:0}}))
+    .sort((a,b)=>b.s.pts-a.s.pts||(b.s.gf-b.s.ga)-(a.s.gf-a.s.ga)||b.s.gf-a.s.gf);
+  let h='<div class="grp-card"><div class="grp-h">Grupo '+g[0]+'</div><table class="grp-t"><tbody>';
+  rows.forEach((r,i)=>{
+    const gd=r.s.gf-r.s.ga;
+    h+='<tr><td class="r" style="color:var(--mut)">'+(i+1)+'</td><td>'+crestHTML(r.n,14)+' '+r.n+'</td>'+
+      '<td class="r">'+(r.s.gp||'–')+'</td><td class="r">'+(r.s.gp?(gd>0?'+'+gd:gd):'–')+'</td>'+
+      '<td class="r" style="color:var(--gold);font-weight:700">'+(r.s.pts||'–')+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
 const ESPN_SEASON=2026;
 async function fetchESPNStandings(){
   const base='https://site.api.espn.com/apis/site/v2/sports/soccer/'+LEAGUES[CURRENT_LEAGUE].espn+'/scoreboard';
@@ -1508,7 +1588,7 @@ async function renderStatsView(){
   const scorers={};
   // datos reales de ESPN (tabla + goleadores) en competiciones ligueras
   const hasStandings=L.id!=='worldcup'&&L.id!=='champions_classif';
-  let espnOk=false;
+  let espnOk=false,stRows=0;
   if(hasStandings){
     try{
       const [sJson,stJson]=await Promise.all([
@@ -1529,13 +1609,14 @@ async function renderStatsView(){
           let g=0;
           if(a.statistics&&Array.isArray(a.statistics))g=parseInt(a.statistics[goalIdx]||'0',10);
           else if(a.statistics&&typeof a.statistics==='object'&&a.statistics.goals)g=parseInt(a.statistics.goals,10);
-          if(g>0)espnScorers.push({name:a.displayName||a.firstName||'?',team:tm,goals:g});
+          if(g>0)espnScorers.push({name:a.displayName||a.firstName||'?',team:tm,goals:g,pid:a.id});
         });
       }
-      let stRows=0;
       if(stJson&&stJson.standings){
-        const entries=stJson.standings[0]&&stJson.standings[0].entries;
-        if(entries)entries.forEach(e=>{
+        const entries=[].concat.apply([],stJson.standings
+          .map(s=>s&&s.entries?s.entries:[])
+          .filter(e=>e&&e.team));
+        if(entries.length)entries.forEach(e=>{
           const tm=mapEspnName((e.team&&(e.team.displayName||e.team.name))||'',CURRENT_LEAGUE);
           const st=e.stats||[];
           const get=n=>{const x=st.find(s=>s.name===n);return x?parseFloat(x.displayValue):0;};
@@ -1578,6 +1659,34 @@ async function renderStatsView(){
   }
   const sorted=Object.values(stats).sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
   const noData=!sorted.some(r=>r.gp>0);
+  const grpCfg=CONMEBOL_GROUPS[CURRENT_LEAGUE];
+  let gstats=stats;
+  if(grpCfg&&!stRows){
+    gstats={};
+    const inGrp={};
+    grpCfg.forEach(g=>{g.slice(1).forEach(n=>{gstats[n]={gp:0,w:0,d:0,l:0,gf:0,ga:0,pts:0};inGrp[n]=g[0];});});
+    HIST.slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(p=>{
+      if(!inGrp[p.A]||inGrp[p.A]!==inGrp[p.B])return;
+      const A=gstats[p.A],B=gstats[p.B];if(!A||!B)return;
+      let res;
+      if(p.actualA!=null&&p.actualB!=null)res=p.actualA>p.actualB?'H':(p.actualA===p.actualB?'D':'A');
+      else res=p.predResult||(p.pH>=p.pD&&p.pH>=p.pA?'H':(p.pA>=p.pD?'A':'D'));
+      A.gp++;B.gp++;
+      if(res==='H'){A.w++;B.l++;A.pts+=3;}
+      else if(res==='A'){B.w++;A.l++;B.pts+=3;}
+      else{A.d++;B.d++;A.pts++;B.pts++;}
+      const gi=p.actualA!=null?p.actualA:p.si,gj=p.actualB!=null?p.actualB:p.sj;
+      A.gf+=gi;A.ga+=gj;B.gf+=gj;B.ga+=gi;});
+  }
+  let groupsHtml='';
+  if(grpCfg){
+    const gNote=CURRENT_LEAGUE==='libertadores'
+      ?'Sorteo Conmebol 19/03/2026. Los 2 primeros de cada grupo avanzan a octavos de final; los terceros juegan un repechaje con los segundos de la fase de grupos de la Sudamericana.'
+      :'Sorteo Conmebol 19/03/2026. El 1° de cada grupo avanza a octavos de final; los segundos disputan un repechaje contra los terceros de la fase de grupos de la Libertadores.';
+    groupsHtml='<div class="panel"><div class="panel-h"><h3>Fase de grupos · '+L.name+'</h3><span class="rule"></span></div>'+
+      '<div class="grp-grid">'+grpCfg.map(g=>grpCard(g,gstats)).join('')+'</div>'+
+      '<p class="note" style="margin-top:12px">'+gNote+'</p></div>';
+  }
   let tableHtml;
   if(noData){tableHtml='<div class="empty">Sin partidos de '+L.name+' en tu historial.</div>';}
   else{
@@ -1585,16 +1694,17 @@ async function renderStatsView(){
     tableHtml='<table class="st-table"><thead><tr><th>#</th><th>Equipo</th><th class="r">PJ</th><th class="r">G</th><th class="r">E</th><th class="r">P</th><th class="r">GF</th><th class="r">GC</th><th class="r">DG</th><th class="r">Pts</th><th>Últimos</th></tr></thead><tbody>';
     sorted.forEach((r,i)=>{
       const gd=r.gf-r.ga;let zone='';
-      if(nT>=16){if(i<4)zone='zone-cl';else if(i<6)zone='zone-el';else if(i>=nT-3)zone='zone-rel';}
+      if(nT>=16&&!grpCfg){if(i<4)zone='zone-cl';else if(i<6)zone='zone-el';else if(i>=nT-3)zone='zone-rel';}
       const five=r.form.slice(-5).map(f=>'<span class="fdot fd-'+f.toLowerCase()+'">'+(f==='W'?'G':f==='D'?'E':'P')+'</span>').join('');
       tableHtml+='<tr class="'+zone+(i===0?' top1':'')+'"><td>'+(i+1)+'</td><td>'+crestHTML(r.t.es,15)+' <b>'+r.t.es+'</b></td><td class="r">'+r.gp+'</td><td class="r">'+r.w+'</td><td class="r">'+r.d+'</td><td class="r">'+r.l+'</td><td class="r">'+r.gf+'</td><td class="r">'+r.ga+'</td><td class="r">'+(gd>0?'+'+gd:gd)+'</td><td class="r" style="color:var(--gold);font-weight:700">'+r.pts+'</td><td>'+(five||'—')+'</td></tr>';});
     tableHtml+='</tbody></table>';
-    if(nT>=16)tableHtml+='<div class="note">Zonas: continental (azul) · secundaria (dorado) · descenso (rojo).</div>';}
+    if(nT>=16&&!grpCfg)tableHtml+='<div class="note">Zonas: continental (azul) · secundaria (dorado) · descenso (rojo).</div>';}
   const topG=Object.values(scorers).sort((a,b)=>b.goals-a.goals).slice(0,8);
-  const scHtml=topG.length?'<table><thead><tr><th>Jugador</th><th>Equipo</th><th class="r">Goles</th></tr></thead><tbody>'+topG.map(s=>'<tr><td><b>'+s.name+'</b></td><td>'+crestHTML(s.team,13)+' '+s.team+'</td><td class="r" style="color:var(--gold);font-weight:700">'+s.goals+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">Sin goles registrados.</div>';
-  elm.innerHTML='<div class="panel"><div class="panel-h"><h3>Tabla · '+L.name+'</h3><span class="rule"></span></div>'+tableHtml+'</div>'+
+  const scHtml=topG.length?'<table><thead><tr><th>Jugador</th><th>Equipo</th><th class="r">Goles</th></tr></thead><tbody>'+topG.map(s=>'<tr><td><span class="gol-ph">'+playerImg(s.pid,s.name,24)+'</span><b>'+s.name+'</b></td><td>'+crestHTML(s.team,13)+' '+s.team+'</td><td class="r" style="color:var(--gold);font-weight:700">'+s.goals+'</td></tr>').join('')+'</tbody></table>':'<div class="empty">Sin goles registrados.</div>';
+  elm.innerHTML=groupsHtml+
+    '<div class="panel"><div class="panel-h"><h3>Tabla · '+L.name+'</h3><span class="rule"></span></div>'+tableHtml+'</div>'+
     '<div><div class="panel"><div class="panel-h"><h3>Goleadores</h3><span class="rule"></span></div>'+scHtml+'</div>'+
-    '<div class="panel" style="margin-top:16px"><div class="panel-h"><h3>Fuente</h3><span class="rule"></span></div><p style="font-size:12px;color:var(--mut);line-height:1.7">'+(espnOk?'Tabla de posiciones y goleadores reales (ESPN · temporada '+ESPN_SEASON+'). Si la API no responde, se usa tu historial.':'Cada predicción guardada suma un partido: con resultado real se usa ese; si no, el escenario más probable del modelo.')+'</p></div></div>';
+    '<div class="panel" style="margin-top:16px"><div class="panel-h"><h3>Fuente</h3><span class="rule"></span></div><p style="font-size:12px;color:var(--mut);line-height:1.7">'+(espnOk?'Tabla de posiciones y goleadores reales (ESPN · temporada '+ESPN_SEASON+'). Si la API no responde, se usa tu historial.':'Cada predicción guardada suma un partido: con resultado real se usa ese; si no, el escenario más probable del modelo.'+(grpCfg?' En la fase de grupos solo se cuentan los partidos entre equipos del mismo grupo.':''))+'</p></div></div>';
 }
 
 /* ═══════════ CARTILLA ═══════════ */
