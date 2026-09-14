@@ -263,7 +263,7 @@ function htftProbs(la,lb,share){
   let tot=0;for(const k in grid)tot+=grid[k];
   if(tot>0){for(const k in grid)grid[k]/=tot;const s=htH+htD+htA;htH/=s;htD/=s;htA/=s;bestHt.p/=s;}
   let best='H/H',bp=0;
-  for(const k in grid){if(grid[k]>bp){bp=grid[k];best=k;}}
+  for(const k of ['H/H','H/D','H/A','D/H','D/D','D/A','A/H','A/D','A/A']){const v=grid[k]||0;if(v>bp+1e-12){bp=v;best=k;}}
   return {grid,htH,htD,htA,bestHt,best,bp,share:r};
 }
 function simulate(lamH,lamA,rho){
@@ -1473,17 +1473,31 @@ function runSim(scroll){
     '<span class="pill"><span>Valla 0 '+tb.es+'</span><b>'+pc(R.csA)+'</b></span>';
   /* HT/FT descanso-final */
   const HTF=htftProbs(lamH,lamA);
-  const htLab={H:'Gana '+ta.es,D:'Empate',A:'Gana '+tb.es};
+  const abA=abbrName(ta.es),abB=abbrName(tb.es);
+  const htName={H:'Gana '+ta.es,D:'Empate',A:'Gana '+tb.es};
   const htRows=['H','D','A'].map(h=>{
     const cells=['H','D','A'].map(f=>{
       const p=HTF.grid[h+'/'+f]||0,isMax=(h+'/'+f)===HTF.best;
-      return '<td class="r" style="color:'+(isMax?'var(--gold)':'var(--mut)')+';font-weight:'+(isMax?700:400)+'">'+pc(p)+'</td>';
+      return '<td class="r" style="'+(isMax?'background:rgba(255,215,0,.16);color:var(--gold);font-weight:700;outline:1px solid var(--gold);':'color:var(--mut)')+'">'+pc(p)+'</td>';
     }).join('');
-    return '<tr><td><b>'+h+'</b> <span style="color:var(--gray);font-size:11px">'+htLab[h]+'</span></td>'+cells+'</tr>';
+    return '<tr><td><span style="color:var(--gold);font-size:10px;font-weight:700">ET</span> <b>'+htName[h]+'</b></td>'+cells+'</tr>';
   }).join('');
+  const bh=HTF.best.split('/')[0],bf=HTF.best.split('/')[1];
+  const htStory={'H/H':ta.es+' se va ganando al descanso y gana el partido',
+    'H/D':ta.es+' se va ganando al descanso pero termina empatado',
+    'H/A':ta.es+' se va ganando al descanso pero lo pierde en el 2T',
+    'D/H':'empate al descanso y '+ta.es+' lo gana en el 2T',
+    'D/D':'empate al descanso y empate final',
+    'D/A':'empate al descanso y '+tb.es+' lo gana en el 2T',
+    'A/H':tb.es+' se va ganando al descanso pero '+ta.es+' lo remonta',
+    'A/D':tb.es+' se va ganando al descanso pero termina empatado',
+    'A/A':tb.es+' gana al descanso y gana el partido'}[HTF.best];
+  const abHT={H:abA,D:'Emp',A:abB};
   el('htftBox').innerHTML=
-    '<table><thead><tr><th>Descanso \\ Final</th><th class="r">Gana '+ta.es+'</th><th class="r">Empate</th><th class="r">Gana '+tb.es+'</th></tr></thead><tbody>'+htRows+'</tbody></table>'+
-    '<div class="pills" style="margin-top:8px"><span class="pill"><span>HT/FT: '+HTF.best+'</span><b>'+pc(HTF.bp)+'</b></span>'+
+    '<div style="font-size:11.5px;color:var(--mut);margin-bottom:8px">Filas = resultado al <b>descanso</b> · Columnas = resultado <b>final</b>. H = gana '+ta.es+', D = empate, A = gana '+tb.es+'.</div>'+
+    '<table><thead><tr><th>Descanso ↓<br>Final →</th><th class="r" title="Final: gana '+ta.es+'">Final<br><b>'+abA+'</b></th><th class="r">Final<br><b>Empate</b></th><th class="r" title="Final: gana '+tb.es+'">Final<br><b>'+abB+'</b></th></tr></thead><tbody>'+htRows+'</tbody></table>'+
+    '<div style="font-size:13px;margin-top:8px">Lo más probable: <b>'+htStory+'</b> ('+pc(HTF.bp)+').</div>'+
+    '<div class="pills" style="margin-top:8px"><span class="pill"><span>Descanso → Final</span><b>'+abHT[bh]+' / '+abHT[bf]+'</b></span>'+
     '<span class="pill"><span>Descanso: '+ta.es+'</span><b>'+pc(HTF.htH)+'</b></span>'+
     '<span class="pill"><span>Descanso: empate</span><b>'+pc(HTF.htD)+'</b></span>'+
     '<span class="pill"><span>Descanso: '+tb.es+'</span><b>'+pc(HTF.htA)+'</b></span></div>'+
