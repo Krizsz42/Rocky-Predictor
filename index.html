@@ -528,7 +528,7 @@ footer b{color:var(--mut)}
   width:100%; height:100%;
   z-index:-1;
   pointer-events:none;
-  opacity:.45; /* ← ajustá: .3 sutil / .6 presente */
+  opacity:.45; /* ← ajusta: .3 sutil / .6 presente */
 }
 /* ===== LINE SIDEBAR EFFECT ===== */
 .side-nav{
@@ -846,7 +846,7 @@ footer b{color:var(--mut)}
   <section class="view" id="view-match">
     <div class="wrap">
       <div class="view-head">
-        <div><div class="kicker">Simulador</div><h2 class="view-title">Predictor de partidos</h2><div class="view-sub">Elegí local y visitante. Podés dejar los λ automáticos, buscar el contexto real en ESPN o pegar los parámetros estimados por una IA.</div></div>
+        <div><div class="kicker">Simulador</div><h2 class="view-title">Predictor de partidos</h2><div class="view-sub">Elige local y visitante. Puedes dejar los λ automáticos, buscar el contexto real en ESPN o pegar los parámetros estimados por una IA.</div></div>
       </div>
       <div class="panel">
         <div class="pick-grid">
@@ -953,6 +953,10 @@ footer b{color:var(--mut)}
             <div class="pills" id="extraPills"></div>
           </div>
         </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-h"><h3>Descanso / Final (HT/FT)</h3><span class="rule"></span></div>
+          <div id="htftBox"></div>
+        </div>
         <div class="grid2" style="margin-top:16px">
           <div class="panel">
             <div class="panel-h"><h3>Córners · escalera dinámica</h3><span class="rule"></span></div>
@@ -971,7 +975,7 @@ footer b{color:var(--mut)}
   <section class="view" id="view-bracket">
     <div class="wrap">
       <div class="view-head">
-        <div><div class="kicker">Camino al título</div><h2 class="view-title">Cuadro eliminatorio</h2><div class="view-sub">Editá los cruces, fijá ganadores con ✓ y ejecutá la simulación Monte Carlo del torneo.</div></div>
+        <div><div class="kicker">Camino al título</div><h2 class="view-title">Cuadro eliminatorio</h2><div class="view-sub">Edita los cruces, fija ganadores con ✓ y ejecuta la simulación Monte Carlo del torneo.</div></div>
       </div>
       <div class="panel">
         <div class="ctrl-row" style="margin-top:0">
@@ -1006,7 +1010,7 @@ footer b{color:var(--mut)}
   <section class="view" id="view-cartilla">
     <div class="wrap">
       <div class="view-head">
-        <div><div class="kicker">Bet builder</div><h2 class="view-title">Cartilla combinada</h2><div class="view-sub">Combiná mercados de varios partidos con correlación real de goles dentro de cada uno.</div></div>
+        <div><div class="kicker">Bet builder</div><h2 class="view-title">Cartilla combinada</h2><div class="view-sub">Combina mercados de varios partidos con correlación real de goles dentro de cada uno.</div></div>
       </div>
       <div class="ct-layout">
         <div>
@@ -1031,7 +1035,7 @@ footer b{color:var(--mut)}
   <section class="view" id="view-rend">
     <div class="wrap">
       <div class="view-head">
-        <div><div class="kicker">Evaluación del modelo</div><h2 class="view-title">Historial y aprendizaje</h2><div class="view-sub">Guardá predicciones, cargá resultados reales y revisá aciertos, sesgo, rachas y calibración.</div></div>
+        <div><div class="kicker">Evaluación del modelo</div><h2 class="view-title">Historial y aprendizaje</h2><div class="view-sub">Guarda predicciones, carga resultados reales y revisa aciertos, sesgo, rachas y calibración.</div></div>
       </div>
       <div class="grid2">
         <div>
@@ -1062,7 +1066,7 @@ footer b{color:var(--mut)}
   <section class="view" id="view-idolo">
     <div class="wrap">
       <div class="view-head">
-        <div><div class="kicker">Modo carrera</div><h2 class="view-title">El Ídolo</h2><div class="view-sub">Creá un futbolista, atravesá temporadas con eventos narrativos y construí tu camino hacia la leyenda.</div></div>
+        <div><div class="kicker">Modo carrera</div><h2 class="view-title">El Ídolo</h2><div class="view-sub">Crea un futbolista, atraviesa temporadas con eventos narrativos y construye tu camino hacia la leyenda.</div></div>
       </div>
       <div class="ido-wrap" id="idoloBody"></div>
     </div>
