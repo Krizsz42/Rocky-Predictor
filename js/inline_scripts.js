@@ -20,7 +20,8 @@ champions:[C("Manchester City",92,382),C("Real Madrid",92,86),C("Bayern Múnich"
   libertadores:[C("Flamengo",82,819),C("Palmeiras",81,2029),C("Boca Juniors",79,5),C("Fluminense",78,3445),C("Botafogo",76,6086),C("Corinthians",75,874),C("Cruzeiro",75,2022),C("Peñarol",75,2683),C("Nacional",74,2684),C("Estudiantes LP",72,8),C("Cerro Porteño",72,2671),C("Bahia",73,9967),C("LDU Quito",69,4816),C("Lanús",67,12),C("Libertad",70,2670),C("Rosario Central",67,17),C("Barcelona SC",70,2686),C("Universidad Católica",70,885),C("Independiente del Valle",68,17086),C("Bolívar",66,2681),C("O'Higgins",62,6072),C("Guaraní",68,7385),C("Deportes Tolima",65,5489),C("Mirassol",68,9169),C("Argentinos Juniors",65,3),C("Atlético Junior",68,4815),C("Coquimbo Unido",60,8186),C("Huachipato",61,4134),C("Independiente Medellín",66,2690),C("Independiente Rivadavia",62,9744),C("Independiente Santa Fe",65,5488),C("Deportivo Táchira",63,4818),C("Sporting Cristal",65,2673),C("Universitario",66,2685),C("Always Ready",64,19425),C("Cusco FC",63,11995),C("Deportivo La Guaira",62,17090),C("Nacional Potosí",62,10311),C("Liverpool (Uruguay)",66,5492),C("Platense",61,7764),C("Carabobo",61,6037),C("Juventud",62,8416),C("UCV FC",60,10094),C("2 de Mayo",60,6097)],
   sudamericana:[C("Racing",71,15),C("River Plate",80,16),C("San Lorenzo",69,18),C("São Paulo",78,2026),C("Santos",74,2674),C("Vasco da Gama",72,3454),C("Grêmio",76,6273),C("Botafogo",76,6086),C("Atlético Mineiro",77,7632),C("RB Bragantino",70,6079),C("Cruzeiro",75,2022),C("Corinthians",75,874),C("Boca Juniors",79,5),C("Lanús",67,12),C("Independiente",70,11),C("Estudiantes LP",72,8),C("Tigre",62,7767),C("Barracas Central",62,10060),C("Deportivo Riestra",60,17702),C("Millonarios",68,5484),C("Atlético Nacional",69,5264),C("Independiente Medellín",66,2690),C("Independiente Santa Fe",65,5488),C("América de Cali",67,8109),C("Atlético Bucaramanga",63,6137),C("Bolívar",66,2681),C("Olimpia",71,2675),C("Nacional",74,2684),C("Nacional Asunción",63,5584),C("Defensor Sporting",65,1007),C("Montevideo City Torque",62,19002),C("Racing (Montevideo)",64,9903),C("Boston River",63,9999),C("Juventud",62,8416),C("Liverpool (Uruguay)",66,5492),C("Universidad de Chile",71,4139),C("Palestino",66,4422),C("Cobresal",59,4133),C("Audax Italiano",61,4138),C("O'Higgins",62,6072),C("Cienciano",63,3372),C("Sporting Cristal",65,2673),C("Melgar",64,7312),C("Alianza Atlético",61,5267),C("Deportivo Garcilaso",60,21819),C("Macará",62,18439),C("Deportivo Cuenca",65,4812),C("Orense",64,20695),C("Libertad (Ecuador)",62,21843),C("UCV FC",60,10094),C("Caracas FC",63,4811),C("Metropolitanos",60,13481),C("Monagas SC",59,6041),C("Academia Puerto Cabello",60,18995),C("Deportivo Recoleta",58,22517),C("San Antonio Bulo Bulo",60,22137),C("Blooming",61,6047),C("Guabirá",60,9497),C("Independiente Petrolero",61,20889),C("Sportivo Trinidense",64,7466),C("Carabobo",61,6037)],
   liga_arg:[C("River Plate",80,16),C("Boca Juniors",79,5),C("Independiente",70,11),C("Racing",71,15),C("San Lorenzo",69,18),C("Huracán",65,10),C("Rosario Central",67,17),C("Newell's",66,14),C("Estudiantes LP",72,8),C("Gimnasia LP",64,9),C("Talleres",68,19),C("Belgrano",64,4),C("Lanús",67,12),C("Defensa y Justicia",66,8950),C("Vélez Sarsfield",68,21),C("Argentinos Jrs",65,3),C("Banfield",64,235),C("Independiente Rivadavia",62,9744),C("Platense",61,7764),C("Tigre",62,7767),C("Unión",63,20),C("Central Córdoba",60,11989),C("Instituto",61,2975),C("Barracas Central",59,10060),C("Sarmiento",58,10158),C("Atlético Tucumán",62,9785),C("Deportivo Riestra",57,17702),C("Aldosivi",61,9739),C("Estudiantes RC",60,19685),C("Gimnasia (Mendoza)",61,11972)],
-  liga_chil:[C("Colo Colo",73,2688),C("Universidad de Chile",71,4139),C("Universidad Católica",70,885),C("Palestino",66,4422),C("Unión Española",65,4132),C("Everton VM",63,4129),C("Audax Italiano",61,4138),C("Deportes Iquique",60,10142),C("Cobresal",59,4133),C("O'Higgins",62,6072),C("Huachipato",61,4134),C("Coquimbo Unido",60,8186),C("Ñublense",59,7427),C("Unión La Calera",58,10144),C("Cobreloa",58,2678),C("Deportes Copiapó",56,10139),C("Deportes Concepción",56,8110),C("Deportes Limache",57,19195),C("U de Concepción",57,5362),C("La Serena",58,4137)]};
+  liga_chil:[C("Colo Colo",73,2688),C("Universidad de Chile",71,4139),C("Universidad Católica",70,885),C("Palestino",66,4422),C("Unión Española",65,4132),C("Everton VM",63,4129),C("Audax Italiano",61,4138),C("Deportes Iquique",60,10142),C("Cobresal",59,4133),C("O'Higgins",62,6072),C("Huachipato",61,4134),C("Coquimbo Unido",60,8186),C("Ñublense",59,7427),C("Unión La Calera",58,10144),C("Cobreloa",58,2678),C("Deportes Copiapó",56,10139),C("Deportes Concepción",56,8110),C("Deportes Limache",57,19195),C("U de Concepción",57,5362),C("La Serena",58,4137)],
+  efl_cup:[C("Manchester City",90,382),C("Arsenal",88,359),C("Liverpool",88,364),C("Chelsea",84,363),C("Manchester United",83,360),C("Tottenham",82,367),C("Newcastle",81,361),C("Aston Villa",80,362),C("Brighton",78,331),C("Everton",77,368),C("Fulham",75,370),C("Crystal Palace",74,384),C("Nottingham Forest",72,393),C("Brentford",71,337),C("Leeds United",71,357),C("Bournemouth",70,349),C("West Ham",72,371),C("Wolverhampton",70,380),C("Burnley",68,379),C("Southampton",67,376),C("Birmingham City",66,392),C("Middlesbrough",67,369),C("Norwich City",67,381),C("Sheffield United",68,398),C("Stoke City",65,336),C("West Bromwich",68,383),C("Bristol City",64,333),C("Cardiff City",63,347),C("Charlton Athletic",62,372),C("Derby County",63,374),C("Hull City",65,306),C("Leicester City",70,375),C("Luton Town",62,301),C("Millwall",61,391),C("Oxford United",61,311),C("Portsmouth",62,385),C("Preston North End",62,394),C("Queens Park Rangers",62,334),C("Sunderland",67,366),C("Swansea City",63,318),C("Watford",64,395),C("Wrexham",62,352)]};
 const LEAGUES={
 worldcup:{name:'Mundial 2026',icon:'🏆',color:'#c9a24a',espn:'fifa.world',ko:true,logo:4,sub:'Fase final en Estados Unidos, Canadá y México.'},
 premier:{name:'Premier League',icon:'🏴󠁢󠁮',color:'#e90052',espn:'eng.1',teams:'premier',logo:23,sub:'Temporada 2026/27 · 20 equipos.'},
@@ -32,7 +33,8 @@ champions:{name:'Champions League',icon:'⭐',color:'#4a7cc9',espn:'uefa.champio
   libertadores:{name:'Copa Libertadores',icon:'🏆',color:'#e1251d',espn:'conmebol.libertadores',teams:'libertadores',ko:true,logo:58,sub:'Torneo de clubes más importante de Sudamérica.'},
   sudamericana:{name:'Copa Sudamericana',icon:'🥈',color:'#f26522',espn:'conmebol.sudamericana',teams:'sudamericana',ko:true,logo:1208,sub:'Segunda competición de clubes de Sudamérica.'},
   liga_arg:{name:'Liga Argentina',icon:'🇦🇷',color:'#6cace4',espn:'arg.1',teams:'liga_arg',logo:1,sub:'Primera División de Argentina 2026.'},
-  liga_chil:{name:'Campeonato Chileno',icon:'🇨🇱',color:'#0039a6',espn:'chi.1',teams:'liga_chil',logo:86,sub:'Primera División de Chile 2026.'}};
+  liga_chil:{name:'Campeonato Chileno',icon:'🇨🇱',color:'#0039a6',espn:'chi.1',teams:'liga_chil',logo:86,sub:'Primera División de Chile 2026.'},
+  efl_cup:{name:'EFL Cup',icon:'🏆',color:'#3d7ed9',espn:'eng.league_cup',teams:'efl_cup',ko:true,logo:41,sub:'Copa de la Liga Inglesa · eliminatoria.'}};
 let CURRENT_LEAGUE='worldcup';
 try{const sv=localStorage.getItem('rp_league_v6');if(sv&&LEAGUES[sv])CURRENT_LEAGUE=sv;}catch(e){}
 const FLAG_CODE={"Argentina":"ar","España":"es","Francia":"fr","Inglaterra":"gb-eng","Brasil":"br","Portugal":"pt","Países Bajos":"nl","Alemania":"de","Bélgica":"be","Croacia":"hr","Marruecos":"ma","Colombia":"co","Uruguay":"uy","Senegal":"sn","Suiza":"ch","Dinamarca":"dk","Noruega":"no","Japón":"jp","Estados Unidos":"us","México":"mx","Ecuador":"ec","Austria":"at","Turquía":"tr","Nigeria":"ng","Suecia":"se","Corea del Sur":"kr","Australia":"au","Egipto":"eg","Costa de Marfil":"ci","Canadá":"ca","Irán":"ir","Paraguay":"py","Argelia":"dz","República Checa":"cz","Bosnia":"ba","Túnez":"tn","Panamá":"pa","Uzbekistán":"uz","Sudáfrica":"za","Arabia Saudita":"sa","Catar":"qa","Jordania":"jo","Cabo Verde":"cv","Curazao":"cw","Nueva Zelanda":"nz","Haití":"ht","Escocia":"gb-sct","Ghana":"gh","RD del Congo":"cd","Irak":"iq"};
@@ -48,7 +50,8 @@ champions:[{a:"Real Madrid",b:"Barcelona"},{a:"Manchester City",b:"Real Madrid"}
 libertadores:[{a:"Flamengo",b:"Fluminense"},{a:"River Plate",b:"Boca Juniors"},{a:"Palmeiras",b:"São Paulo"},{a:"Nacional",b:"Peñarol"},{a:"Colo Colo",b:"Universidad de Chile"},{a:"Atlético Mineiro",b:"Cruzeiro"}],
   sudamericana:[{a:"Independiente",b:"Racing"},{a:"São Paulo",b:"Santos"},{a:"LDU Quito",b:"Barcelona SC"},{a:"Cruzeiro",b:"Corinthians"},{a:"Defensa y Justicia",b:"Lanús"},{a:"River Plate",b:"Boca Juniors"}],
 liga_arg:[{a:"River Plate",b:"Boca Juniors"},{a:"Independiente",b:"Racing"},{a:"San Lorenzo",b:"Huracán"},{a:"Rosario Central",b:"Newell's"},{a:"Estudiantes LP",b:"Gimnasia LP"},{a:"Talleres",b:"Belgrano"}],
-  liga_chil:[{a:"Colo Colo",b:"Universidad de Chile"},{a:"Universidad Católica",b:"Universidad de Chile"},{a:"Colo Colo",b:"Universidad Católica"},{a:"Palestino",b:"Unión Española"},{a:"Everton VM",b:"Coquimbo Unido"},{a:"Audax Italiano",b:"Unión Española"}]};
+  liga_chil:[{a:"Colo Colo",b:"Universidad de Chile"},{a:"Universidad Católica",b:"Universidad de Chile"},{a:"Colo Colo",b:"Universidad Católica"},{a:"Palestino",b:"Unión Española"},{a:"Everton VM",b:"Coquimbo Unido"},{a:"Audax Italiano",b:"Unión Española"}],
+  efl_cup:[{a:"Manchester City",b:"Liverpool"},{a:"Arsenal",b:"Chelsea"},{a:"Manchester United",b:"Tottenham"},{a:"Newcastle",b:"Aston Villa"},{a:"Liverpool",b:"Chelsea"},{a:"Manchester City",b:"Arsenal"}]};
 const WC2026_TEAMS=['Alemania','Paraguay','Francia','Suecia','Canadá','Sudáfrica','Países Bajos','Marruecos','Portugal','Croacia','España','Austria','Estados Unidos','Bosnia','Bélgica','Senegal','Brasil','Japón','Costa de Marfil','Noruega','México','Ecuador','Inglaterra','RD del Congo','Argentina','Cabo Verde','Australia','Egipto','Suiza','Argelia','Colombia','Ghana'];
 const WC2026_LOCK={0:2,2:1,8:1};
 const EN_NAME={"Argentina":"Argentina","España":"Spain","Francia":"France","Inglaterra":"England","Brasil":"Brazil","Portugal":"Portugal","Países Bajos":"Netherlands","Alemania":"Germany","Bélgica":"Belgium","Croacia":"Croatia","Marruecos":"Morocco","Colombia":"Colombia","Uruguay":"Uruguay","Senegal":"Senegal","Suiza":"Switzerland","Dinamarca":"Denmark","Noruega":"Norway","Japón":"Japan","Estados Unidos":"United States","México":"Mexico","Ecuador":"Ecuador","Austria":"Austria","Turquía":"Turkey","Nigeria":"Nigeria","Suecia":"Sweden","Corea del Sur":"South Korea","Australia":"Australia","Egipto":"Egypt","Costa de Marfil":"Ivory Coast","Canadá":"Canada","Irán":"Iran","Paraguay":"Paraguay","Argelia":"Algeria","República Checa":"Czech Republic","Bosnia":"Bosnia","Túnez":"Tunisia","Panamá":"Panama","Uzbekistán":"Uzbekistan","Sudáfrica":"South Africa","Arabia Saudita":"Saudi Arabia","Catar":"Qatar","Jordania":"Jordan","Cabo Verde":"Cape Verde","Curazao":"Curacao","Nueva Zelanda":"New Zealand","Haití":"Haiti","Escocia":"Scotland","Ghana":"Ghana","RD del Congo":"Congo DR","Irak":"Iraq"};
@@ -1123,6 +1126,57 @@ function closeLiveCompare(){
 }
 /* ═══════════ COMPARATIVA MODELO VS REAL ═══════════ */
 let _liveOpenMatch=null;
+/* ═══════════ LIVE SCORE PROBS (Predictor en tiempo real) ═══════════
+   Calcula probabilidades condicionales dado el marcador actual y tiempo restante.
+   Si el partido va 1-0 al minuto 60, calcula P(final) usando Poisson
+   con lambdas ajustadas al tiempo restante (30 min = 1/3 de 90). */
+function liveScoreProbs(lamH,lamA,rho,hs,as,minute){
+  const pct=Math.max(0.05,Math.min(0.95,(90-Math.max(0,Math.min(90,minute||90)))/90));
+  const lamHrem=clamp(lamH*pct,0.05,3.2);
+  const lamArem=clamp(lamA*pct,0.05,3.2);
+  const R=simulate(lamHrem,lamArem,rho);
+  const mg=8,grid={};
+  for(let i=0;i<=mg;i++)for(let j=0;j<=mg;j++){
+    const p=PoissonPmf(i,lamHrem)*PoissonPmf(j,lamArem);
+    if(!(p>0))continue;
+    const fi=hs+i,fj=as+j;
+    const key=fi+'_'+fj;
+    grid[key]=(grid[key]||0)+p;
+  }
+  let pH=0,pD=0,pA=0,pOver25=0,pBTTS=0,bestScore={i:0,j:0,p:0};
+  const scores=[];
+  for(const key in grid){
+    const p=grid[key];
+    const [fi,fj]=key.split('_').map(Number);
+    if(fi>fj)pH+=p;else if(fi===fj)pD+=p;else pA+=p;
+    if(fi+fj>2.5)pOver25+=p;
+    if(fi>0&&fj>0)pBTTS+=p;
+    if(p>bestScore.p)bestScore={i:fi,j:fj,p};
+    scores.push({i:fi,j:fj,p});
+  }
+  scores.sort((a,b)=>b.p-a.p);
+  const tot=pH+pD+pA;
+  if(tot>0){pH/=tot;pD/=tot;pA/=tot;}
+  for(const s of scores)s.p/=tot||1;
+  return {pH,pD,pA,pOver25,pBTTS,scores,bestScore,pct,lamHrem,lamArem};
+}
+/* ═══════ NEXT GOAL: predicción del próximo gol ═══════
+   Dado el tiempo restante y los λ, calcula:
+   - P(próximo gol = local/visitante/no hay más goles)
+   - Minuto esperado del próximo gol */
+function nextGoalProbs(lamH,lamA,minute){
+  const remPct=Math.max(0,Math.min(1,(90-Math.max(0,Math.min(90,minute||90)))/90));
+  const totalRem=(lamH+lamA)*remPct;
+  const pNone=Math.exp(-totalRem);
+  const pSome=1-pNone;
+  const pH=pSome*(lamH/(lamH+lamA||1));
+  const pA=pSome*(lamA/(lamH+lamA||1));
+  const ratePerMin=totalRem/(90*remPct||1);
+  const expNextMin=ratePerMin>0?(1/ratePerMin):999;
+  const minuteNext=Math.min(90,Math.round(minute+expNextMin));
+  return {pH,pA,pNone,expNextMin:Math.round(expNextMin),minuteNext};
+}
+function PoissonPmf(k,l){return Math.exp(-l+k*Math.log(l)-logFact(k));}
 function teamColor(hex){
   if(!hex)return null;
   hex=(''+hex).replace('#','');if(hex.length!==6)return null;
@@ -1194,6 +1248,41 @@ async function renderLiveCompare(){
     box.innerHTML=html;box.classList.remove('hidden');return;
   }
   html+='<div class="lc-score">'+crestHTML(A,22)+' '+A+' <b>'+hs+'</b> - <b>'+as+'</b> '+B+' '+crestHTML(B,22)+pen+'</div>';
+  /* ═══════ LIVE SCORE PROBS: predictor en tiempo real ═══════ */
+  if(stState==='in'&&pred.lamH&&pred.lamA){
+    const curMin=parseInt((stt.displayClock||'').replace(/[^0-9]/g,''),10)||45;
+    const LSP=liveScoreProbs(pred.lamH,pred.lamA,pred.rho,hs,as,curMin);
+    const remMin=Math.max(0,90-curMin);
+    const nmH='Gana '+A,nmD='Empate',nmA='Gana '+B;
+    const pick=LSP.pH>=LSP.pD&&LSP.pH>=LSP.pA?nmH:(LSP.pA>=LSP.pD?nmA:nmD);
+    const pickP=Math.max(LSP.pH,LSP.pD,LSP.pA);
+    const favO=pred.pH>=pred.pD&&pred.pH>=pred.pA?'H':(pred.pA>=pred.pD?'A':'D');
+    const preFav=favO==='H'?nmH:(favO==='A'?nmA:nmD);
+    html+='<div class="lc-live-pred">'+
+      '<div class="lc-live-top">⚡ <b>Predicción en vivo</b> · min '+curMin+' · ~'+remMin+' restantes</div>'+
+      '<div class="lc-live-bar">'+
+        '<div class="lc-live-seg lc-live-h" style="width:'+Math.round(LSP.pH*100)+'%">'+(LSP.pH>0.08?pc(LSP.pH):'')+'</div>'+
+        '<div class="lc-live-seg lc-live-d" style="width:'+Math.round(LSP.pD*100)+'%">'+(LSP.pD>0.08?pc(LSP.pD):'')+'</div>'+
+        '<div class="lc-live-seg lc-live-a" style="width:'+Math.round(LSP.pA*100)+'%">'+(LSP.pA>0.08?pc(LSP.pA):'')+'</div>'+
+      '</div>'+
+      '<div class="lc-live-labels"><span>'+nmH+' '+pc(LSP.pH)+'</span><span>'+nmD+' '+pc(LSP.pD)+'</span><span>'+nmA+' '+pc(LSP.pA)+'</span></div>'+
+      '<div class="lc-live-pick">Lo más probable ahora: <b>'+pick+'</b> ('+pc(pickP)+')'+
+        (pick!==preFav?' · <span style="color:var(--gold)">cambio vs pre-partido (era '+preFav+')</span>':' · <span style="color:var(--acc)">mantiene favorito</span>')+'</div>'+
+      '<div class="lc-live-sub">Marcador actual: <b>'+hs+'-'+as+'</b> · Over 2.5: '+pc(LSP.pOver25)+' · Ambos marcan: '+pc(LSP.pBTTS)+'</div>'+
+    '</div>';
+    /* ═══════ NEXT GOAL: predicción del próximo gol ═══════ */
+    const NG=nextGoalProbs(pred.lamH,pred.lamA,curMin);
+    const ngPick=NG.pH>=NG.pA&&NG.pH>NG.pNone?A:(NG.pA>NG.pNone?B:null);
+    const ngP=Math.max(NG.pH,NG.pA,NG.pNone);
+    html+='<div class="lc-next-goal">'+
+      '<div class="lc-ng-title">🎯 Próximo gol</div>'+
+      '<div class="lc-ng-row"><span class="lc-ng-team">'+crestHTML(A,16)+' '+A+'</span><span class="lc-ng-bar"><span class="lc-ng-fill lc-ng-h" style="width:'+Math.round(NG.pH*100)+'%"></span></span><span class="lc-ng-pct">'+pc(NG.pH)+'</span></div>'+
+      '<div class="lc-ng-row"><span class="lc-ng-team">'+crestHTML(B,16)+' '+B+'</span><span class="lc-ng-bar"><span class="lc-ng-fill lc-ng-a" style="width:'+Math.round(NG.pA*100)+'%"></span></span><span class="lc-ng-pct">'+pc(NG.pA)+'</span></div>'+
+      '<div class="lc-ng-row"><span class="lc-ng-team" style="color:var(--mut)">Sin más goles</span><span class="lc-ng-bar"><span class="lc-ng-fill lc-ng-n" style="width:'+Math.round(NG.pNone*100)+'%"></span></span><span class="lc-ng-pct">'+pc(NG.pNone)+'</span></div>'+
+      '<div class="lc-ng-info">'+(ngPick?'Próximo gol probable: <b>'+ngPick+'</b> ('+pc(ngP)+')':'Más probable que no haya más goles ('+pc(NG.pNone)+')')+' · Minuto esperado: <b>~'+NG.minuteNext+'</b>'+(NG.minuteNext<=90?' (\'~'+Math.max(1,NG.minuteNext-90+90)+'′)':'')+'</div>'+
+    '</div>';
+  }
+  /* ═══════ FIN LIVE SCORE PROBS ═══════ */
   const allSc=s.scorers||[];
   const goalSc=allSc.filter(g=>!g.shootout);
   const shootSc=allSc.filter(g=>g.shootout);
