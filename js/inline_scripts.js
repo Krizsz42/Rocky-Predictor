@@ -425,6 +425,7 @@ function espnParse(ev){
   const sot=bestStat(['shotsOnTarget','shotsOnGoal','sog']);
   const co=bestStat(['wonCorners','corners','cornerKicks']);
   const fo=bestStat(['foulsCommitted','fouls','totalFouls']);
+  const xg=bestStat(['expectedGoals','xG','xg']);
   /* Descanso (HT): la API no trae linescores en los terminados; se deriva del minuto de cada gol.
      Solo se acepta si los goles con detalle cubren el marcador (si no, null). Minuto<=45 (incl. 45+x') = 1T. */
   let homeHT=null,awayHT=null;
@@ -455,7 +456,7 @@ function espnParse(ev){
     homeColor:(home.team&&home.team.color)||null,awayColor:(away.team&&away.team.color)||null,
     homeShootout:home.shootoutScore!=null?home.shootoutScore:null,
     awayShootout:away.shootoutScore!=null?away.shootoutScore:null,
-    stats:{homePoss:poss.home,awayPoss:poss.away,homeShots:sh.home,awayShots:sh.away,homeSOT:sot.home,awaySOT:sot.away,homeCorners:co.home,awayCorners:co.away,homeFouls:fo.home,awayFouls:fo.away,yellow,red,yellowA:yA,yellowB:yB,redA:rA,redB:rB,scorers}};
+    stats:{homePoss:poss.home,awayPoss:poss.away,homeShots:sh.home,awayShots:sh.away,homeSOT:sot.home,awaySOT:sot.away,homeCorners:co.home,awayCorners:co.away,homeFouls:fo.home,awayFouls:fo.away,yellow,red,yellowA:yA,yellowB:yB,redA:rA,redB:rB,scorers,homeXg:xg.home,awayXg:xg.away}};
 }
 function eventMatches(ev,A,B){const set=[norm(ev.strHomeTeam||''),norm(ev.strAwayTeam||'')];const inSet=x=>set.some(s=>s&&x&&(s===x||s.includes(x)||x.includes(s)));return inSet(A)&&inSet(B);}
 window.phFallback=function(img,ini){
@@ -1129,11 +1130,20 @@ let _liveOpenMatch=null;
 /* ═══════════ LIVE SCORE PROBS (Predictor en tiempo real) ═══════════
    Calcula probabilidades condicionales dado el marcador actual y tiempo restante.
    Si el partido va 1-0 al minuto 60, calcula P(final) usando Poisson
-   con lambdas ajustadas al tiempo restante (30 min = 1/3 de 90). */
-function liveScoreProbs(lamH,lamA,rho,hs,as,minute){
+   con lambdas ajustadas al tiempo restante (30 min = 1/3 de 90).
+   Si hay xG en vivo, lo usa para ajustar los λ según el rendimiento real. */
+function liveScoreProbs(lamH,lamA,rho,hs,as,minute,xgH,xgA){
   const pct=Math.max(0.05,Math.min(0.95,(90-Math.max(0,Math.min(90,minute||90)))/90));
-  const lamHrem=clamp(lamH*pct,0.05,3.2);
-  const lamArem=clamp(lamA*pct,0.05,3.2);
+  let lamHrem=clamp(lamH*pct,0.05,3.2);
+  let lamArem=clamp(lamA*pct,0.05,3.2);
+  if(xgH!=null&&xgA!=null&&minute>15){
+    const elapsedPct=Math.min(0.95,minute/90);
+    const expectedH=lamH*elapsedPct,expectedA=lamA*elapsedPct;
+    const perfH=expectedH>0.1?clamp(xgH/expectedH,0.3,2.5):1;
+    const perfA=expectedA>0.1?clamp(xgA/expectedA,0.3,2.5):1;
+    lamHrem=clamp(lamH*pct*perfH,0.05,3.2);
+    lamArem=clamp(lamA*pct*perfA,0.05,3.2);
+  }
   const R=simulate(lamHrem,lamArem,rho);
   const mg=8,grid={};
   for(let i=0;i<=mg;i++)for(let j=0;j<=mg;j++){
@@ -1164,9 +1174,17 @@ function liveScoreProbs(lamH,lamA,rho,hs,as,minute){
    Dado el tiempo restante y los λ, calcula:
    - P(próximo gol = local/visitante/no hay más goles)
    - Minuto esperado del próximo gol */
-function nextGoalProbs(lamH,lamA,minute){
+function nextGoalProbs(lamH,lamA,minute,xgH,xgA){
   const remPct=Math.max(0,Math.min(1,(90-Math.max(0,Math.min(90,minute||90)))/90));
-  const totalRem=(lamH+lamA)*remPct;
+  let effH=lamH,effA=lamA;
+  if(xgH!=null&&xgA!=null&&minute>15){
+    const elapsedPct=Math.min(0.95,minute/90);
+    const expectedH=lamH*elapsedPct,expectedA=lamA*elapsedPct;
+    const perfH=expectedH>0.1?clamp(xgH/expectedH,0.3,2.5):1;
+    const perfA=expectedA>0.1?clamp(xgA/expectedA,0.3,2.5):1;
+    effH=lamH*perfH;effA=lamA*perfA;
+  }
+  const totalRem=(effH+effA)*remPct;
   const pNone=Math.exp(-totalRem);
   const pSome=1-pNone;
   const pH=pSome*(lamH/(lamH+lamA||1));
@@ -1251,7 +1269,7 @@ async function renderLiveCompare(){
   /* ═══════ LIVE SCORE PROBS: predictor en tiempo real ═══════ */
   if(stState==='in'&&pred.lamH&&pred.lamA){
     const curMin=parseInt((stt.displayClock||'').replace(/[^0-9]/g,''),10)||45;
-    const LSP=liveScoreProbs(pred.lamH,pred.lamA,pred.rho,hs,as,curMin);
+    const LSP=liveScoreProbs(pred.lamH,pred.lamA,pred.rho,hs,as,curMin,s.homeXg,s.awayXg);
     const remMin=Math.max(0,90-curMin);
     const nmH='Gana '+A,nmD='Empate',nmA='Gana '+B;
     const pick=LSP.pH>=LSP.pD&&LSP.pH>=LSP.pA?nmH:(LSP.pA>=LSP.pD?nmA:nmD);
@@ -1268,10 +1286,11 @@ async function renderLiveCompare(){
       '<div class="lc-live-labels"><span>'+nmH+' '+pc(LSP.pH)+'</span><span>'+nmD+' '+pc(LSP.pD)+'</span><span>'+nmA+' '+pc(LSP.pA)+'</span></div>'+
       '<div class="lc-live-pick">Lo más probable ahora: <b>'+pick+'</b> ('+pc(pickP)+')'+
         (pick!==preFav?' · <span style="color:var(--gold)">cambio vs pre-partido (era '+preFav+')</span>':' · <span style="color:var(--acc)">mantiene favorito</span>')+'</div>'+
-      '<div class="lc-live-sub">Marcador actual: <b>'+hs+'-'+as+'</b> · Over 2.5: '+pc(LSP.pOver25)+' · Ambos marcan: '+pc(LSP.pBTTS)+'</div>'+
+      '<div class="lc-live-sub">Marcador actual: <b>'+hs+'-'+as+'</b> · Over 2.5: '+pc(LSP.pOver25)+' · Ambos marcan: '+pc(LSP.pBTTS)+
+      (s.homeXg!=null&&s.awayXg!=null?' · xG: <b>'+Number(s.homeXg).toFixed(2)+'-'+Number(s.awayXg).toFixed(2)+'</b>':'')+'</div>'+
     '</div>';
     /* ═══════ NEXT GOAL: predicción del próximo gol ═══════ */
-    const NG=nextGoalProbs(pred.lamH,pred.lamA,curMin);
+    const NG=nextGoalProbs(pred.lamH,pred.lamA,curMin,s.homeXg,s.awayXg);
     const ngPick=NG.pH>=NG.pA&&NG.pH>NG.pNone?A:(NG.pA>NG.pNone?B:null);
     const ngP=Math.max(NG.pH,NG.pA,NG.pNone);
     html+='<div class="lc-next-goal">'+
