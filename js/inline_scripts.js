@@ -1320,6 +1320,55 @@ function genVeredicto(pred,hs,as,A,B){
     '<span><b>Real:</b> '+hs+' — '+as+' ('+res+')</span>'+
     '<span>'+est+'</span></div>';
 }
+/* ═══════ ALINEACIONES (formaciones titulares desde ESPN summary) ═══════ */
+let _lineupsCache={},_lineupsBusy={};
+function parseLineups(d){
+  const ros=(d&&d.rosters)||[];
+  if(!ros.length)return null;
+  const sides=ros.map(r=>{
+    const arr=(r.roster||[]).filter(x=>x&&x.athlete);
+    const xi=arr.filter(x=>x.starter).sort((a,b)=>(parseInt(a.formationPlace,10)||99)-(parseInt(b.formationPlace,10)||99));
+    if(!xi.length)return null;
+    const subs=arr.filter(x=>!x.starter);
+    const nm=x=>(x.athlete.shortName||x.athlete.displayName||'?');
+    return {home:r.homeAway==='home',
+      xi:xi.map(x=>({id:x.athlete.id,name:nm(x),pos:(x.position&&x.position.abbreviation)||'',num:x.jersey||'',out:!!x.subbedOut})),
+      subs:subs.map(x=>({id:x.athlete.id,name:nm(x),in:!!x.subbedIn}))};
+  }).filter(Boolean);
+  return sides.length===2?sides:null;
+}
+async function loadLineups(leagueEspn,evId){
+  const k=leagueEspn+':'+evId,ex=_lineupsCache[k],now=Date.now();
+  if(ex&&now<ex.exp)return ex.data;
+  if(_lineupsBusy[k])return ex?ex.data:null;
+  _lineupsBusy[k]=true;
+  try{
+    const d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/soccer/'+leagueEspn+'/summary?event='+evId);
+    const data=parseLineups(d);
+    _lineupsCache[k]={exp:now+(data?15*60e3:5*60e3),data};
+    return data;
+  }catch(e){return ex?ex.data:null;}
+  finally{delete _lineupsBusy[k];}
+}
+function lineupCol(s){
+  const xi=s.xi.map(x=>'<div class="lc-lin-row">'+playerImg(x.id,x.name,18)+'<span class="lc-lin-num">'+x.num+'</span><span class="lc-lin-name">'+x.name+'</span>'+(x.pos?'<span class="lc-lin-pos">'+x.pos+'</span>':'')+(x.out?'<span style="color:var(--mut)"> ↓</span>':'')+'</div>').join('');
+  const subs=s.subs.length?'<details class="lc-lin-subs"><summary>Suplentes ('+s.subs.length+')</summary>'+s.subs.map(x=>'<div class="lc-lin-row sub">'+playerImg(x.id,x.name,16)+'<span class="lc-lin-name">'+x.name+'</span>'+(x.in?'<span style="color:var(--acc)"> ↑</span>':'')+'</div>').join('')+'</details>':'';
+  return xi+subs;
+}
+function lineupsHTML(lin,A,B){
+  const h=lin.find(s=>s.home)||lin[0],a=lin.find(s=>!s.home)||lin[1];
+  return '<div class="lc-lineups"><div class="lc-lin-h">📋 Formaciones titulares</div><div class="lc-lin-grid">'+
+    '<div><div class="lc-lin-team">'+crestHTML(A,14)+' '+A+'</div>'+lineupCol(h)+'</div>'+
+    '<div><div class="lc-lin-team">'+crestHTML(B,14)+' '+B+'</div>'+lineupCol(a)+'</div></div></div>';
+}
+/* Bloque de alineaciones para el comparador: usa caché o dispara la carga y re-renderiza al llegar */
+function lineupsBlock(L,m,A,B){
+  if(!m||!m.id||!L)return '';
+  const k=L.espn+':'+m.id,ex=_lineupsCache[k];
+  if(ex&&Date.now()<ex.exp)return ex.data?lineupsHTML(ex.data,A,B):'';
+  loadLineups(L.espn,m.id).then(d=>{if(d&&_liveOpenMatch===m)renderLiveCompare();});
+  return '';
+}
 async function renderLiveCompare(){
   const inPlace=!!el('lvCompareBox');
   const box=inPlace?el('lvCompareBox'):el('liveCompare');
@@ -1352,7 +1401,9 @@ async function renderLiveCompare(){
     '<div class="lc-top"><span class="lc-min">'+tag+' · '+min+'</span><span class="sub" style="margin:0">vs predicción del modelo</span></div>';
   if(stState==='pre'){
     html+='<div class="lc-score">'+crestHTML(A,22)+' '+A+' <b>vs</b> '+B+' '+crestHTML(B,22)+'</div>'+
-      '<div class="sub" style="margin:6px 0 0">El partido aún no comienza. Abajo tienes la predicción del modelo; cuando arranque, aquí verás goleadores, córners y tarjetas reales.</div></div>';
+      '<div class="sub" style="margin:6px 0 0">El partido aún no comienza. Abajo tienes la predicción del modelo; cuando arranque, aquí verás goleadores, córners y tarjetas reales.</div>';
+    html+=lineupsBlock(L,m,A,B);
+    html+='</div>';
     box.innerHTML=html;box.classList.remove('hidden');return;
   }
   html+='<div class="lc-score">'+crestHTML(A,22)+' '+A+' <b>'+hs+'</b> - <b>'+as+'</b> '+B+' '+crestHTML(B,22)+pen+'</div>';
@@ -1405,6 +1456,7 @@ async function renderLiveCompare(){
       '<div class="lc-pen-row"><span class="lc-pen-tm">'+crestHTML(A,14)+' '+A+':</span> '+(aPk.length?aPk.join(', '):'—')+'</div>'+
       '<div class="lc-pen-row"><span class="lc-pen-tm">'+crestHTML(B,14)+' '+B+':</span> '+(bPk.length?bPk.join(', '):'—')+'</div></div>';
   }
+  html+=lineupsBlock(L,m,A,B);
   const shA=pred.predShotsA,shB=pred.predShotsB,shTot=(shA||0)+(shB||0);
   const mPossA=pred.predPossA;
   const shareA=(mPossA!=null)?(0.5-0.4*(mPossA-0.5)):0.5;

@@ -52,6 +52,16 @@ input,select,textarea{font-family:var(--body)}
   .lc-goals{margin:6px 0 2px}
   .lc-goal{font-size:12px; padding:2px 0; color:var(--txt)}
   .lc-verdict{margin-top:8px; font-size:11px; line-height:1.5; border-top:1px solid var(--line); padding-top:8px}
+  .lc-lineups{margin-top:10px; border-top:1px solid var(--line); padding-top:8px}
+  .lc-lin-h{font-size:11px; font-weight:700; color:var(--mut); letter-spacing:.4px; margin-bottom:6px}
+  .lc-lin-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .lc-lin-team{font-size:12px; font-weight:700; margin-bottom:4px}
+  .lc-lin-row{display:flex; align-items:center; gap:5px; font-size:12px; padding:1.5px 0}
+  .lc-lin-row.sub{font-size:11px; color:var(--mut)}
+  .lc-lin-num{color:var(--gray); min-width:18px; font-weight:700}
+  .lc-lin-name{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .lc-lin-pos{font-size:9px; font-weight:800; color:var(--blue); background:var(--blue-dim); border-radius:4px; padding:1px 5px}
+  .lc-lin-subs{margin-top:4px}
   .lc-pens{margin:5px 0 0; background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:7px 9px}
   .lc-pen-h{font-size:11px; color:var(--mut); font-weight:600; margin-bottom:4px}
   .lc-pen-row{font-size:12px; padding:2px 0; color:var(--txt)}
@@ -759,6 +769,7 @@ footer b{color:var(--mut)}
 }
 @media(max-width:560px){
   .lv2-inner{grid-template-columns:56px 1fr}
+  .lc-lin-grid{grid-template-columns:1fr}
   .lv2-status{padding:12px 4px;font-size:10px}
   .lv2-main{gap:8px}
   .lv2-team{gap:6px}
