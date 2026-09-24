@@ -173,13 +173,13 @@ Base de scoreboard: `https://site.api.espn.com/apis/site/v2/sports/soccer/{códi
 | Competición | Código ESPN | ID (referencia) |
 |---|---|---|
 | 🏴 FA Cup | `eng.fa` | 40 |
-| 🏴 Carabao Cup | `eng.league_cup` | 41 |
+| 🏴 Carabao Cup ✅ | `eng.league_cup` | 41 |
 | 🇪🇸 Copa del Rey | `esp.copa_del_rey` | 80 |
 | 🇪🇸 Supercopa de España | `esp.super_cup` | 431 |
 | 🇩🇪 DFB Pokal | `ger.dfb_pokal` | 2061 |
 | 🇮🇹 Coppa Italia | `ita.coppa_italia` | 2192 |
 | 🇫🇷 Coupe de France | `fra.coupe_de_france` | 182 |
-| 🇪🇺 Nations League | `uefa.nations` | 2395 |
+| 🇪🇺 Nations League ✅ | `uefa.nations` | 2395 |
 | 🌎 Copa América | `conmebol.america` | 83 |
 | 🇪🇺 Eurocopa | `uefa.euro` | 74 |
 | 🌎 Eliminatorias CONMEBOL | `fifa.worldq.conmebol` | 65 |

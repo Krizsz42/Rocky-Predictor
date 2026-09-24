@@ -21,7 +21,8 @@ champions:[C("Manchester City",92,382),C("Real Madrid",92,86),C("Bayern Múnich"
   sudamericana:[C("Racing",71,15),C("River Plate",80,16),C("San Lorenzo",69,18),C("São Paulo",78,2026),C("Santos",74,2674),C("Vasco da Gama",72,3454),C("Grêmio",76,6273),C("Botafogo",76,6086),C("Atlético Mineiro",77,7632),C("RB Bragantino",70,6079),C("Cruzeiro",75,2022),C("Corinthians",75,874),C("Boca Juniors",79,5),C("Lanús",67,12),C("Independiente",70,11),C("Estudiantes LP",72,8),C("Tigre",62,7767),C("Barracas Central",62,10060),C("Deportivo Riestra",60,17702),C("Millonarios",68,5484),C("Atlético Nacional",69,5264),C("Independiente Medellín",66,2690),C("Independiente Santa Fe",65,5488),C("América de Cali",67,8109),C("Atlético Bucaramanga",63,6137),C("Bolívar",66,2681),C("Olimpia",71,2675),C("Nacional",74,2684),C("Nacional Asunción",63,5584),C("Defensor Sporting",65,1007),C("Montevideo City Torque",62,19002),C("Racing (Montevideo)",64,9903),C("Boston River",63,9999),C("Juventud",62,8416),C("Liverpool (Uruguay)",66,5492),C("Universidad de Chile",71,4139),C("Palestino",66,4422),C("Cobresal",59,4133),C("Audax Italiano",61,4138),C("O'Higgins",62,6072),C("Cienciano",63,3372),C("Sporting Cristal",65,2673),C("Melgar",64,7312),C("Alianza Atlético",61,5267),C("Deportivo Garcilaso",60,21819),C("Macará",62,18439),C("Deportivo Cuenca",65,4812),C("Orense",64,20695),C("Libertad (Ecuador)",62,21843),C("UCV FC",60,10094),C("Caracas FC",63,4811),C("Metropolitanos",60,13481),C("Monagas SC",59,6041),C("Academia Puerto Cabello",60,18995),C("Deportivo Recoleta",58,22517),C("San Antonio Bulo Bulo",60,22137),C("Blooming",61,6047),C("Guabirá",60,9497),C("Independiente Petrolero",61,20889),C("Sportivo Trinidense",64,7466),C("Carabobo",61,6037)],
   liga_arg:[C("River Plate",80,16),C("Boca Juniors",79,5),C("Independiente",70,11),C("Racing",71,15),C("San Lorenzo",69,18),C("Huracán",65,10),C("Rosario Central",67,17),C("Newell's",66,14),C("Estudiantes LP",72,8),C("Gimnasia LP",64,9),C("Talleres",68,19),C("Belgrano",64,4),C("Lanús",67,12),C("Defensa y Justicia",66,8950),C("Vélez Sarsfield",68,21),C("Argentinos Jrs",65,3),C("Banfield",64,235),C("Independiente Rivadavia",62,9744),C("Platense",61,7764),C("Tigre",62,7767),C("Unión",63,20),C("Central Córdoba",60,11989),C("Instituto",61,2975),C("Barracas Central",59,10060),C("Sarmiento",58,10158),C("Atlético Tucumán",62,9785),C("Deportivo Riestra",57,17702),C("Aldosivi",61,9739),C("Estudiantes RC",60,19685),C("Gimnasia (Mendoza)",61,11972)],
   liga_chil:[C("Colo Colo",73,2688),C("Universidad de Chile",71,4139),C("Universidad Católica",70,885),C("Palestino",66,4422),C("Unión Española",65,4132),C("Everton VM",63,4129),C("Audax Italiano",61,4138),C("Deportes Iquique",60,10142),C("Cobresal",59,4133),C("O'Higgins",62,6072),C("Huachipato",61,4134),C("Coquimbo Unido",60,8186),C("Ñublense",59,7427),C("Unión La Calera",58,10144),C("Cobreloa",58,2678),C("Deportes Copiapó",56,10139),C("Deportes Concepción",56,8110),C("Deportes Limache",57,19195),C("U de Concepción",57,5362),C("La Serena",58,4137)],
-  efl_cup:[C("Manchester City",90,382),C("Arsenal",88,359),C("Liverpool",88,364),C("Chelsea",84,363),C("Manchester United",83,360),C("Tottenham",82,367),C("Newcastle",81,361),C("Aston Villa",80,362),C("Brighton",78,331),C("Everton",77,368),C("Fulham",75,370),C("Crystal Palace",74,384),C("Nottingham Forest",72,393),C("Brentford",71,337),C("Leeds United",71,357),C("Bournemouth",70,349),C("West Ham",72,371),C("Wolverhampton",70,380),C("Burnley",68,379),C("Southampton",67,376),C("Birmingham City",66,392),C("Middlesbrough",67,369),C("Norwich City",67,381),C("Sheffield United",68,398),C("Stoke City",65,336),C("West Bromwich",68,383),C("Bristol City",64,333),C("Cardiff City",63,347),C("Charlton Athletic",62,372),C("Derby County",63,374),C("Hull City",65,306),C("Leicester City",70,375),C("Luton Town",62,301),C("Millwall",61,391),C("Oxford United",61,311),C("Portsmouth",62,385),C("Preston North End",62,394),C("Queens Park Rangers",62,334),C("Sunderland",67,366),C("Swansea City",63,318),C("Watford",64,395),C("Wrexham",62,352)]};
+  efl_cup:[C("Manchester City",90,382),C("Arsenal",88,359),C("Liverpool",88,364),C("Chelsea",84,363),C("Manchester United",83,360),C("Tottenham",82,367),C("Newcastle",81,361),C("Aston Villa",80,362),C("Brighton",78,331),C("Everton",77,368),C("Fulham",75,370),C("Crystal Palace",74,384),C("Nottingham Forest",72,393),C("Brentford",71,337),C("Leeds United",71,357),C("Bournemouth",70,349),C("West Ham",72,371),C("Wolverhampton",70,380),C("Burnley",68,379),C("Southampton",67,376),C("Birmingham City",66,392),C("Middlesbrough",67,369),C("Norwich City",67,381),C("Sheffield United",68,398),C("Stoke City",65,336),C("West Bromwich",68,383),C("Bristol City",64,333),C("Cardiff City",63,347),C("Charlton Athletic",62,372),C("Derby County",63,374),C("Hull City",65,306),C("Leicester City",70,375),C("Luton Town",62,301),C("Millwall",61,391),C("Oxford United",61,311),C("Portsmouth",62,385),C("Preston North End",62,394),C("Queens Park Rangers",62,334),C("Sunderland",67,366),C("Swansea City",63,318),C("Watford",64,395),C("Wrexham",62,352)],
+  nations:[C("España",91,164),C("Francia",90,478),C("Inglaterra",88,448),C("Portugal",87,482),C("Países Bajos",85,449),C("Alemania",84,481),C("Italia",84,162),C("Bélgica",82,459),C("Croacia",80,477),C("Dinamarca",78,479),C("Austria",77,474),C("Suiza",76,475),C("Turquía",75,465),C("Noruega",74,464),C("Serbia",73,6757),C("Grecia",72,455),C("Suecia",71,466),C("Polonia",71,471),C("Ucrania",71,457),C("Gales",70,578),C("Escocia",70,580),C("Hungría",70,480),C("República Checa",68,450),C("Rumanía",68,473),C("Eslovenia",68,472),C("Georgia",68,584),C("Bosnia",67,452),C("Eslovaquia",66,468),C("Israel",66,461),C("Irlanda",65,476),C("Islandia",65,470),C("Albania",64,585),C("Finlandia",64,458),C("Macedonia del Norte",63,463),C("Irlanda del Norte",62,586),C("Montenegro",62,6775),C("Chipre",60,445),C("Bulgaria",60,462),C("Estonia",59,444),C("Kazajistán",59,2619),C("Luxemburgo",58,582),C("Kosovo",58,18272),C("Bielorrusia",58,583),C("Azerbaiyán",57,581),C("Armenia",57,579),C("Letonia",56,456),C("Moldavia",55,483),C("Malta",52,453),C("Islas Feroe",52,447),C("Lituania",52,460),C("Andorra",45,587),C("Gibraltar",45,16721),C("Liechtenstein",44,589),C("San Marino",40,588)]};
 const LEAGUES={
 worldcup:{name:'Mundial 2026',icon:'🏆',color:'#c9a24a',espn:'fifa.world',ko:true,logo:4,sub:'Fase final en Estados Unidos, Canadá y México.'},
 premier:{name:'Premier League',icon:'🏴󠁢󠁮',color:'#e90052',espn:'eng.1',teams:'premier',logo:23,sub:'Temporada 2026/27 · 20 equipos.'},
@@ -34,11 +35,54 @@ champions:{name:'Champions League',icon:'⭐',color:'#4a7cc9',espn:'uefa.champio
   sudamericana:{name:'Copa Sudamericana',icon:'🥈',color:'#f26522',espn:'conmebol.sudamericana',teams:'sudamericana',ko:true,logo:1208,sub:'Segunda competición de clubes de Sudamérica.'},
   liga_arg:{name:'Liga Argentina',icon:'🇦🇷',color:'#6cace4',espn:'arg.1',teams:'liga_arg',logo:1,sub:'Primera División de Argentina 2026.'},
   liga_chil:{name:'Campeonato Chileno',icon:'🇨🇱',color:'#0039a6',espn:'chi.1',teams:'liga_chil',logo:86,sub:'Primera División de Chile 2026.'},
-  efl_cup:{name:'EFL Cup',icon:'🏆',color:'#3d7ed9',espn:'eng.league_cup',teams:'efl_cup',ko:true,logo:41,sub:'Copa de la Liga Inglesa · eliminatoria.'}};
+  efl_cup:{name:'EFL Cup',icon:'🏆',color:'#3d7ed9',espn:'eng.league_cup',teams:'efl_cup',ko:true,logo:41,sub:'Copa de la Liga Inglesa · eliminatoria.'},
+  nations:{name:'Nations League',icon:'🇪🇺',color:'#1a3b6b',espn:'uefa.nations',teams:'nations',ko:true,logo:2395,sub:'UEFA Nations League 2026/27 · 54 selecciones.'}};
+/* Liga doméstica de cada club copero que no está en los pools locales (forma cruzada).
+   Valor: código ESPN o lista (se prueban en orden). Inglaterra prueba 3 niveles. */
+const HOME_LEAGUES={
+  "Sporting CP":"por.1","Porto":"por.1","PSV":"ned.1","Feyenoord":"ned.1",
+  "Galatasaray":"tur.1","Fenerbahçe":"tur.1","Club Brujas":"bel.1","Slavia Praga":"cze.1",
+  "AEK Atenas":"gre.1","Bodo/Glimt":"nor.1","Viking":"nor.1","LASK":"aut.1",
+  "Flamengo":"bra.1","Palmeiras":"bra.1","Fluminense":"bra.1","Botafogo":"bra.1","Corinthians":"bra.1",
+  "Cruzeiro":"bra.1","Bahia":"bra.1","Mirassol":"bra.1","São Paulo":"bra.1","Santos":"bra.1",
+  "Vasco da Gama":"bra.1","Grêmio":"bra.1","Atlético Mineiro":"bra.1","RB Bragantino":"bra.1",
+  "Deportes Tolima":"col.1","Atlético Junior":"col.1","Independiente Medellín":"col.1",
+  "Independiente Santa Fe":"col.1","Millonarios":"col.1","Atlético Nacional":"col.1",
+  "América de Cali":"col.1","Atlético Bucaramanga":"col.1",
+  "LDU Quito":"ecu.1","Barcelona SC":"ecu.1","Independiente del Valle":"ecu.1","Macará":"ecu.1",
+  "Deportivo Cuenca":"ecu.1","Orense":"ecu.1","Libertad (Ecuador)":"ecu.1",
+  "Sporting Cristal":"per.1","Universitario":"per.1","Cienciano":"per.1","Melgar":"per.1",
+  "Alianza Atlético":"per.1","Deportivo Garcilaso":"per.1",
+  "Peñarol":"uru.1","Nacional":"uru.1","Defensor Sporting":"uru.1","Montevideo City Torque":"uru.1",
+  "Racing (Montevideo)":"uru.1","Boston River":"uru.1","Juventud":"uru.1","Liverpool (Uruguay)":"uru.1",
+  "Cerro Porteño":"par.1","Libertad":"par.1","Guaraní":"par.1","Olimpia":"par.1",
+  "Nacional Asunción":"par.1","Sportivo Trinidense":"par.1",
+  "Deportivo Táchira":"ven.1","Deportivo La Guaira":"ven.1","UCV FC":"ven.1","Carabobo":"ven.1",
+  "Caracas FC":"ven.1","Metropolitanos":"ven.1","Monagas SC":"ven.1","Academia Puerto Cabello":"ven.1",
+  "Bolívar":"bol.1","Always Ready":"bol.1","Nacional Potosí":"bol.1","San Antonio Bulo Bulo":"bol.1",
+  "Blooming":"bol.1","Guabirá":"bol.1","Independiente Petrolero":"bol.1",
+  "Argentinos Juniors":"arg.1",
+};
+const HOME_POOL={"premier":"eng.1","laliga":"esp.1","bundes":"ger.1","seriea":"ita.1","ligue1":"fra.1","liga_arg":"arg.1","liga_chil":"chi.1"};
+/* Códigos ESPN de ligas domésticas donde buscar últimos partidos fuera de la copa:
+   1º deriva del pool local (vía alias), 2º mapa manual, 3º cadena inglesa. */
+function homeLeaguesOf(esName){
+  const canon=(typeof ALIAS!=='undefined'&&ALIAS[norm(esName||'')])||esName;
+  for(const pk of Object.keys(HOME_POOL)){
+    const pool=(typeof CLUB_TEAMS!=='undefined'&&CLUB_TEAMS[pk])||[];
+    if(pool.some(t=>t.es===canon))return [HOME_POOL[pk]];
+  }
+  const m=HOME_LEAGUES[esName]||HOME_LEAGUES[canon];
+  if(m)return [m];
+  if(CURRENT_LEAGUE==='efl_cup')return ['eng.1','eng.2','eng.3'];
+  return [];
+}
 let CURRENT_LEAGUE='worldcup';
 try{const sv=localStorage.getItem('rp_league_v6');if(sv&&LEAGUES[sv])CURRENT_LEAGUE=sv;}catch(e){}
 const FLAG_CODE={"Argentina":"ar","España":"es","Francia":"fr","Inglaterra":"gb-eng","Brasil":"br","Portugal":"pt","Países Bajos":"nl","Alemania":"de","Bélgica":"be","Croacia":"hr","Marruecos":"ma","Colombia":"co","Uruguay":"uy","Senegal":"sn","Suiza":"ch","Dinamarca":"dk","Noruega":"no","Japón":"jp","Estados Unidos":"us","México":"mx","Ecuador":"ec","Austria":"at","Turquía":"tr","Nigeria":"ng","Suecia":"se","Corea del Sur":"kr","Australia":"au","Egipto":"eg","Costa de Marfil":"ci","Canadá":"ca","Irán":"ir","Paraguay":"py","Argelia":"dz","República Checa":"cz","Bosnia":"ba","Túnez":"tn","Panamá":"pa","Uzbekistán":"uz","Sudáfrica":"za","Arabia Saudita":"sa","Catar":"qa","Jordania":"jo","Cabo Verde":"cv","Curazao":"cw","Nueva Zelanda":"nz","Haití":"ht","Escocia":"gb-sct","Ghana":"gh","RD del Congo":"cd","Irak":"iq"};
+Object.assign(FLAG_CODE,{"Italia":"it","Serbia":"rs","Grecia":"gr","Gales":"gb-wls","Eslovenia":"si","Macedonia del Norte":"mk","Hungría":"hu","Ucrania":"ua","Georgia":"ge","Irlanda del Norte":"gb-nir","Israel":"il","Irlanda":"ie","Kosovo":"xk","Polonia":"pl","Rumanía":"ro","Eslovaquia":"sk","Albania":"al","Finlandia":"fi","Chipre":"cy","Bulgaria":"bg","Estonia":"ee","Kazajistán":"kz","Luxemburgo":"lu","Azerbaiyán":"az","Armenia":"am","Letonia":"lv","Moldavia":"md","Malta":"mt","Islas Feroe":"fo","Lituania":"lt","Andorra":"ad","Gibraltar":"gi","Liechtenstein":"li","San Marino":"sm","Montenegro":"me","Islandia":"is","Bielorrusia":"by"});
 const ESPN_ID={"Argelia":"624","Argentina":"202","Australia":"628","Austria":"474","Bélgica":"459","Bosnia":"452","Brasil":"205","Canadá":"206","Cabo Verde":"2597","Colombia":"208","RD del Congo":"2850","Croacia":"477","Curazao":"11678","República Checa":"450","Ecuador":"209","Egipto":"2620","Inglaterra":"448","Francia":"478","Alemania":"481","Ghana":"4469","Haití":"2654","Irán":"469","Irak":"4375","Costa de Marfil":"4789","Japón":"627","Jordania":"2917","México":"203","Marruecos":"2869","Países Bajos":"449","Nueva Zelanda":"2666","Noruega":"464","Panamá":"2659","Paraguay":"210","Portugal":"482","Catar":"4398","Arabia Saudita":"655","Escocia":"580","Senegal":"654","Sudáfrica":"467","Corea del Sur":"451","España":"164","Suecia":"466","Suiza":"475","Túnez":"659","Turquía":"465","Estados Unidos":"660","Uruguay":"212","Uzbekistán":"2570"};
+Object.assign(ESPN_ID,{"Italia":"162","Serbia":"6757","Grecia":"455","Gales":"578","Eslovenia":"472","Macedonia del Norte":"463","Hungría":"480","Ucrania":"457","Georgia":"584","Irlanda del Norte":"586","Israel":"461","Irlanda":"476","Kosovo":"18272","Polonia":"471","Rumanía":"473","Eslovaquia":"468","Albania":"585","Finlandia":"458","Chipre":"445","Bulgaria":"462","Estonia":"444","Kazajistán":"2619","Luxemburgo":"582","Azerbaiyán":"581","Armenia":"579","Letonia":"456","Moldavia":"483","Malta":"453","Islas Feroe":"447","Lituania":"460","Andorra":"587","Gibraltar":"16721","Liechtenstein":"589","San Marino":"588","Montenegro":"6775","Islandia":"470","Bielorrusia":"583","Dinamarca":"479"});
 const PRESET_MATCHUPS={
 worldcup:[{a:"Argentina",b:"Brasil"},{a:"España",b:"Francia"},{a:"Inglaterra",b:"Alemania"},{a:"Marruecos",b:"Portugal"},{a:"México",b:"Estados Unidos"},{a:"Japón",b:"Corea del Sur"}],
 premier:[{a:"Manchester City",b:"Manchester United"},{a:"Liverpool",b:"Everton"},{a:"Arsenal",b:"Tottenham"},{a:"Manchester United",b:"Liverpool"},{a:"Chelsea",b:"Fulham"},{a:"Newcastle",b:"Aston Villa"}],
@@ -51,10 +95,12 @@ libertadores:[{a:"Flamengo",b:"Fluminense"},{a:"River Plate",b:"Boca Juniors"},{
   sudamericana:[{a:"Independiente",b:"Racing"},{a:"São Paulo",b:"Santos"},{a:"LDU Quito",b:"Barcelona SC"},{a:"Cruzeiro",b:"Corinthians"},{a:"Defensa y Justicia",b:"Lanús"},{a:"River Plate",b:"Boca Juniors"}],
 liga_arg:[{a:"River Plate",b:"Boca Juniors"},{a:"Independiente",b:"Racing"},{a:"San Lorenzo",b:"Huracán"},{a:"Rosario Central",b:"Newell's"},{a:"Estudiantes LP",b:"Gimnasia LP"},{a:"Talleres",b:"Belgrano"}],
   liga_chil:[{a:"Colo Colo",b:"Universidad de Chile"},{a:"Universidad Católica",b:"Universidad de Chile"},{a:"Colo Colo",b:"Universidad Católica"},{a:"Palestino",b:"Unión Española"},{a:"Everton VM",b:"Coquimbo Unido"},{a:"Audax Italiano",b:"Unión Española"}],
-  efl_cup:[{a:"Manchester City",b:"Liverpool"},{a:"Arsenal",b:"Chelsea"},{a:"Manchester United",b:"Tottenham"},{a:"Newcastle",b:"Aston Villa"},{a:"Liverpool",b:"Chelsea"},{a:"Manchester City",b:"Arsenal"}]};
+  efl_cup:[{a:"Manchester City",b:"Liverpool"},{a:"Arsenal",b:"Chelsea"},{a:"Manchester United",b:"Tottenham"},{a:"Newcastle",b:"Aston Villa"},{a:"Liverpool",b:"Chelsea"},{a:"Manchester City",b:"Arsenal"}],
+  nations:[{a:"España",b:"Inglaterra"},{a:"Francia",b:"Italia"},{a:"Portugal",b:"Dinamarca"},{a:"Alemania",b:"Países Bajos"},{a:"Bélgica",b:"Turquía"},{a:"Croacia",b:"Noruega"}]};
 const WC2026_TEAMS=['Alemania','Paraguay','Francia','Suecia','Canadá','Sudáfrica','Países Bajos','Marruecos','Portugal','Croacia','España','Austria','Estados Unidos','Bosnia','Bélgica','Senegal','Brasil','Japón','Costa de Marfil','Noruega','México','Ecuador','Inglaterra','RD del Congo','Argentina','Cabo Verde','Australia','Egipto','Suiza','Argelia','Colombia','Ghana'];
 const WC2026_LOCK={0:2,2:1,8:1};
 const EN_NAME={"Argentina":"Argentina","España":"Spain","Francia":"France","Inglaterra":"England","Brasil":"Brazil","Portugal":"Portugal","Países Bajos":"Netherlands","Alemania":"Germany","Bélgica":"Belgium","Croacia":"Croatia","Marruecos":"Morocco","Colombia":"Colombia","Uruguay":"Uruguay","Senegal":"Senegal","Suiza":"Switzerland","Dinamarca":"Denmark","Noruega":"Norway","Japón":"Japan","Estados Unidos":"United States","México":"Mexico","Ecuador":"Ecuador","Austria":"Austria","Turquía":"Turkey","Nigeria":"Nigeria","Suecia":"Sweden","Corea del Sur":"South Korea","Australia":"Australia","Egipto":"Egypt","Costa de Marfil":"Ivory Coast","Canadá":"Canada","Irán":"Iran","Paraguay":"Paraguay","Argelia":"Algeria","República Checa":"Czech Republic","Bosnia":"Bosnia","Túnez":"Tunisia","Panamá":"Panama","Uzbekistán":"Uzbekistan","Sudáfrica":"South Africa","Arabia Saudita":"Saudi Arabia","Catar":"Qatar","Jordania":"Jordan","Cabo Verde":"Cape Verde","Curazao":"Curacao","Nueva Zelanda":"New Zealand","Haití":"Haiti","Escocia":"Scotland","Ghana":"Ghana","RD del Congo":"Congo DR","Irak":"Iraq"};
+Object.assign(EN_NAME,{"Italia":"Italy","Serbia":"Serbia","Grecia":"Greece","Gales":"Wales","Eslovenia":"Slovenia","Macedonia del Norte":"North Macedonia","Hungría":"Hungary","Ucrania":"Ukraine","Georgia":"Georgia","Irlanda del Norte":"Northern Ireland","Israel":"Israel","Irlanda":"Ireland","Kosovo":"Kosovo","Polonia":"Poland","Rumanía":"Romania","Eslovaquia":"Slovakia","Albania":"Albania","Finlandia":"Finland","Chipre":"Cyprus","Bulgaria":"Bulgaria","Estonia":"Estonia","Kazajistán":"Kazakhstan","Luxemburgo":"Luxembourg","Azerbaiyán":"Azerbaijan","Armenia":"Armenia","Letonia":"Latvia","Moldavia":"Moldova","Malta":"Malta","Islas Feroe":"Faroe Islands","Lituania":"Lithuania","Andorra":"Andorra","Gibraltar":"Gibraltar","Liechtenstein":"Liechtenstein","San Marino":"San Marino","Montenegro":"Montenegro","Islandia":"Iceland","Bielorrusia":"Belarus","Dinamarca":"Denmark"});
 const MES_ES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
 /* ═══════════ HELPERS ═══════════ */
@@ -127,7 +173,9 @@ Object.assign(ALIAS,{
   'marseille':'Marsella',
   'slavia prague':'Slavia Praga','lask linz':'LASK','sabah fk':'Sabah',
   'fc porto':'Porto','fc union berlin':'Union Berlin',
-  'aek athens':'AEK Atenas','slovan':'Slovan Bratislava','viking fk':'Viking','viking stavanger':'Viking'});
+  'aek athens':'AEK Atenas','slovan':'Slovan Bratislava','viking fk':'Viking','viking stavanger':'Viking',
+  'czechia':'República Checa','turkiye':'Turquía','bosnia herzegovina':'Bosnia','bosnia and herzegovina':'Bosnia',
+  'republic of ireland':'Irlanda','north macedonia':'Macedonia del Norte','faroe islands':'Islas Feroe'});
 function ensureTeam(name,espnId,leagueId){
   const byId=findTeamByEspnId(espnId,leagueId);if(byId)return byId;
   const q=norm(name);if(!q)return null;
@@ -190,18 +238,18 @@ function crestHTML(es, px) {
   const fb = t ? (t.f || '⚽') : '⚽';
   const size = px || 24;
   
-  // Clubes → ESPN
-  if (t && t.espn) {
-    const url = 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/' + t.espn + '.png&w=' + (size*2) + '&h=' + (size*2);
+  // Selecciones → flagcdn (primero: las selecciones también traen ID de ESPN pero su escudo es la bandera)
+  if (t && FLAG_CODE[es]) {
+    const url = 'https://flagcdn.com/w' + (size >= 40 ? 80 : 40) + '/' + FLAG_CODE[es] + '.png';
     return '<span class="crest" style="width:' + size + 'px;height:' + size + 'px">' +
            '<span class="crest-fb" style="font-size:' + size + 'px">' + fb + '</span>' +
            '<img src="' + url + '" alt="" loading="eager" onload="this.parentNode.classList.add(\'ok\')" onerror="this.remove()">' +
            '</span>';
   }
-  
-  // Selecciones → flagcdn
-  if (t && FLAG_CODE[es]) {
-    const url = 'https://flagcdn.com/w' + (size >= 40 ? 80 : 40) + '/' + FLAG_CODE[es] + '.png';
+
+  // Clubes → ESPN
+  if (t && t.espn) {
+    const url = 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/' + t.espn + '.png&w=' + (size*2) + '&h=' + (size*2);
     return '<span class="crest" style="width:' + size + 'px;height:' + size + 'px">' +
            '<span class="crest-fb" style="font-size:' + size + 'px">' + fb + '</span>' +
            '<img src="' + url + '" alt="" loading="eager" onload="this.parentNode.classList.add(\'ok\')" onerror="this.remove()">' +
@@ -372,6 +420,48 @@ async function loadTeamForm(esName,force){
       const conf=Math.min(n/3,1);
       const delta=clamp((sumOp/n)*14,-13,13)*conf;
       TEAM_FORM[esName]={n,gf,ga,delta,ts:Date.now()};
+      // Forma cruzada (solo copas de clubes con <3 pj en la copa): últimos partidos
+      // en cualquier competición (liga doméstica). Rellena la confianza que falta en
+      // la copa (1-n/3) con descuento 0.7 por cambio de contexto. Se guarda en
+      // xn/xdelta sin tocar n/gf/ga/delta: no se muestra en pantalla, solo ajusta rating.
+      try{
+        const _L=LEAGUES[league];
+        if(_L&&_L.ko&&_L.teams&&n<3&&CURRENT_LEAGUE===league){
+          const need=3-n,codes=homeLeaguesOf(esName);
+          const cross=[];
+          for(const code of codes){
+            if(cross.length>=need)break;
+            const u2='https://site.api.espn.com/apis/site/v2/sports/soccer/'+code+'/teams/'+id+'/schedule';
+            const d2=await espnFetch(u2);const evs2=(d2&&d2.events)||[];
+            const done2=evs2.filter(e=>{const c=e.competitions&&e.competitions[0];return c&&c.status&&c.status.type&&c.status.type.completed;});
+            done2.sort((a,b)=>new Date(b.date)-new Date(a.date));
+            for(const e of done2){if(cross.length>=need)break;cross.push(e);}
+          }
+          if(cross.length&&CURRENT_LEAGUE===league){
+            let sumX=0,kn=0;
+            cross.forEach(e=>{
+              const comp=e.competitions&&e.competitions[0];if(!comp)return;
+              const cs=comp.competitors||[];
+              const me=cs.find(c=>c.id===id||(c.team&&c.team.id===id));const opp=cs.find(c=>c!==me);
+              if(!me||!opp)return;
+              const sM=typeof me.score==='object'?(me.score&&me.score.value):me.score;
+              const sO=typeof opp.score==='object'?(opp.score&&opp.score.value):opp.score;
+              const mgs=parseFloat(sM),ogs=parseFloat(sO);
+              if(isNaN(mgs)||isNaN(ogs))return;
+              const ot=findTeamByEspnId(opp.team&&opp.team.id)||findAnyTeam((opp.team&&(opp.team.displayName||opp.team.name))||'');
+              const or=ot?ot.s:62;
+              const [ela,elb]=autoLambdas(br,or);
+              const home=me.homeAway==='home';
+              sumX+=((mgs-ogs)-(home?ela-elb:elb-ela))*0.7;kn++;
+            });
+            if(kn){
+              const gap=1-Math.min(n/3,1);
+              TEAM_FORM[esName].xn=kn;
+              TEAM_FORM[esName].xdelta=clamp((sumX/kn)*14,-13,13)*Math.min(kn/3,1)*gap;
+            }
+          }
+        }
+      }catch(_xe){}
       saveFormCache();
       return TEAM_FORM[esName];
     }catch(e){return null;}finally{delete _formBusy[esName];}
@@ -479,7 +569,7 @@ function detectPhase(noteText){
   if(mg)return {group:'Grupo '+mg[1].toUpperCase(),knockout:false,label:''};
   const KO=[[/round of 32|dieciseisavos/i,'Dieciseisavos'],[/round of 16|octavos/i,'Octavos de final'],[/quarter|cuartos/i,'Cuartos de final'],[/semi/i,'Semifinal'],[/(3rd|third)\s place|tercer\s puesto/i,'Tercer puesto'],[/final/i,'Final']];
   for(const [re,lab] of KO){if(re.test(t))return {group:'',knockout:true,label:lab};}
-  if(CURRENT_LEAGUE!=='worldcup'&&CURRENT_LEAGUE!=='champions')return {group:'',knockout:false,label:''};
+  if(!(LEAGUES[CURRENT_LEAGUE]&&LEAGUES[CURRENT_LEAGUE].ko))return {group:'',knockout:false,label:''};
   return {group:'',knockout:true,label:'',unknown:true};
 }
 function espnTeamId(esName){
@@ -1652,7 +1742,7 @@ let CONFIRMED=lsGet('rp_confirmed_v6',{});function saveConfirmed(){lsSet('rp_con
 function confKey(a,b){return [norm(a),norm(b)].sort().join('|');}
 function saveBracket(){lsSet('rp_bracket_v6',BRACKET);lsSet('rp_picks_v6',PICKS);}
 function pickedWinner(a,b){if(!a||!b)return null;const k=confKey(a,b);if(PICKS[k])return PICKS[k];return CONFIRMED[k]||null;}
-function ratingOf(name){const t=findAnyTeam(name);if(!t)return name?62:null;const f=APPLY_FORM&&TEAM_FORM[t.es];return (f&&Math.abs(f.delta)>=0.5)?clamp(t.s+f.delta,40,90):t.s;}
+function ratingOf(name){const t=findAnyTeam(name);if(!t)return name?62:null;const f=APPLY_FORM&&TEAM_FORM[t.es];if(!f)return t.s;const adj=f.delta+(f.xdelta||0);return (Math.abs(adj)>=0.5)?clamp(t.s+adj,40,90):t.s;}
 function advProb(nameA,nameB,cache){
   const key=nameA+'|'+nameB;if(cache[key]!=null)return cache[key];
   const sa=ratingOf(nameA),sb=ratingOf(nameB);let p;
@@ -2509,7 +2599,7 @@ function setLeague(id){
   else if(pool.length){state.A=pool[0].es;state.B=pool.length>1?pool[1].es:pool[0].es;}
   state.filterA='';state.filterB='';
   el('searchA').value='';el('searchB').value='';
-  el('koWrap').style.display=(id==='worldcup'||id==='champions')?'':'none';
+  el('koWrap').style.display=(LEAGUES[id]&&LEAGUES[id].ko)?'':'none';
   buildSideLeagues();
   renderPicker('A');renderPicker('B');buildPresets();buildTeamlist();fillAutoParams(false);
   renderStatsView();renderCartDay();renderHistory();renderDashboard();renderResumen();
@@ -2541,7 +2631,7 @@ function buildRanking(){
   buildSideLeagues();
   buildPresets();buildTeamlist();buildRanking();
   renderPicker('A');renderPicker('B');
-  el('koWrap').style.display=(CURRENT_LEAGUE==='worldcup'||CURRENT_LEAGUE==='champions')?'':'none';
+  el('koWrap').style.display=(LEAGUES[CURRENT_LEAGUE]&&LEAGUES[CURRENT_LEAGUE].ko)?'':'none';
   setLeague(CURRENT_LEAGUE);
   fillAutoParams(false);
   runSim(false);
