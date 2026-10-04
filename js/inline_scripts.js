@@ -1324,7 +1324,18 @@ function genVeredicto(pred,hs,as,A,B){
 let _lineupsCache={},_lineupsBusy={};
 function parseLineups(d){
   const ros=(d&&d.rosters)||[];
-  if(!ros.length)return null;
+  // Asistencias del partido (ESPN da quién asistió, pero no en qué gol: se muestran por equipo, sin inventar el mapeo)
+  const assists=[];
+  ros.forEach(r=>{
+    const home=r.homeAway==='home';
+    (r.roster||[]).forEach(x=>{
+      if(!x||!x.athlete)return;
+      const g=(x.stats||[]).find(s=>s.name==='goalAssists');
+      const n=g?parseFloat(g.displayValue||g.value||0):0;
+      if(n>0)assists.push({home,id:x.athlete.id,name:(x.athlete.shortName||x.athlete.displayName||'?'),n});
+    });
+  });
+  if(!ros.length)return {sides:null,assists};
   const sides=ros.map(r=>{
     const arr=(r.roster||[]).filter(x=>x&&x.athlete);
     const xi=arr.filter(x=>x.starter).sort((a,b)=>(parseInt(a.formationPlace,10)||99)-(parseInt(b.formationPlace,10)||99));
@@ -1335,7 +1346,7 @@ function parseLineups(d){
       xi:xi.map(x=>({id:x.athlete.id,name:nm(x),pos:(x.position&&x.position.abbreviation)||'',num:x.jersey||'',out:!!x.subbedOut})),
       subs:subs.map(x=>({id:x.athlete.id,name:nm(x),in:!!x.subbedIn}))};
   }).filter(Boolean);
-  return sides.length===2?sides:null;
+  return {sides:sides.length===2?sides:null,assists};
 }
 async function loadLineups(leagueEspn,evId){
   const k=leagueEspn+':'+evId,ex=_lineupsCache[k],now=Date.now();
@@ -1345,7 +1356,8 @@ async function loadLineups(leagueEspn,evId){
   try{
     const d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/soccer/'+leagueEspn+'/summary?event='+evId);
     const data=parseLineups(d);
-    _lineupsCache[k]={exp:now+(data?15*60e3:5*60e3),data};
+    const has=data&&(data.sides||(data.assists&&data.assists.length));
+    _lineupsCache[k]={exp:now+(has?15*60e3:5*60e3),data};
     return data;
   }catch(e){return ex?ex.data:null;}
   finally{delete _lineupsBusy[k];}
@@ -1365,9 +1377,20 @@ function lineupsHTML(lin,A,B){
 function lineupsBlock(L,m,A,B){
   if(!m||!m.id||!L)return '';
   const k=L.espn+':'+m.id,ex=_lineupsCache[k];
-  if(ex&&Date.now()<ex.exp)return ex.data?lineupsHTML(ex.data,A,B):'';
-  loadLineups(L.espn,m.id).then(d=>{if(d&&_liveOpenMatch===m)renderLiveCompare();});
+  if(ex&&Date.now()<ex.exp)return (ex.data&&ex.data.sides)?lineupsHTML(ex.data.sides,A,B):'';
+  loadLineups(L.espn,m.id).then(d=>{if(d&&(d.sides||(d.assists&&d.assists.length))&&_liveOpenMatch===m)renderLiveCompare();});
   return '';
+}
+/* Asistencias del partido por equipo (vienen en el mismo summary ya cacheado) */
+function assistsBlock(L,m,A,B){
+  if(!m||!m.id||!L)return '';
+  const ex=_lineupsCache[L.espn+':'+m.id];
+  const ast=ex&&ex.data&&ex.data.assists;
+  if(!ast||!ast.length||Date.now()>=ex.exp)return '';
+  const fmt=home=>ast.filter(a=>a.home===home).map(a=>playerImg(a.id,a.name,16)+' '+a.name+(a.n>1?' ('+a.n+')':'')).join(', ');
+  const ha=fmt(true),ab=fmt(false);
+  if(!ha&&!ab)return '';
+  return '<div class="lc-ast">🅰️ Asistencias'+(ha?' · <b>'+A+':</b> '+ha:'')+(ab?' · <b>'+B+':</b> '+ab:'')+'</div>';
 }
 async function renderLiveCompare(){
   const inPlace=!!el('lvCompareBox');
@@ -1449,6 +1472,7 @@ async function renderLiveCompare(){
   html+='<div class="lc-goals">'+(goalSc.length
     ? goalSc.map(g=>'<div class="lc-goal">⚽ <b>'+(g.min||'')+'</b> '+playerImg(g.pid,g.name,20)+' '+(g.name||'—')+' <span style="color:var(--mut)">('+(g.home?A:B)+')</span>'+(g.pen?' <span style="color:var(--acc2)">de penal</span>':'')+(g.ownGoal?' <span style="color:var(--red)">e.c.</span>':'')+'</div>').join('')
     :(hs>0||as>0)?'<div class="sub" style="margin:0">Goles registrados sin detalle de goleador.</div>':'<div class="sub" style="margin:0">Sin goles.</div>')+'</div>';
+  html+=assistsBlock(L,m,A,B);
   if(shootSc.length||p.homeShootout!=null||p.awayShootout!=null){
     const aPk=shootSc.filter(g=>g.home).map(g=>g.name||'—');
     const bPk=shootSc.filter(g=>!g.home).map(g=>g.name||'—');
