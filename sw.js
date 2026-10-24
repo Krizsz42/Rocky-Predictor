@@ -6,6 +6,8 @@ self.addEventListener('fetch',e=>{
   if(req.method!=='GET')return;
   const url=new URL(req.url);
   if(url.origin!==location.origin)return;
+  // No cachear API ni el proxy ESPN (datos en vivo + POST del chat)
+  if(url.pathname.startsWith('/api/')||url.pathname==='/espn')return;
   e.respondWith(
     fetch(req).then(res=>{
       if(res.ok){
