@@ -187,7 +187,7 @@ function ensureTeam(name,espnId,leagueId){
   return nt;
 }
 const lsGet=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v;}catch(e){return d;}};
-const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}};
 function showToast(m){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2600);}
 function countUp(el,to,dec,suffix,dur){const t0=performance.now();dur=dur||900;function fr(t){const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);el.textContent=(to*e).toFixed(dec)+(suffix||'');if(k<1)requestAnimationFrame(fr);}requestAnimationFrame(fr);}
 function poolTeams(){return CURRENT_LEAGUE==='worldcup'?TEAMS:(CLUB_TEAMS[LEAGUES[CURRENT_LEAGUE].teams]||TEAMS);}
@@ -680,7 +680,133 @@ function loadPasted(){
 /* ═══════════ HISTORIAL ═══════════ */
 let HIST=lsGet('rp_hist_'+CURRENT_LEAGUE+'_v6',[]);
 let lastPrediction=null,histShowAll=false;
-function persistHist(){lsSet('rp_hist_'+CURRENT_LEAGUE+'_v6',HIST);}
+let _lastSaveInfo=lsGet('rp_last_save_v1',null);
+
+/* ═══════════ RESPALDO DEL HISTORIAL (IndexedDB) ═══════════ */
+/* localStorage puede quedar lleno o ser borrado por el navegador. Guardamos
+   una copia por liga en una base aparte para poder restaurar el historial. */
+const HIST_BACKUP_DB='rocky_history_backup';
+const HIST_BACKUP_STORE='hist';
+const HIST_BACKUP_VERSION=1;
+let _histBackupDB=null;
+function openHistBackupDB(){
+  if(_histBackupDB)return _histBackupDB;
+  _histBackupDB=new Promise((resolve,reject)=>{
+    if(!('indexedDB' in window)){reject(new Error('IndexedDB no disponible'));return;}
+    const req=indexedDB.open(HIST_BACKUP_DB,HIST_BACKUP_VERSION);
+    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(HIST_BACKUP_STORE))db.createObjectStore(HIST_BACKUP_STORE,{keyPath:'league'});};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return _histBackupDB;
+}
+function backupHistToIDB(league,items){
+  if(!league||!Array.isArray(items))return Promise.resolve(false);
+  return openHistBackupDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(HIST_BACKUP_STORE,'readwrite');
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error);
+    tx.onabort=()=>reject(tx.error);
+    tx.objectStore(HIST_BACKUP_STORE).put({league,items,savedAt:Date.now(),origin:location.origin});
+  })).catch(e=>{console.warn('[hist] respaldo IndexedDB:',e&&e.message);return false;});
+}
+function readHistBackup(league){
+  return openHistBackupDB().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction(HIST_BACKUP_STORE,'readonly');
+    const req=tx.objectStore(HIST_BACKUP_STORE).get(league);
+    req.onsuccess=()=>resolve(req.result||null);
+    req.onerror=()=>reject(req.error);
+  })).catch(e=>{console.warn('[hist] lectura respaldo:',e&&e.message);return null;});
+}
+function histKeyFor(league){return 'rp_hist_'+league+'_v6';}
+function histItemKey(x){
+  if(!x)return '';
+  if(x.id)return String(x.id);
+  if(x.espnId)return 'espn:'+String(x.espnId);
+  return 'match:'+norm(x.A||'')+'|'+norm(x.B||'')+'|'+(x.ts||0);
+}
+function mergeHistLists(base,incoming){
+  const out=Array.isArray(base)?base.slice():[];
+  const pos=new Map();
+  out.forEach((x,i)=>pos.set(histItemKey(x),i));
+  (Array.isArray(incoming)?incoming:[]).forEach(x=>{
+    if(!x)return;
+    const k=histItemKey(x);
+    if(k&&pos.has(k)){
+      const i=pos.get(k),cur=out[i];
+      const score=v=>((v&&v.actualA!=null&&v.actualB!=null)?1e15:0)+(Number(v&&v.ts)||0);
+      if(score(x)>=score(cur))out[i]=x;
+    }else{
+      out.push(x);
+      if(k)pos.set(k,out.length-1);
+    }
+  });
+  return out;
+}
+function fmtHistTime(ts){
+  if(!ts)return '';
+  const d=new Date(Number(ts));
+  if(isNaN(d))return '';
+  return d.toLocaleString('es-AR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+function stampHistorySave(kind,count,detail,league,at){
+  const info={at:at||Date.now(),kind:kind||'save',count:Number(count)||0,detail:detail||'',league:league||CURRENT_LEAGUE,origin:location.origin};
+  _lastSaveInfo=info;
+  lsSet('rp_last_save_v1',info);
+  renderHistSaveState();
+  return info;
+}
+function renderHistSaveState(){
+  const el=document.getElementById('histSaveState');
+  if(!el)return;
+  const info=_lastSaveInfo||lsGet('rp_last_save_v1',null);
+  const origin=location.origin==='null'?'archivo local':location.origin;
+  const saved=info&&info.at?('🎟 '+(info.kind==='import'?'Importado':'Guardado')+' '+fmtHistTime(info.at)):'🎟 Sin guardados recientes';
+  const detail=info&&info.count?(' · '+info.count+' '+(info.count===1?'partido':'partidos')):'';
+  el.innerHTML='<span class="ticket-chip" title="'+(info&&info.detail?info.detail:'')+'">'+saved+detail+'</span><span class="hist-origin" title="Cada URL/origen tiene su propio almacenamiento">'+origin+'</span>';
+}
+async function restoreHistBackup(league){
+  const id=league||CURRENT_LEAGUE;
+  const key=histKeyFor(id);
+  const local=lsGet(key,[]);
+  const backup=await readHistBackup(id);
+  const items=backup&&Array.isArray(backup.items)?backup.items:[];
+  const merged=mergeHistLists(local,items);
+  const localMap=new Map(local.map(x=>[histItemKey(x),x]));
+  const score=v=>((v&&v.actualA!=null&&v.actualB!=null)?1e15:0)+(Number(v&&v.ts)||0);
+  const changed=merged.length!==local.length||items.some(x=>{
+    const cur=localMap.get(histItemKey(x));
+    return !cur||score(x)>score(cur);
+  });
+  if(changed){
+    const ok=lsSet(key,merged);
+    if(!ok)console.warn('[hist] localStorage lleno; se usa respaldo IndexedDB');
+    if(merged.length)lsSet('rp_auto_import_v1',Date.now());
+    backupHistToIDB(id,merged);
+    if(id===CURRENT_LEAGUE){
+      HIST=merged;
+      try{computeLearning();renderHistory();renderDashboard();renderStatsView();renderResumen();renderCartilla();}catch(e){}
+      if(backup&&backup.savedAt&&Date.now()-Number(backup.savedAt)>60000){
+        showToast('🎟 Historial restaurado desde respaldo local · '+merged.length+' partidos');
+      }
+    }
+  }else if(!local.length&&!items.length&&id===CURRENT_LEAGUE){
+    renderHistSaveState();
+  }
+  return changed;
+}
+function persistHist(){
+  const ok=lsSet(histKeyFor(CURRENT_LEAGUE),HIST);
+  backupHistToIDB(CURRENT_LEAGUE,HIST);
+  if(!ok)showToast('⚠ localStorage lleno: guardado en respaldo IndexedDB');
+  return ok;
+}
+function backupAllHistories(){
+  Object.keys(LEAGUES).forEach(id=>{
+    const items=id===CURRENT_LEAGUE?HIST:lsGet(histKeyFor(id),[]);
+    if(Array.isArray(items)&&items.length)backupHistToIDB(id,items);
+  });
+}
 function judge(it){
   const a=it.actualA,b=it.actualB;
   const realRes=a>b?'H':(a===b?'D':'A');
@@ -716,11 +842,14 @@ function computeLearning(){
     goalAdj:(n>=3&&sumP>0)?clamp(sumR/sumP,.8,1.25):1,ready:n>=3});
 }
 function savePrediction(){
-  if(!lastPrediction){document.getElementById('saveMsg').textContent='Simula un partido primero.';return;}
-  HIST.unshift(Object.assign({},lastPrediction,{id:Date.now()+'-'+Math.random().toString(36).slice(2,7),ts:Date.now(),actualA:null,actualB:null}));
-  persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderResumen();
-  document.getElementById('saveMsg').textContent='✓ Guardada en el historial';
-  setTimeout(()=>{const e=document.getElementById('saveMsg');if(e)e.textContent='';},2600);
+  if(!lastPrediction){const e=document.getElementById('saveMsg');if(e)e.textContent='Simula un partido primero.';return;}
+  const item=Object.assign({},lastPrediction,{id:Date.now()+'-'+Math.random().toString(36).slice(2,7),ts:Date.now(),actualA:null,actualB:null});
+  HIST.unshift(item);
+  const ok=persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderResumen();
+  const info=stampHistorySave('prediction',1,item.A+' vs '+item.B+' · '+item.si+'-'+item.sj);
+  const msg=document.getElementById('saveMsg');
+  if(msg){msg.innerHTML='🎟 Guardada '+fmtHistTime(info.at);setTimeout(()=>{const e=document.getElementById('saveMsg');if(e)e.innerHTML='';},3200);}
+  showToast(ok?('🎟 Ticket guardado · '+item.A+' vs '+item.B):'⚠ Guardado en respaldo IndexedDB (localStorage lleno)');
 }
 function setResult(id){const it=HIST.find(x=>x.id===id);if(!it)return;
   const a=parseInt(document.getElementById('ra_'+id).value,10),b=parseInt(document.getElementById('rb_'+id).value,10);
@@ -729,9 +858,52 @@ function setResult(id){const it=HIST.find(x=>x.id===id);if(!it)return;
   const haEl=document.getElementById('ha_'+id),hbEl=document.getElementById('hb_'+id);
   const ha=haEl?parseInt(haEl.value,10):NaN,hb=hbEl?parseInt(hbEl.value,10):NaN;
   if(!isNaN(ha)&&!isNaN(hb)&&ha>=0&&hb>=0&&ha<=a&&hb<=b){it.actualHTA=ha;it.actualHTB=hb;}
-  persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();}
+  persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();
+  const info=stampHistorySave('result',1,it.A+' '+a+'-'+b+' '+it.B);
+  showToast('🎟 Resultado guardado · '+it.A+' '+a+'-'+b+' '+it.B+' · '+fmtHistTime(info.at));}
 function delItem(id){HIST=HIST.filter(x=>x.id!==id);persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();}
 function clearHistory(){if(!HIST.length)return;if(!confirm('¿Vaciar el historial de '+LEAGUES[CURRENT_LEAGUE].name+'?'))return;HIST=[];persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();}
+function downloadTextFile(name,text,mime){
+  const blob=new Blob([text],{type:mime||'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function exportHistory(){
+  const leagues={};
+  Object.keys(LEAGUES).forEach(id=>{
+    const items=id===CURRENT_LEAGUE?HIST:lsGet(histKeyFor(id),[]);
+    if(Array.isArray(items)&&items.length)leagues[id]=items;
+  });
+  const total=Object.values(leagues).reduce((a,b)=>a+b.length,0);
+  if(!total){showToast('No hay historial para exportar');return;}
+  const payload={app:'Rocky Predictor',version:1,exportedAt:new Date().toISOString(),origin:location.origin,leagues};
+  downloadTextFile('rocky-historial-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(payload,null,2),'application/json');
+  showToast('🎟 Historial exportado · '+total+' partidos');
+}
+async function importHistoryFile(file){
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    const leagues=Array.isArray(data)?{[CURRENT_LEAGUE]:data}:(data&&data.leagues)||{};
+    let added=0,total=0,touchedCurrent=false;
+    Object.keys(leagues).forEach(id=>{
+      if(!LEAGUES[id]||!Array.isArray(leagues[id]))return;
+      const key=histKeyFor(id);
+      const local=lsGet(key,[]);
+      const merged=mergeHistLists(local,leagues[id]);
+      added+=Math.max(0,merged.length-local.length);
+      total+=merged.length;
+      lsSet(key,merged);backupHistToIDB(id,merged);
+      if(id===CURRENT_LEAGUE){HIST=merged;touchedCurrent=true;}
+    });
+    if(touchedCurrent){computeLearning();renderHistory();renderDashboard();renderStatsView();renderResumen();renderCartilla();}
+    stampHistorySave('import',added,'Importación manual · '+total+' partidos',CURRENT_LEAGUE);
+    showToast('🎟 Historial importado · '+added+' nuevos · '+total+' totales');
+  }catch(e){console.error('[hist] import:',e);showToast('No se pudo importar el historial');}
+  finally{const input=document.getElementById('histFile');if(input)input.value='';}
+}
 function toggleHistAll(){histShowAll=!histShowAll;renderHistory();}
 function toggleDetail(id){const d=document.getElementById('det_'+id),c=document.getElementById('cv_'+id);if(!d)return;const hid=d.classList.toggle('hidden');if(c)c.textContent=hid?'▸':'▾';}
 function toggleLearnCb(cb){LEARN.apply=cb.checked;lsSet('rp_learn_apply_v6',cb.checked);renderHistory();}
@@ -787,8 +959,10 @@ async function fetchResult(id){
         cornersTot:(s.homeCorners||0)+(s.awayCorners||0),
         cornersA:pick(s.homeCorners,s.awayCorners),cornersB:pick(s.awayCorners,s.homeCorners),
         yellowTot:s.yellow,scorers:s.scorers};}
-    if(lg===CURRENT_LEAGUE){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();}
-    else lsSet('rp_hist_'+lg+'_v6',arr);
+    if(lg===CURRENT_LEAGUE){persistHist();computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();
+      const info=stampHistorySave('result',1,it.A+' '+it.actualA+'-'+it.actualB+' '+it.B);
+      showToast('🎟 Resultado actualizado · '+it.A+' '+it.actualA+'-'+it.actualB+' '+it.B+' · '+fmtHistTime(info.at));}
+    else {lsSet('rp_hist_'+lg+'_v6',arr);backupHistToIDB(lg,arr);stampHistorySave('result',1,it.A+' '+it.actualA+'-'+it.actualB+' '+it.B,lg);}
   }catch(e){setStatusH(id,'No se pudo conectar (CORS/red). Cárgalo a mano.','err');}
 }
 function parseCtxDateSafe(ctx){if(!ctx)return null;const t=ctx.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const m=t.match(/(\d{1,2})\s+([a-z]{3,}).?\s+(\d{4})/);if(!m)return null;const MO={ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',jul:'07',ago:'08',sep:'09',oct:'10',nov:'11',dic:'12'};const mon=MO[m[2].slice(0,3)];if(!mon)return null;return m[3]+'-'+mon+'-'+String(m[1]).padStart(2,'0');}
@@ -815,6 +989,7 @@ let _importRunning=false;
 let _stopImport=false;
 window.importPlayed=async function(){
   if(_importRunning){showToast('Ya hay una importación en curso');return;}
+  if(window._histReady)await window._histReady;
   _stopImport=false;
   const stopBtn=document.getElementById('stopImportBtn');
   if(stopBtn)stopBtn.style.display='inline-block';
@@ -886,13 +1061,20 @@ window.importPlayed=async function(){
     }
   
     if(added||refreshed){
-      lsSet(histKey,hist);
+      // Si el usuario guardó una predicción mientras la importación estaba en
+      // curso, no la pisamos: fusionamos el historial actual con lo importado.
+      const merged=same()?mergeHistLists(hist,HIST):hist;
+      lsSet(histKey,merged);
+      backupHistToIDB(id,merged);
+      const savedCount=added||refreshed;
+      stampHistorySave('import',savedCount,added+' nuevos · '+refreshed+' actualizados · '+LEAGUES[id].name,id);
       if(same()){
-        HIST=hist;persistHist();
+        HIST=merged;persistHist();
         computeLearning();renderHistory();renderDashboard();renderStatsView();renderCartilla();renderResumen();
       }else{
         showToast('Importados '+added+' partidos en '+LEAGUES[id].name);
       }
+      if(added)showToast('🎟 '+added+' '+(added===1?'partido guardado':'partidos guardados')+' · '+LEAGUES[id].name);
     }
     if(_stopImport){
       set((added||refreshed)?'⏹ Detenido: se guardaron '+added+' nuevos y '+refreshed+' actualizados.':'⏹ Detenido sin cambios.','var(--red)');
@@ -930,6 +1112,7 @@ function loadBulkResults(){
   if(ok)document.getElementById('bulkBox').value='';
 }
 function renderHistory(){
+  renderHistSaveState();
   const learn=document.getElementById('learnStats');const n=LEARN.n;
   if(n===0){learn.innerHTML='<div class="empty">Aún no hay resultados cargados. Guarda predicciones y carga los marcadores reales: con 3 o más, el modelo calibra los goles.</div>'+
     '<label class="learn-toggle"><input type="checkbox" checked disabled> Rating base (siempre activo)</label>'+
@@ -952,7 +1135,10 @@ function renderHistory(){
       '<label class="learn-toggle"><input type="checkbox" '+(APPLY_FORM?'checked':'')+' onchange="toggleFormCb(this)"> Forma reciente ajustada por rival (ESPN)</label>';
   }
   const list=document.getElementById('histList');
-  if(!HIST.length){list.innerHTML='<div class="empty">Sin predicciones guardadas.</div>';return;}
+  if(!HIST.length){
+    list.innerHTML='<div class="empty">Sin predicciones guardadas en esta liga/origen.<br><small>Si antes usabas otra liga, URL/IP o dispositivo, cada uno guarda su propio historial. Exportá el historial desde la URL anterior e importalo acá, o mantené siempre la misma dirección.</small></div>';
+    return;
+  }
   const bdg=(ok,t)=>'<span class="badge '+(ok?'ok':'no')+'">'+(ok?'✓':'✗')+' '+t+'</span>';
   const items=HIST.slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
   const shown=histShowAll?items:items.slice(0,5);
@@ -965,11 +1151,16 @@ function renderHistory(){
       icons=dot(j0.hitRes,'Resultado')+dot(j0.hitScore,'Marcador')+dot(j0.hitOU,'O/U 2.5')+dot(j0.hitBtts,'BTTS')+(j0.hitHtft!=null?dot(j0.hitHtft,'HT/FT ('+j0.realHtft+')'):'');
       realChip='<span class="hr-real">real '+it.A+' '+it.actualA+'-'+it.actualB+' '+it.B+(it.actualHTA!=null&&it.actualHTB!=null?' (ET '+it.actualHTA+'-'+it.actualHTB+')':'')+'</span>';
     }else{icons='<span class="hr-pend">⏳ pendiente</span>';realChip='<span class="hr-real">'+(it.ctx||'')+'</span>';}
-    const row='<div class="hist-row" onclick="toggleDetail(\''+it.id+'\')"><span class="hr-match">'+it.A+' '+it.si+'-'+it.sj+' '+it.B+'</span>'+realChip+'<span class="hr-icons">'+icons+'</span><span class="chev" id="cv_'+it.id+'">▸</span><button class="del-x" onclick="event.stopPropagation();delItem(\''+it.id+'\')">✕</button></div>';
+    const savedAt=it.ts||it.importedAt||it.createdAt;
+    const originLabel=location.origin==='null'?'archivo local':location.origin;
+    const isImported=it.source==='imported'||String(it.id||'').startsWith('imp-');
+    const ticket=savedAt?'<span class="hr-ticket" title="'+(isImported?'Importado':'Guardado')+' '+fmtHistTime(savedAt)+'">🎟</span>':'';
+    const ticketLine=savedAt?'<div class="hist-ticket-line">🎟 '+(isImported?'Importado':'Guardado')+' '+fmtHistTime(savedAt)+' · '+originLabel+'</div>':'';
+    const row='<div class="hist-row" onclick="toggleDetail(\''+it.id+'\')"><span class="hr-match">'+it.A+' '+it.si+'-'+it.sj+' '+it.B+'</span>'+ticket+realChip+'<span class="hr-icons">'+icons+'</span><span class="chev" id="cv_'+it.id+'">▸</span><button class="del-x" onclick="event.stopPropagation();delItem(\''+it.id+'\')">✕</button></div>';
     let detail;
     if(!done){
       detail='<div class="hist-meta">'+(it.ctx||'')+' · pred: '+predTxt+' · '+it.si+'-'+it.sj+' ('+pc(it.sp)+')</div>'+
-        '<div class="res-in"><span>Final:</span><input type="number" min="0" id="ra_'+it.id+'"><span>-</span><input type="number" min="0" id="rb_'+it.id+'"><button class="go" onclick="setResult(\''+it.id+'\')">Guardar</button><button class="ghostb" onclick="fetchResult(\''+it.id+'\')">🔎 Buscar</button></div><div class="res-in" style="margin-top:6px"><span>Descanso (opcional):</span><input type="number" min="0" id="ha_'+it.id+'"><span>-</span><input type="number" min="0" id="hb_'+it.id+'"></div><div style="margin-top:6px;font-size:11px" id="st_'+it.id+'"></div>';
+        '<div class="res-in"><span>Final:</span><input type="number" min="0" id="ra_'+it.id+'"><span>-</span><input type="number" min="0" id="rb_'+it.id+'"><button class="go" onclick="setResult(\''+it.id+'\')">Guardar</button><button class="ghostb" onclick="fetchResult(\''+it.id+'\')">🔎 Buscar</button></div><div class="res-in" style="margin-top:6px"><span>Descanso (opcional):</span><input type="number" min="0" id="ha_'+it.id+'"><span>-</span><input type="number" min="0" id="hb_'+it.id+'"></div><div style="margin-top:6px;font-size:11px" id="st_'+it.id+'"></div>'+ticketLine;
     }else{
       const j=judge(it);let extra='';const s=it.actualStats;
       const metaPct=it.sp!=null?' ('+pc(it.sp)+')':'';
@@ -991,7 +1182,7 @@ function renderHistory(){
           '</tbody></table>';
         if(s.scorers&&s.scorers.length)extra+='<div style="margin-top:7px">⚽ '+s.scorers.map(g=>g.min+' '+g.name).join(' · ')+'</div>';}
       detail='<div class="hist-meta">'+(it.ctx||'')+' · pred: '+predTxt+' · marcador '+it.si+'-'+it.sj+metaPct+meta2+'</div>'+
-        '<div class="badges">'+bdg(j.hitRes,'Resultado')+bdg(j.hitScore,'Marcador')+bdg(j.hitOU,'Goles: '+ouP+' · hubo '+(it.actualA+it.actualB))+bdg(j.hitBtts,'Ambos marcan: '+btP)+(j.hitHtft!=null?bdg(j.hitHtft,'HT/FT: '+(it.predHtft||'–')+' · hubo '+j.realHtft):'')+'</div>'+extra;
+        '<div class="badges">'+bdg(j.hitRes,'Resultado')+bdg(j.hitScore,'Marcador')+bdg(j.hitOU,'Goles: '+ouP+' · hubo '+(it.actualA+it.actualB))+bdg(j.hitBtts,'Ambos marcan: '+btP)+(j.hitHtft!=null?bdg(j.hitHtft,'HT/FT: '+(it.predHtft||'–')+' · hubo '+j.realHtft):'')+'</div>'+extra+ticketLine;
     }
     return row+'<div class="hist-detail hidden" id="det_'+it.id+'">'+detail+'</div>';
   }).join('')+(items.length>5?'<div style="margin-top:8px"><button class="ghostb" onclick="toggleHistAll()">'+(histShowAll?'▲ Menos':'▼ Ver más')+'</button></div>':'');
@@ -1542,7 +1733,18 @@ async function autoSyncResults(){
   if(_autoSyncRunning||document.hidden)return;
   _autoSyncRunning=true;
   try{
-    try{await window.importPlayed();}catch(e){}
+    if(window._histReady)await window._histReady;
+    const last=Number(lsGet('rp_auto_import_v1',0))||0;
+    const stale=Date.now()-last>6*3600e3;
+    if(!HIST.length||stale){
+      try{await window.importPlayed();}catch(e){}
+      if(HIST.length)lsSet('rp_auto_import_v1',Date.now());
+    }else{
+      // Sin reimportar toda la temporada cada 3 minutos: solo revisa los
+      // pronósticos pendientes que ya tienen un id de ESPN.
+      const pend=HIST.filter(x=>x&&x.actualA==null&&x.espnId).slice(0,6);
+      for(const it of pend){try{await fetchResult(it.id);}catch(e){}}
+    }
     const vs=document.getElementById('view-stats');
     if(vs&&vs.classList.contains('active'))renderStatsView();
     const vc=document.getElementById('view-cartilla');
@@ -2669,6 +2871,8 @@ function setLeague(id){
   CURRENT_LEAGUE=id;lsSet('rp_league_v6',id);
   loadFormCache();
   HIST=lsGet('rp_hist_'+id+'_v6',[]);
+  const _restorePromise=restoreHistBackup(id).catch(e=>console.warn('[hist] restore:',e&&e.message));
+  if(!window._histReady)window._histReady=_restorePromise;
   computeLearning();
   const pool=poolTeams();
   if(id==='worldcup'){state.A='Bélgica';state.B='Irán';}
@@ -2709,6 +2913,7 @@ function buildRanking(){
   renderPicker('A');renderPicker('B');
   el('koWrap').style.display=(LEAGUES[CURRENT_LEAGUE]&&LEAGUES[CURRENT_LEAGUE].ko)?'':'none';
   setLeague(CURRENT_LEAGUE);
+  if(window._histReady)window._histReady.then(()=>backupAllHistories()).catch(()=>{});
   fillAutoParams(false);
   runSim(false);
   if(CURRENT_LEAGUE==='worldcup'&&!BRACKET.length)loadWCBracket();
