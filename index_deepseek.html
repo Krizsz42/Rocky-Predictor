@@ -275,8 +275,13 @@ summary:hover{color:var(--acc)}
 .lv2-inner{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:stretch}
 .lv2-inner>div{min-width:0}
 @media(max-width:560px){.lv2-inner{grid-template-columns:56px minmax(0,1fr)}}
-.lv2-status{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--mut);border-right:1px solid var(--line);background:var(--panel2);padding:14px 6px;font-weight:600;text-align:center}
+.lv2-status{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;color:var(--mut);border-right:1px solid var(--line);background:var(--panel2);padding:14px 6px;font-weight:600;text-align:center}
 .lv2-match.live .lv2-status{color:var(--red);font-weight:800}
+.lv2-ticket{display:block;font-size:10.5px;line-height:1;color:var(--gold);cursor:help}
+.lv-savebar{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--gray)}
+.lv-savebar.show{display:flex}
+.lv-savebar .ticket-chip{white-space:normal;max-width:100%}
+.lv-save-note{font-size:10px;color:var(--gray)}
 .lv2-main{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:14px;padding:13px 12px}
 .lv2-team{display:flex;align-items:center;gap:9px;min-width:0}
 .lv2-team.home{justify-content:flex-end;text-align:right}
@@ -1294,6 +1299,7 @@ html[data-theme="saas"] .brand-name{letter-spacing:.08em}
                 <button type="button" class="lv-segbtn" data-f="live" onclick="setLiveFilter('live')">En vivo</button>
               </div>
             </div>
+            <div class="lv-savebar" id="liveSaveState" aria-live="polite"></div>
           </div>
           <div class="lv-groups2" id="lvBody"><div class="empty">Cargando partidos…</div></div>
         </div>

@@ -940,6 +940,9 @@
     if (Date.now() >= ko) return null;
 
     await rpPut(RP_DB_STORES.prematch_predictions, record);
+    try {
+      window.dispatchEvent(new CustomEvent('rp:prematch-saved', { detail: record }));
+    } catch (e) {}
     return record;
   }
 
@@ -1509,6 +1512,10 @@
       };
     }
   };
+
+  try {
+    window.dispatchEvent(new Event('rp:prematch-ready'));
+  } catch (e) {}
 
   // Recalcular métricas con la separación de fuentes y reaplicar la ventaja
   // de local en el predictor visible. Se hace después de que el motor original

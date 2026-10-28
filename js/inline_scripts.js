@@ -1245,6 +1245,74 @@ function checkGoalNotifs(flat){
 
 /* ═══════════ EN VIVO + TICKER ═══════════ */
 let LV_DATE=new Date(),liveFilter='all',_liveFlat=[],_tickerFlat=[],_lvLoading=false,_tkrLoading=false,_tickerAt=0,_lvAt=0,_autoSyncRunning=false;
+/* Tickets de las predicciones pre-partido que el modelo congela en segundo
+   plano al abrir En vivo. No son predicciones del usuario: viven en
+   prematch_predictions y se avisan acá para que no queden invisibles. */
+let _prematchTickets=new Set();
+let _prematchTicketInfo=lsGet('rp_prematch_ticket_v1',null);
+let _prematchNotifyCount=0,_prematchNotifyTimer=null;
+function renderLiveSaveState(){
+  const box=document.getElementById('liveSaveState');
+  if(!box)return;
+  const info=_prematchTicketInfo||lsGet('rp_prematch_ticket_v1',null);
+  const n=info&&Number(info.count)||0;
+  if(!n){box.classList.remove('show');box.innerHTML='';return;}
+  box.classList.add('show');
+  box.innerHTML='<span class="ticket-chip" title="Predicciones pre-partido guardadas en IndexedDB">🎟 '+n+' '+(n===1?'predicción guardada en segundo plano':'predicciones guardadas en segundo plano')+'</span><span class="lv-save-note">Congeladas antes del inicio · '+fmtHistTime(info.at)+'</span>';
+}
+function paintPrematchTickets(){
+  document.querySelectorAll('.lv2-match').forEach(card=>{
+    const raw=String(card.id||'').replace('lvCard-','');
+    const m=_liveFlat[Number(raw)];
+    const st=card.querySelector('.lv2-status');
+    if(!m||!st)return;
+    const has=_prematchTickets.has(String(m.id||''));
+    let badge=st.querySelector('.lv2-ticket');
+    if(has&&!badge){
+      badge=document.createElement('span');
+      badge.className='lv2-ticket';
+      badge.title='Predicción pre-partido guardada en segundo plano';
+      badge.textContent='🎟';
+      st.appendChild(badge);
+    }else if(!has&&badge){
+      badge.remove();
+    }
+  });
+}
+function registerPrematchTicket(rec){
+  if(!rec||!rec.espnId)return;
+  const id=String(rec.espnId);
+  const isNew=!_prematchTickets.has(id);
+  _prematchTickets.add(id);
+  if(!isNew)return;
+  _prematchTicketInfo={at:Date.now(),count:_prematchTickets.size,league:rec.league||CURRENT_LEAGUE,detail:(rec.homeTeam||'')+' vs '+(rec.awayTeam||'')};
+  lsSet('rp_prematch_ticket_v1',_prematchTicketInfo);
+  renderLiveSaveState();
+  paintPrematchTickets();
+  _prematchNotifyCount++;
+  clearTimeout(_prematchNotifyTimer);
+  _prematchNotifyTimer=setTimeout(()=>{
+    const n=_prematchNotifyCount;_prematchNotifyCount=0;
+    if(n)showToast('🎟 '+n+' '+(n===1?'predicción guardada':'predicciones guardadas')+' en segundo plano');
+  },1000);
+}
+async function loadPrematchTickets(){
+  if(!window.RP_PREMATCH||typeof RP_PREMATCH.list!=='function')return;
+  try{
+    const list=await RP_PREMATCH.list(2000);
+    const set=new Set(_prematchTickets);
+    (list||[]).forEach(r=>{if(r&&r.espnId)set.add(String(r.espnId));});
+    _prematchTickets=set;
+    const newest=(list||[]).reduce((a,b)=>Number(b&&b.createdAt||0)>Number(a&&a.createdAt||0)?b:a,null);
+    _prematchTicketInfo=set.size?{at:newest?Number(newest.createdAt||newest.asOf||Date.now()):Date.now(),count:set.size,league:newest&&newest.league}:null;
+    if(_prematchTicketInfo)lsSet('rp_prematch_ticket_v1',_prematchTicketInfo);
+    else {try{localStorage.removeItem('rp_prematch_ticket_v1');}catch(e){}}
+    renderLiveSaveState();
+    paintPrematchTickets();
+  }catch(e){console.warn('[live] tickets prematch:',e&&e.message);}
+}
+window.addEventListener('rp:prematch-saved',e=>{try{registerPrematchTicket(e.detail);}catch(err){}});
+window.addEventListener('rp:prematch-ready',()=>{loadPrematchTickets();});
 function setLiveFilter(f){liveFilter=f;document.querySelectorAll('.lv-segbtn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));renderLive();}
 function lvMove(d){LV_DATE=new Date(LV_DATE.getTime()+d*864e5);renderLive(true);}
 function lvSet(ymd){LV_DATE=new Date(ymd.slice(0,4)+'-'+ymd.slice(4,6)+'-'+ymd.slice(6,8)+'T12:00:00');renderLive(true);}
@@ -1275,6 +1343,7 @@ async function fetchDayGroups(ymd){
   return {groups,flat};
 }
 async function renderLive(force){
+  renderLiveSaveState();
   const body=document.getElementById('lvBody'),strip=document.getElementById('lvDateStrip');
   const dias=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
   const sel=new Date(LV_DATE);sel.setHours(0,0,0,0);
@@ -1306,8 +1375,9 @@ async function renderLive(force){
         g.evs.map(m=>{
           const hasScore=m.hs!=null&&m.as!=null;
           const hWin=hasScore&&m.hs>m.as,aWin=hasScore&&m.as>m.hs;
+          const pt=_prematchTickets.has(String(m.id||''))?'<span class="lv2-ticket" title="Predicción pre-partido guardada en segundo plano">🎟</span>':'';
           return '<div class="lv2-match'+(m.state==='in'?' live':'')+'" id="lvCard-'+m.idx+'" onclick="openLiveInPlace(_liveFlat['+m.idx+'])">'+
-            '<div class="lv2-inner"><div class="lv2-status">'+(m.state==='in'?'En vivo':(m.state==='post'?'Final':m.label))+'</div>'+
+            '<div class="lv2-inner"><div class="lv2-status">'+(m.state==='in'?'En vivo':(m.state==='post'?'Final':m.label))+pt+'</div>'+
             '<div><div class="lv2-main">'+
             '<div class="lv2-team home"><span class="lv2-name'+(hWin?' win':'')+'">'+m.A+'</span>'+crestHTML(m.A,20)+'</div>'+
             '<div class="lv2-score"><b>'+(m.hs!=null?m.hs:'–')+'</b><i>|</i><b>'+(m.as!=null?m.as:'–')+'</b></div>'+
